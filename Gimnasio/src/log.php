@@ -1,3 +1,16 @@
+<?php
+session_start();
+
+if (isset($_SESSION['error'])) {
+    echo "<p class='mensaje-error'>{$_SESSION['error']}</p>";
+    unset($_SESSION['error']);
+}
+
+if (isset($_SESSION['mensaje'])) {
+    echo "<p class='mensaje-confirmacion'>{$_SESSION['mensaje']}</p>";
+    unset($_SESSION['mensaje']);
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -33,7 +46,8 @@
         <form action="login.php" method="POST">
             <!-- Campo de entrada para el email en el inicio de sesión, requerido -->
             <label for="email_login">Email:</label>
-            <input type="email" id="email_login" name="email" required>
+            <input type="email" id="email_login" name="email" required value="<?php echo isset($_SESSION['form_data']['email']) ? htmlspecialchars($_SESSION['form_data']['email']) : ''; ?>">
+
 
             <!-- Campo de entrada para la contraseña en el inicio de sesión, requerido -->
             <label for="contrasenya_login">Contraseña:</label>
