@@ -179,38 +179,41 @@ $conn->close();
 
                 <!-- Contenedor de acciones disponibles para el usuario (eliminar, asignar como miembro o monitor) -->
                 <td>
-                    <!-- Formulario para eliminar al usuario -->
-                    <form action="admin.php" method="POST" style="display:inline;">
-                        <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
-                        <button type="submit" name="eliminar_usuario" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
-                            Eliminar
-                        </button>
-                    </form>
+                    <div class="button-container">
+                        <!-- Formulario para eliminar al usuario -->
+                        <form action="admin.php" method="POST" style="display:inline;">
+                            <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
+                            <button type="submit" name="eliminar_usuario" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
+                                Eliminar
+                            </button>
+                        </form>
 
-                    <!-- Formulario para asignar el rol de miembro al usuario -->
-                    <form action="admin.php" method="POST" style="display:inline;">
-                        <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
-                        <button type="submit" name="crear_miembro">
-                            Crear Miembro
-                        </button>
-                    </form>
+                        <!-- Formulario para asignar el rol de miembro al usuario -->
+                        <form action="admin.php" method="POST" style="display:inline;">
+                            <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
+                            <button type="submit" name="crear_miembro">
+                                Crear Miembro
+                            </button>
+                        </form>
 
-                    <!-- Formulario para asignar el rol de monitor al usuario -->
-                    <form action="admin.php" method="POST" style="display:inline;">
-                        <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
-                        <button type="submit" name="crear_monitor">
-                            Crear Monitor
-                        </button>
-                    </form>
-                    <!-- Formulario para restaurar el rol del usuario a "usuario" -->
-                    <form action="admin.php" method="POST" style="display:inline;">
-                        <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
-                        <button type="submit" name="restaurar_usuario">
-                            Restaurar Usuario
-                        </button>
-                    </form>
+                        <!-- Formulario para asignar el rol de monitor al usuario -->
+                        <form action="admin.php" method="POST" style="display:inline;">
+                            <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
+                            <button type="submit" name="crear_monitor">
+                                Crear Monitor
+                            </button>
+                        </form>
 
+                        <!-- Formulario para restaurar el rol del usuario a "usuario" -->
+                        <form action="admin.php" method="POST" style="display:inline;">
+                            <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
+                            <button type="submit" name="restaurar_usuario">
+                                Restaurar Usuario
+                            </button>
+                        </form>
+                    </div>
                 </td>
+
             </tr>
         <?php endwhile; ?>
     </table>
