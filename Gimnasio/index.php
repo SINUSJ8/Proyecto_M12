@@ -1,16 +1,3 @@
-<?php if (isset($_GET['mensaje'])): ?>
-    <div class="mensaje-confirmacion">
-        <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
-    </div>
-<?php endif; ?>
-
-<?php if (isset($_GET['error'])): ?>
-    <div class="mensaje-error">
-        <p><?php echo htmlspecialchars($_GET['error']); ?></p>
-    </div>
-<?php endif; ?>
-
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -30,7 +17,7 @@
     <h2>Bienvenido al Gimnasio</h2>
     <p>Elige una opción para continuar:</p>
 
-    <div class="button_container">
+    <div class="button-container">
         <!-- Botón para redirigir a la página de registro -->
         <a href="src/reg.php">
             <button>Registrarse</button>
