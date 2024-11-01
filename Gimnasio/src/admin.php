@@ -25,6 +25,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Crear miembro
     if (isset($_POST['crear_miembro'])) {
+        $stmt = $conn->prepare("SELECT * FROM miembro WHERE id_usuario = ?");
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            header("Location: admin.php?mensaje=El+usuario+ya+es+miembro");
+            exit();
+        }
+        $stmt->close();
+
+        // Eliminar de monitor si existe
+        $stmt = $conn->prepare("DELETE FROM monitor WHERE id_usuario = ?");
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $stmt->close();
+
         // Crear entrada en la tabla miembro
         $stmt = $conn->prepare("INSERT INTO miembro (id_usuario, fecha_registro, tipo_membresia, entrenamiento) VALUES (?, NOW(), 'Básica', 'General')");
         $stmt->bind_param("i", $id_usuario);
@@ -43,6 +60,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Crear monitor
     if (isset($_POST['crear_monitor'])) {
+        $stmt = $conn->prepare("SELECT * FROM monitor WHERE id_usuario = ?");
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            header("Location: admin.php?mensaje=El+usuario+ya+es+monitor");
+            exit();
+        }
+        $stmt->close();
+
+        // Eliminar de miembro si existe
+        $stmt = $conn->prepare("DELETE FROM miembro WHERE id_usuario = ?");
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $stmt->close();
+
         // Crear entrada en la tabla monitor
         $stmt = $conn->prepare("INSERT INTO monitor (id_usuario, especialidad, disponibilidad) VALUES (?, 'General', 'Disponible')");
         $stmt->bind_param("i", $id_usuario);
@@ -56,6 +90,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->close();
 
         header("Location: admin.php?mensaje=Monitor+creado+correctamente");
+        exit();
+    }
+
+    // Restaurar usuario
+    if (isset($_POST['restaurar_usuario'])) {
+        $stmt = $conn->prepare("SELECT rol FROM usuario WHERE id_usuario = ?");
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $stmt->bind_result($rol_actual);
+        $stmt->fetch();
+        $stmt->close();
+
+        // Verificar si el rol actual es miembro o monitor
+        if ($rol_actual == 'miembro') {
+            // Eliminar de la tabla miembro
+            $stmt = $conn->prepare("DELETE FROM miembro WHERE id_usuario = ?");
+            $stmt->bind_param("i", $id_usuario);
+            $stmt->execute();
+            $stmt->close();
+        } elseif ($rol_actual == 'monitor') {
+            // Eliminar de la tabla monitor
+            $stmt = $conn->prepare("DELETE FROM monitor WHERE id_usuario = ?");
+            $stmt->bind_param("i", $id_usuario);
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            header("Location: admin.php?mensaje=El+usuario+ya+es+un+usuario+sin+rol+especial");
+            exit();
+        }
+
+        // Actualizar rol a "usuario"
+        $stmt = $conn->prepare("UPDATE usuario SET rol = 'usuario' WHERE id_usuario = ?");
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $stmt->close();
+
+        header("Location: admin.php?mensaje=Usuario+restaurado+correctamente");
         exit();
     }
 }
@@ -131,6 +202,14 @@ $conn->close();
                             Crear Monitor
                         </button>
                     </form>
+                    <!-- Formulario para restaurar el rol del usuario a "usuario" -->
+                    <form action="admin.php" method="POST" style="display:inline;">
+                        <input type="hidden" name="id_usuario" value="<?php echo $row['id_usuario']; ?>">
+                        <button type="submit" name="restaurar_usuario">
+                            Restaurar Usuario
+                        </button>
+                    </form>
+
                 </td>
             </tr>
         <?php endwhile; ?>
