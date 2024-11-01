@@ -107,9 +107,14 @@ $conn->close(); // Cerrar conexión a la base de datos
             <button type="submit">Actualizar Datos</button>
         </form>
     </div>
+    <div class="form_container">
+        <form action="logout.php" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
 
     <!-- Enlace al archivo JavaScript para validación de formularios -->
-    <script src="assets/js/validacion.js"></script>
+    <script src="../assets/js/validacion.js"></script>
 </body>
 
 </html>

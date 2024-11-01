@@ -135,6 +135,11 @@ $conn->close();
             </tr>
         <?php endwhile; ?>
     </table>
+    <div class="form_container">
+        <form action="logout.php" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
 </body>
 
 </html>

@@ -52,12 +52,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit(); // Terminar el script después de redirigir
         } else {
             // Redirigir al inicio con un mensaje de error si la contraseña es incorrecta
-            header("Location: /Gimnasio/index.php?error=Contraseña+incorrecta");
+            header("Location: /Gimnasio/src/log.php?error=Contraseña+incorrecta");
             exit();
         }
     } else {
         // Redirigir al inicio con un mensaje de error si el usuario no existe
-        header("Location: /Gimnasio/index.php?error=Usuario+no+encontrado");
+        header("Location: /Gimnasio/src/log.php?error=Usuario+no+encontrado");
         exit();
     }
     $stmt->close(); // Cerrar la declaración preparada

@@ -1,3 +1,17 @@
+<?php
+session_start();
+
+if (isset($_SESSION['error'])) {
+    echo "<p class='error'>{$_SESSION['error']}</p>";
+    unset($_SESSION['error']);
+}
+
+if (isset($_SESSION['mensaje'])) {
+    echo "<p class='success'>{$_SESSION['mensaje']}</p>";
+    unset($_SESSION['mensaje']);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -29,31 +43,29 @@
         <h2>Registro de Usuario</h2>
         <!-- Formulario de registro con validación de formulario en JavaScript -->
         <form action="registro.php" method="POST" onsubmit="return validarFormulario()">
-            <!-- Campo de entrada para el nombre del usuario, requerido -->
             <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required>
+            <input type="text" id="nombre" name="nombre" required value="<?php echo isset($_SESSION['form_data']['nombre']) ? htmlspecialchars($_SESSION['form_data']['nombre']) : ''; ?>">
 
-            <!-- Campo de entrada para el email del usuario, requerido -->
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" required value="<?php echo isset($_SESSION['form_data']['email']) ? htmlspecialchars($_SESSION['form_data']['email']) : ''; ?>">
 
-            <!-- Campo de entrada para la contraseña del usuario, requerido -->
             <label for="contrasenya">Contraseña:</label>
             <input type="password" id="contrasenya" name="contrasenya" required>
 
-            <!-- Campo de entrada para confirmar la contraseña, requerido para validar coincidencia -->
             <label for="confirmar_contrasenya">Confirmar Contraseña:</label>
             <input type="password" id="confirmar_contrasenya" name="confirmar_contrasenya" required>
 
-            <!-- Botón para enviar el formulario de registro -->
             <button type="submit">Registrarse</button>
         </form>
+        <!-- Botón para volver a la página principal -->
+    </div>
+    <div class="form_container">
+        <button onclick="window.location.href='../index.php'">Volver a la Página Principal</button>
     </div>
 
 
-
     <!-- Enlace al archivo JavaScript para validación de formularios en el registro -->
-    <script src="assets/js/validacion.js"></script>
+    <script src="../assets/js/validacion.js"></script>
 </body>
 
 </html>

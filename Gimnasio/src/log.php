@@ -43,9 +43,12 @@
             <button type="submit">Iniciar Sesión</button>
         </form>
     </div>
+    <div class="form_container">
+        <button onclick="window.location.href='../index.php'">Volver a la Página Principal</button>
+    </div>
 
     <!-- Enlace al archivo JavaScript para validación de formularios en el registro -->
-    <script src="/Gimnasio/assets/js/validacion.js"></script>
+    <script src="../assets/js/validacion.js"></script>
 </body>
 
 </html>
