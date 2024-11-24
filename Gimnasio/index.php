@@ -9,9 +9,17 @@
 </head>
 
 <body>
+    <?php
+    if (isset($_GET['error'])) {
+        echo "<p class='mensaje-error'>" . htmlspecialchars($_GET['error']) . "</p>";
+    }
+    if (isset($_GET['mensaje'])) {
+        echo "<p class='mensaje-confirmacion'>" . htmlspecialchars($_GET['mensaje']) . "</p>";
+    }
+    ?>
     <!-- Imagen de portada del gimnasio -->
     <div class="image-container">
-        <img src="/Gimnasio/assets/imgs/gym.webp" alt="Gimnasio" class="gym-image">
+        <img src="assets/imgs/gym.webp" alt="Gimnasio" class="gym-image">
     </div>
 
     <h2>Bienvenido al Gimnasio</h2>
