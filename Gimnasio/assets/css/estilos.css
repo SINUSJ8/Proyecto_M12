@@ -26,6 +26,16 @@ header {
     position: sticky; 
     top: 0;
     z-index: 10;
+    display: flex;
+}
+
+ul {
+    display: flex;
+}
+
+nav li{
+    flex: auto;
+    list-style:none
 }
 
 header h1 {
