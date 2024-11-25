@@ -9,6 +9,33 @@
 </head>
 
 <body>
+    <header>
+        <nav class="logo">
+        </nav>
+        <nav class="informacion">
+            <ul>
+                <li>
+                    <a href>Inicio</a>
+                </li>
+                <li>
+                    <a href>Equipo</a>
+                </li>
+                <li>
+                    <a href>Gimnasio</a>
+                </li>
+                <li>
+                    <a href>Clases</a>
+                </li>
+                <li>
+                    <a href>Contacto</a>
+                </li>
+            </ul>
+        </nav>
+        <nav class="buscador">
+        </nav>
+    </header>
+
+
     <?php
     if (isset($_GET['error'])) {
         echo "<p class='mensaje-error'>" . htmlspecialchars($_GET['error']) . "</p>";
