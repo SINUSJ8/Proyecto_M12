@@ -17,10 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
 
 
 $filtros = [
-    'nombre_clase' => $_GET['nombre_clase'] ?? '',
-    'nombre_monitor' => $_GET['nombre_monitor'] ?? '',
-    'especialidad' => $_GET['especialidad'] ?? '',
-    'fecha' => $_GET['fecha'] ?? '',
+    'nombre_clase' => isset($_GET['nombre_clase']) ? $_GET['nombre_clase'] : '',
+    'nombre_monitor' => isset($_GET['nombre_monitor']) ? $_GET['nombre_monitor'] : '',
+    'especialidad' => isset($_GET['especialidad']) ? $_GET['especialidad'] : '',
+    'fecha' => isset($_GET['fecha']) ? $_GET['fecha'] : '',
 ];
 
 $clases = obtenerClases($conn, $filtros);
@@ -44,10 +44,10 @@ include '../admin/admin_header.php';
         <!-- Formulario de búsqueda -->
 
         <form method="GET" action="clases.php" class="search-form">
-            <input type="text" name="nombre_clase" placeholder="Nombre de la clase" value="<?= htmlspecialchars($_GET['nombre_clase'] ?? '') ?>">
-            <input type="text" name="nombre_monitor" placeholder="Nombre del monitor" value="<?= htmlspecialchars($_GET['nombre_monitor'] ?? '') ?>">
-            <input type="text" name="especialidad" placeholder="Especialidad" value="<?= htmlspecialchars($_GET['especialidad'] ?? '') ?>">
-            <input type="date" name="fecha" value="<?= htmlspecialchars($_GET['fecha'] ?? '') ?>">
+            <input type="text" name="nombre_clase" placeholder="Nombre de la clase" value="<?= htmlspecialchars(isset($_GET['nombre_clase']) ? $_GET['nombre_clase'] : '', ENT_QUOTES, 'UTF-8') ?>">
+            <input type="text" name="nombre_monitor" placeholder="Nombre del monitor" value="<?= htmlspecialchars(isset($_GET['nombre_monitor']) ? $_GET['nombre_monitor'] : '', ENT_QUOTES, 'UTF-8') ?>">
+            <input type="text" name="especialidad" placeholder="Especialidad" value="<?= htmlspecialchars(isset($_GET['especialidad']) ? $_GET['especialidad'] : '', ENT_QUOTES, 'UTF-8') ?>">
+            <input type="date" name="fecha" value="<?= htmlspecialchars(isset($_GET['fecha']) ? $_GET['fecha'] : '', ENT_QUOTES, 'UTF-8') ?>">
             <button type="submit">Buscar</button>
             <button type="button" class="reset-button" onclick="limpiarFormulario()">Limpiar</button>
         </form>
