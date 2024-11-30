@@ -81,6 +81,41 @@ main {
     margin-bottom: 20px;
 }
 
+.infoCalendario{
+    display: flex;
+    align-items: center;
+    padding: 0 2em;
+    font-size: 1.4em;
+    padding: .5em 1em,
+}
+
+.semanaPrev, .semanaPos{
+    color: #27ae60;
+    cursor: pointer;
+}
+
+.semanaPrev{
+    margin-right: auto;
+}
+
+.semanaPos{
+    margin-left: auto;
+}
+
+
+.calendarioSemana{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-gap: 10px;
+    align-items: right;
+}
+
+.calendarioDia{
+    align-items: center;
+}
+
+
+
 .especialidades-lista {
     list-style-type: none;
     padding: 0;
