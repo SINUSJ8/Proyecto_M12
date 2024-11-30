@@ -10,9 +10,9 @@ $conn = obtenerConexion();
 manejarAccionUsuario($conn);
 
 // Capturar el término de búsqueda y los parámetros de ordenamiento
-$busqueda = $_GET['busqueda'] ?? '';
-$orden_columna = $_GET['orden'] ?? 'nombre';
-$orden_direccion = $_GET['direccion'] ?? 'ASC';
+$busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
+$orden_columna = isset($_GET['orden']) ? $_GET['orden'] : 'nombre';
+$orden_direccion = isset($_GET['direccion']) ? $_GET['direccion'] : 'ASC';
 
 // Obtener el ID del administrador actual desde la sesión
 $id_admin = $_SESSION['id_usuario'];
@@ -24,7 +24,7 @@ $title = "Gestión de usuarios";
 include '../admin/admin_header.php';
 
 // Capturar el término de búsqueda si está presente
-$busqueda = $_GET['busqueda'] ?? '';
+$busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
 
 // Construir la consulta SQL con el filtro de búsqueda
 $sql = "SELECT id_usuario, nombre, email, rol FROM usuario WHERE id_usuario != ?";

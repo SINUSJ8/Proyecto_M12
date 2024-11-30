@@ -71,7 +71,7 @@ include '../admin/admin_header.php';
                         <tr>
                             <td><?php echo htmlspecialchars($dato['nombre_usuario']); ?></td>
                             <td><?php echo htmlspecialchars($dato['email']); ?></td>
-                            <td><?php echo htmlspecialchars($dato['telefono'] ?? 'N/A'); ?></td>
+                            <td><?php echo htmlspecialchars(isset($dato['telefono']) ? $dato['telefono'] : 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
                             <td><?php echo htmlspecialchars($dato['tipo_membresia']); ?></td>
                             <td><?php echo htmlspecialchars($dato['precio']); ?> €</td>
                             <td><?php echo htmlspecialchars($dato['duracion']); ?> meses</td>

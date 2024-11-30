@@ -16,25 +16,26 @@ $miembro = obtenerMiembroPorID($conn, $id_usuario);
 $id_miembro = obtenerIdMiembroPorUsuario($conn, $id_usuario);
 $fechas_membresia = obtenerFechasMembresiaActiva($conn, $id_miembro);
 
-$fecha_inicio = $fechas_membresia['fecha_inicio'] ?? null;
-$fecha_fin = $fechas_membresia['fecha_fin'] ?? null;
+$fecha_inicio = isset($fechas_membresia['fecha_inicio']) ? $fechas_membresia['fecha_inicio'] : null;
+$fecha_fin = isset($fechas_membresia['fecha_fin']) ? $fechas_membresia['fecha_fin'] : null;
 
 
 // Asegurarse de que el array 'entrenamientos' esté definido aunque esté vacío
-$miembro['entrenamientos'] = $miembro['entrenamientos'] ?? [];
+$miembro['entrenamientos'] = isset($miembro['entrenamientos']) ? $miembro['entrenamientos'] : [];
 
 // Obtener entrenamientos y membresías para los desplegables
 $entrenamientos = obtenerEntrenamientos($conn);
 $membresias = obtenerMembresias($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'] ?? null;
-    $email = $_POST['email'] ?? null;
-    $fecha_registro = $_POST['fecha_registro'] ?? null;
-    $id_membresia_nueva = $_POST['id_membresia'] ?? null;
-    $entrenamientos_seleccionados = $_POST['entrenamiento'] ?? [];
-    $fecha_inicio_nueva = $_POST['fecha_inicio'] ?? null;
-    $fecha_fin_nueva = $_POST['fecha_fin'] ?? null;
+    $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
+    $email = isset($_POST['email']) ? $_POST['email'] : null;
+    $fecha_registro = isset($_POST['fecha_registro']) ? $_POST['fecha_registro'] : null;
+    $id_membresia_nueva = isset($_POST['id_membresia']) ? $_POST['id_membresia'] : null;
+    $entrenamientos_seleccionados = isset($_POST['entrenamiento']) ? $_POST['entrenamiento'] : [];
+    $fecha_inicio_nueva = isset($_POST['fecha_inicio']) ? $_POST['fecha_inicio'] : null;
+    $fecha_fin_nueva = isset($_POST['fecha_fin']) ? $_POST['fecha_fin'] : null;
+
 
     if (!$nombre || !$email || !$fecha_registro || !$id_membresia_nueva) {
         $mensaje = "Error: Todos los campos son obligatorios.";
@@ -96,8 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Recargar las fechas de inicio y fin actualizadas
             $fechas_membresia = obtenerFechasMembresiaActiva($conn, $id_miembro);
-            $fecha_inicio = $fechas_membresia['fecha_inicio'] ?? null;
-            $fecha_fin = $fechas_membresia['fecha_fin'] ?? null;
+            $fecha_inicio = isset($fechas_membresia['fecha_inicio']) ? $fechas_membresia['fecha_inicio'] : null;
+            $fecha_fin = isset($fechas_membresia['fecha_fin']) ? $fechas_membresia['fecha_fin'] : null;
+
 
             $miembro = obtenerMiembroPorID($conn, $id_usuario);
         } else {

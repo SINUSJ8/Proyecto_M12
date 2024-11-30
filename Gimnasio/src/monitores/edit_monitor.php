@@ -15,18 +15,19 @@ $id_usuario = $_GET['id_usuario'];
 $monitor = obtenerMonitorPorID($conn, $id_usuario);
 
 // Asegurarse de que el array 'entrenamientos' esté definido aunque esté vacío
-$monitor['entrenamientos'] = $monitor['entrenamientos'] ?? [];
+$monitor['entrenamientos'] = isset($monitor['entrenamientos']) ? $monitor['entrenamientos'] : [];
 
 // Obtener entrenamientos y especialidades disponibles para los desplegables
 $entrenamientos = obtenerEntrenamientos($conn);
 $especialidades = obtenerEspecialidades($conn); // Esta función obtiene todas las especialidades
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'] ?? null;
-    $email = $_POST['email'] ?? null;
-    $experiencia = $_POST['experiencia'] ?? null;
-    $disponibilidad = $_POST['disponibilidad'] ?? null;
-    $entrenamientos_seleccionados = $_POST['entrenamiento'] ?? [];
+    $nombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
+    $email = isset($_POST['email']) ? $_POST['email'] : null;
+    $experiencia = isset($_POST['experiencia']) ? $_POST['experiencia'] : null;
+    $disponibilidad = isset($_POST['disponibilidad']) ? $_POST['disponibilidad'] : null;
+    $entrenamientos_seleccionados = isset($_POST['entrenamiento']) ? $_POST['entrenamiento'] : [];
+
 
     if (!$nombre || !$email || $experiencia === null || $disponibilidad === null) {
         $mensaje = "Error: Todos los campos son obligatorios.";

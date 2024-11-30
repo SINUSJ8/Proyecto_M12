@@ -295,7 +295,7 @@ function obtenerIdMiembroPorUsuario($conn, $id_usuario)
     $result = $stmt->get_result();
     $miembro = $result->fetch_assoc();
     $stmt->close();
-    return $miembro['id_miembro'] ?? null;
+    return isset($miembro['id_miembro']) ? $miembro['id_miembro'] : null;
 }
 function obtenerFechasMembresiaActiva($conn, $id_miembro)
 {
