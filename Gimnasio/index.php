@@ -9,33 +9,6 @@
 </head>
 
 <body>
-    <header>
-        <nav class="logo">
-        </nav>
-        <nav class="informacion">
-            <ul>
-                <li>
-                    <a href>Inicio</a>
-                </li>
-                <li>
-                    <a href>Equipo</a>
-                </li>
-                <li>
-                    <a href>Gimnasio</a>
-                </li>
-                <li>
-                    <a href>Clases</a>
-                </li>
-                <li>
-                    <a href>Contacto</a>
-                </li>
-            </ul>
-        </nav>
-        <nav class="buscador">
-        </nav>
-    </header>
-
-
     <?php
     if (isset($_GET['error'])) {
         echo "<p class='mensaje-error'>" . htmlspecialchars($_GET['error']) . "</p>";
@@ -54,12 +27,12 @@
 
     <div class="button-container">
         <!-- Botón para redirigir a la página de registro -->
-        <a href="src/reg.php">
+        <a href="src/auth/reg.php">
             <button>Registrarse</button>
         </a>
 
         <!-- Botón para redirigir a la página de inicio de sesión -->
-        <a href="src/log.php">
+        <a href="src/auth/log.php">
             <button>Iniciar Sesión</button>
         </a>
     </div>

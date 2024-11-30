@@ -91,27 +91,27 @@ function iniciarSesionUsuario($email, $contrasenya)
             // Redireccionar según el rol del usuario
             switch ($rol) {
                 case 'admin':
-                    header("Location: ../src/admin.php");
+                    header("Location: ../admin/admin.php");
                     break;
                 case 'monitor':
-                    header("Location: ../src/monitor.php");
+                    header("Location: ../monitores/monitor.php");
                     break;
                 case 'miembro':
-                    header("Location: ../src/miembro.php");
+                    header("Location: ../miembros/miembro.php");
                     break;
                 default:
-                    header("Location: ../src/usuario.php");
+                    header("Location: ../usuarios/usuario.php");
                     break;
             }
             exit();
         } else {
             $_SESSION['error'] = "Contraseña incorrecta";
-            header("Location: ../src/log.php");
+            header("Location: ../auth/log.php");
             exit();
         }
     } else {
         $_SESSION['error'] = "Usuario no encontrado";
-        header("Location: ../src/log.php");
+        header("Location: ../auth/log.php");
         exit();
     }
 
