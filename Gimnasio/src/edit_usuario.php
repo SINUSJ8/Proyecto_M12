@@ -51,24 +51,25 @@ $conn->close();
 
             <!-- Campo para editar el nombre -->
             <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($datos_usuario['nombre'] ?? ''); ?>" required aria-label="Nombre completo del usuario">
+            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars(isset($datos_usuario['nombre']) ? $datos_usuario['nombre'] : '', ENT_QUOTES, 'UTF-8'); ?>" required aria-label="Nombre completo del usuario">
 
             <!-- Campo para editar el email -->
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($datos_usuario['email'] ?? ''); ?>" required title="Introduce el email del usuario" aria-label="Correo electrónico del usuario">
+            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars(isset($datos_usuario['email']) ? $datos_usuario['email'] : '', ENT_QUOTES, 'UTF-8'); ?>" required title="Introduce el email del usuario" aria-label="Correo electrónico del usuario">
+
 
             <!-- Selector para editar el rol -->
             <label for="rol">Rol:</label>
             <select id="rol" name="rol" required title="Selecciona el rol del usuario" aria-label="Rol del usuario">
-                <option value="usuario" <?php echo ($datos_usuario['rol'] ?? '') == 'usuario' ? 'selected' : ''; ?>>Usuario</option>
-                <option value="miembro" <?php echo ($datos_usuario['rol'] ?? '') == 'miembro' ? 'selected' : ''; ?>>Miembro</option>
-                <option value="monitor" <?php echo ($datos_usuario['rol'] ?? '') == 'monitor' ? 'selected' : ''; ?>>Monitor</option>
-                <option value="admin" <?php echo ($datos_usuario['rol'] ?? '') == 'admin' ? 'selected' : ''; ?>>Administrador</option>
+                <option value="usuario" <?php echo isset($datos_usuario['rol']) && $datos_usuario['rol'] == 'usuario' ? 'selected' : ''; ?>>Usuario</option>
+                <option value="miembro" <?php echo isset($datos_usuario['rol']) && $datos_usuario['rol'] == 'miembro' ? 'selected' : ''; ?>>Miembro</option>
+                <option value="monitor" <?php echo isset($datos_usuario['rol']) && $datos_usuario['rol'] == 'monitor' ? 'selected' : ''; ?>>Monitor</option>
+                <option value="admin" <?php echo isset($datos_usuario['rol']) && $datos_usuario['rol'] == 'admin' ? 'selected' : ''; ?>>Administrador</option>
             </select>
 
             <!-- Campo para editar el teléfono -->
             <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($datos_usuario['telefono'] ?? ''); ?>" maxlength="9" pattern="\d{9}" title="Debe contener exactamente 9 dígitos numéricos" autocomplete="off" aria-label="Número de teléfono del usuario">
+            <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars(isset($datos_usuario['telefono']) ? $datos_usuario['telefono'] : '', ENT_QUOTES, 'UTF-8'); ?>" maxlength="9" pattern="\d{9}" title="Debe contener exactamente 9 dígitos numéricos" autocomplete="off" aria-label="Número de teléfono del usuario">
 
             <!-- Campo para editar la contraseña -->
             <label for="contrasenya">Contraseña (dejar en blanco para no cambiarla):</label>

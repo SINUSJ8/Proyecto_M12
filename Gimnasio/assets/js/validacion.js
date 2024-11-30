@@ -37,7 +37,7 @@ function validarFormulario() {
         return false;
     }
 
-    const mensajeConfirmacion = "Estás a punto de actualizar los datos del usuario.\n\n" +
+    const mensajeConfirmacion = "Estás a punto de crear o actualizar los datos del usuario.\n\n" +
         "Esta acción no se puede deshacer. Asegúrate de que toda la información sea correcta " +
         "antes de continuar.\n\n" +
         "¿Deseas continuar con la actualización de los datos?";

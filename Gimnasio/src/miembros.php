@@ -19,9 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['eliminar_usuario']) &
 }
 
 // Capturar el término de búsqueda y los parámetros de ordenamiento
-$busqueda = $_GET['busqueda'] ?? '';
-$orden_columna = $_GET['orden'] ?? 'nombre';
-$orden_direccion = $_GET['direccion'] ?? 'ASC';
+$busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
+$orden_columna = isset($_GET['orden']) ? $_GET['orden'] : 'nombre';
+$orden_direccion = isset($_GET['direccion']) ? $_GET['direccion'] : 'ASC';
 
 // Obtener los miembros usando la función en member_functions.php
 $miembros = obtenerMiembros($conn, $busqueda, $orden_columna, $orden_direccion);
@@ -68,8 +68,7 @@ include 'includes/admin_header.php';
                     <td><?php echo htmlspecialchars($miembro['tipo']); ?></td>
                     <td>
                         <?php
-
-                        echo htmlspecialchars($miembro['entrenamientos'] ?? 'N/A');
+                            echo htmlspecialchars(isset($miembro['entrenamientos']) ? $miembro['entrenamientos'] : 'N/A', ENT_QUOTES, 'UTF-8');
                         ?>
                     </td>
                     <td class="acciones">
