@@ -8,7 +8,7 @@ $conn = obtenerConexion();
 // Manejar la inserción, edición o eliminación de membresías
 $mensaje = '';
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $entrenamientos_seleccionados = $_POST['entrenamientos'] ?? [];
+    $entrenamientos_seleccionados = isset($_POST['entrenamientos']) ? $_POST['entrenamientos'] : [];
 
     if (isset($_POST['nueva_membresia'])) {
         $tipo = trim($_POST['tipo']);
