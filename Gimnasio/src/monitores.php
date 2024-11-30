@@ -19,11 +19,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['eliminar_usuario']) &
 }
 
 // Capturar el término de búsqueda, especialidad, disponibilidad y los parámetros de ordenamiento
-$busqueda = $_GET['busqueda'] ?? '';
-$especialidad_filtro = $_GET['especialidad'] ?? '';
-$disponibilidad_filtro = $_GET['disponibilidad'] ?? '';
-$orden_columna = $_GET['orden'] ?? 'nombre';
-$orden_direccion = $_GET['direccion'] ?? 'ASC';
+$busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
+$especialidad_filtro = isset($_GET['especialidad']) ? $_GET['especialidad'] : '';
+$disponibilidad_filtro = isset($_GET['disponibilidad']) ? $_GET['disponibilidad'] : '';
+$orden_columna = isset($_GET['orden']) ? $_GET['orden'] : 'nombre';
+$orden_direccion = isset($_GET['direccion']) ? $_GET['direccion'] : 'ASC';
 
 // Obtener los monitores usando la función en monitor_functions.php
 $monitores = obtenerMonitores($conn, $busqueda, $orden_columna, $orden_direccion, $especialidad_filtro, $disponibilidad_filtro);

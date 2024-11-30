@@ -107,7 +107,7 @@ function obtenerMonitorPorID($conn, $id_usuario)
     }
 
     // Asegurarse de que 'especialidad' esté definido
-    $monitor['especialidad'] = $monitor['especialidad'] ?? '';
+    $monitor['especialidad'] = isset($monitor['especialidad']) ? $monitor['especialidad'] : '';
 
     // Inicializar especialidades como un array vacío
     $monitor['especialidades'] = [];
