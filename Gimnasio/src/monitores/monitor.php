@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../clases/class_functions.php';
+include 'monitores_header.php';
 
 // Verifica que el usuario ha iniciado sesión y tiene el rol de "monitor"
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'monitor') {
