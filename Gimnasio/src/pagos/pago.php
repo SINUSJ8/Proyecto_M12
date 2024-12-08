@@ -1,5 +1,5 @@
 <?php
-$title = "Acceso Miembros";
+$title = "Acceso Pago de membresías";
 include '../miembros/miembro_header.php';
 require_once '../miembros/member_functions.php';
 
@@ -12,30 +12,18 @@ $miembro = informacionMembresia($id_usuario);
 if (!$miembro) {
     echo "No se encontró información para este miembro.";
     exit;
-}
+} else{$_SESSION['mensaje'] = "Pago realizado con éxito.";}
+
+    
 ?>
 
-<!-- Contenedor principal con clase form_container -->
 
 <main class="form_container">
-    <h1>EN CONSTRUCCIÓN</h1>
-    <h2>Bienvenido, <?php echo htmlspecialchars($nombre); ?>!</h2>
+    <h1>Pago de la membresía siguiente realizado correctamente, <?php echo htmlspecialchars($nombre); ?>!</h1>
     <h3>Información de tu Membresía</h3>
 
     <!-- Tabla de información usando solo las clases aplicables -->
     <table>
-        <tr>
-            <th>Nombre de Usuario:</th>
-            <td><?php echo htmlspecialchars($miembro['nombre_usuario']); ?></td>
-        </tr>
-        <tr>
-            <th>Email:</th>
-            <td><?php echo htmlspecialchars($miembro['email']); ?></td>
-        </tr>
-        <tr>
-            <th>Fecha de Registro:</th>
-            <td><?php echo htmlspecialchars($miembro['fecha_registro']); ?></td>
-        </tr>
         <tr>
             <th>Nombre de la Membresía:</th>
             <td><?php echo htmlspecialchars($miembro['nombre_membresia']); ?></td>
@@ -83,20 +71,15 @@ if (!$miembro) {
         </tr>
         <tr>
             <div class="button-container">
-                <!-- Proceder al pago -->
-                <form action="../pagos/pago.php" method="POST" style="display:inline;">
+                <!-- Renovar membresía -->
+                <form action="../membresias/mi_membresia.php" method="POST" style="display:inline;">
                     <input type="hidden" name="id_usuario" value="27">
-                    <button type="submit" name="pagar" onclick="return confirm('¿Estás seguro de que deseas realizar el pago? Esta acción no se puede deshacer.')" title="Realizar pago">Pagar</button>
+                    <button type="submit" name="renovar" onclick="return confirm('¿Estás seguro de que deseas renovar la membresía? Esta acción no se puede deshacer.')" title="renovar membresía">Renovar membresía</button>
                 </form>
-                <!-- Acción de editar membresía -->
-                <form action="../membresias/crear_membresia.php" method="GET" style="display:inline;">
+                <!-- Acción de solicitar nueva membresía -->
+                <form action="../usuarios/usuario.php" method="GET" style="display:inline;">
                     <input type="hidden" name="id_usuario" value="27">
-                    <button type="submit" name="editar_perfil" title="Modificar el perfil de este miembro">Modificar membresía</button>
-                </form>
-                <!-- Acción de eliminar membresía -->
-                <form action="../membresias/crear_membresia.php" method="GET" style="display:inline;">
-                    <input type="hidden" name="id_usuario" value="27">
-                    <button type="submit" name="eliminar_membresía" title="Eliminar membresía de usuario">Eliminar membresía</button>
+                    <button type="submit" name="nueva_membresia" title="Solicitar nueva membresia">Solicitar otra membresia</button>
                 </form>
             </div>
         </tr>
