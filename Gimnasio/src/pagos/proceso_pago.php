@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
 
                     // Redirigir a la página de miembro con un mensaje de confirmación
-                    header("Location: miembro.php?mensaje=Membresía adquirida correctamente. Bienvenido como miembro.");
+                    header("Location: ../miembros/miembro.php?mensaje=Membresía adquirida correctamente. Bienvenido como miembro.");
                     exit();
                 } else {
                     header("Location: usuario.php?error=Error+al+actualizar+el+rol+de+usuario.");

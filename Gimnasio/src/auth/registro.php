@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once('includes/general.php');
+require_once('../includes/general.php');
 $conn = obtenerConexion();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (strlen($contrasenya) < 6) {
         $_SESSION['error'] = "La contraseña debe tener al menos 6 caracteres.";
-        header("Location: ../src/reg.php");
+        header("Location: reg.php");
         exit();
     }
 
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($stmt->num_rows > 0) {
         $_SESSION['error'] = "El correo electrónico ya está registrado.";
-        header("Location: ../src/reg.php");
+        header("Location: reg.php");
         exit();
     }
 
@@ -37,10 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         $_SESSION['mensaje'] = "Registro exitoso.";
         unset($_SESSION['form_data']);  // Limpia los datos si el registro es exitoso
-        header("Location: ../src/reg.php");
+        header("Location: reg.php");
     } else {
         $_SESSION['error'] = "Error al registrarse.";
-        header("Location: ../src/reg.php");
+        header("Location: reg.php");
     }
 
     $stmt->close();
