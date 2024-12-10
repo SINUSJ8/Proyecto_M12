@@ -67,7 +67,7 @@ if (!$miembro) {
         <tr>
             <th>Método de Pago:</th>
             <td><?php echo htmlspecialchars($miembro['metodo_pago']); ?>
-        </td>
+            </td>
         </tr>
         <tr>
             <th>Entrenamientos/Especialidades:</th>
@@ -89,12 +89,12 @@ if (!$miembro) {
                     <button type="submit" name="pagar" onclick="return confirm('¿Estás seguro de que deseas realizar el pago? Esta acción no se puede deshacer.')" title="Realizar pago">Pagar</button>
                 </form>
                 <!-- Acción de editar membresía -->
-                <form action="../membresias/crear_membresia.php" method="GET" style="display:inline;">
+                <form action="crear_membresia.php" method="GET" style="display:inline;">
                     <input type="hidden" name="id_usuario" value="27">
                     <button type="submit" name="editar_perfil" title="Modificar el perfil de este miembro">Modificar membresía</button>
                 </form>
                 <!-- Acción de eliminar membresía -->
-                <form action="../membresias/crear_membresia.php" method="GET" style="display:inline;">
+                <form action="crear_membresia.php" method="GET" style="display:inline;">
                     <input type="hidden" name="id_usuario" value="27">
                     <button type="submit" name="eliminar_membresía" title="Eliminar membresía de usuario">Eliminar membresía</button>
                 </form>
