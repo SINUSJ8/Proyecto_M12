@@ -35,27 +35,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             switch ($rol) {
                 case 'admin':
-                    header("Location: /Gimnasio/src/admin.php");
+                    header("Location: ../admin/admin.php");
                     break;
                 case 'monitor':
-                    header("Location: /Gimnasio/src/monitor.php");
+                    header("Location: ../monitores/monitor.php");
                     break;
                 case 'miembro':
-                    header("Location: /Gimnasio/src/miembro.php");
+                    header("Location: ../miembros/miembro.php");
                     break;
                 default:
-                    header("Location: /Gimnasio/src/usuario.php");
+                    header("Location: ../usuarios/usuario.php");
                     break;
             }
             exit();
         } else {
             $_SESSION['error'] = "Contraseña incorrecta";
-            header("Location: /Gimnasio/src/log.php");
+            header("Location: log.php");
             exit();
         }
     } else {
         $_SESSION['error'] = "Usuario no encontrado";
-        header("Location: /Gimnasio/src/log.php");
+        header("Location: log.php");
         exit();
     }
     $stmt->close();
