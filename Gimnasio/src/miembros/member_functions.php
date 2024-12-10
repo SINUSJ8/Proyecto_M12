@@ -156,16 +156,19 @@ function actualizarMiembro($conn, $id_usuario, $nombre, $email, $fecha_registro,
         $stmtActualizarMiembro->bind_param("sii", $fecha_registro, $id_membresia, $id_miembro);
         $stmtActualizarMiembro->execute();
 
+        // Cambiar el estado de la membresía actual a "no activa"
+        $queryActualizarEstado = "UPDATE miembro_membresia 
+                                  SET estado = 'no activa' 
+                                  WHERE id_miembro = ? AND estado = 'activa'";
+        $stmtActualizarEstado = $conn->prepare($queryActualizarEstado);
+        $stmtActualizarEstado->bind_param("i", $id_miembro);
+        if (!$stmtActualizarEstado->execute()) {
+            throw new Exception("Error al desactivar la membresía actual: " . $stmtActualizarEstado->error);
+        }
+        $stmtActualizarEstado->close();
+
         // Registrar el cambio en la tabla miembro_membresia
         $fecha_actual = date('Y-m-d');
-        $fecha_fin = date('Y-m-d', strtotime("+1 month")); // Cambiar según la duración de la membresía
-        $sqlInsertarMembresia = "
-            INSERT INTO miembro_membresia (id_miembro, id_membresia, monto_pagado, fecha_inicio, fecha_fin, estado, renovacion_automatica) 
-            VALUES (?, ?, ?, ?, ?, 'activa', FALSE)
-        ";
-        $stmtInsertarMembresia = $conn->prepare($sqlInsertarMembresia);
-
-        // Obtener el precio de la membresía para registrar el monto pagado
         $sqlPrecioMembresia = "SELECT precio, duracion FROM membresia WHERE id_membresia = ?";
         $stmtPrecioMembresia = $conn->prepare($sqlPrecioMembresia);
         $stmtPrecioMembresia->bind_param("i", $id_membresia);
@@ -178,7 +181,11 @@ function actualizarMiembro($conn, $id_usuario, $nombre, $email, $fecha_registro,
             $duracion_meses = $membresia['duracion'];
             $fecha_fin = date('Y-m-d', strtotime("+$duracion_meses months", strtotime($fecha_actual)));
 
-            // Registrar la nueva membresía
+            $sqlInsertarMembresia = "
+                INSERT INTO miembro_membresia (id_miembro, id_membresia, monto_pagado, fecha_inicio, fecha_fin, estado, renovacion_automatica) 
+                VALUES (?, ?, ?, ?, ?, 'activa', FALSE)
+            ";
+            $stmtInsertarMembresia = $conn->prepare($sqlInsertarMembresia);
             $stmtInsertarMembresia->bind_param("iisss", $id_miembro, $id_membresia, $monto_pagado, $fecha_actual, $fecha_fin);
             $stmtInsertarMembresia->execute();
         } else {

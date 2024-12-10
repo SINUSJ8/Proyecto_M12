@@ -152,23 +152,24 @@ include '../admin/admin_header.php';
 
                     <!-- Campo para editar el tipo de membresía -->
                     <label for="tipo_membresia">Tipo de Membresía:</label>
-                    <select id="tipo_membresia" name="id_membresia" required>
+                    <select id="tipo_membresia" name="id_membresia" required onchange="actualizarFechasMembresia()">
                         <?php foreach ($membresias as $membresia): ?>
                             <option value="<?php echo htmlspecialchars($membresia['id_membresia']); ?>"
+                                data-duracion="<?php echo htmlspecialchars($membresia['duracion']); ?>"
                                 <?php echo (isset($miembro['id_membresia']) && $membresia['id_membresia'] == $miembro['id_membresia']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($membresia['tipo']); ?>
-                                - <?php echo "$" . htmlspecialchars($membresia['precio']); ?>
+                                <?php echo htmlspecialchars($membresia['tipo']); ?> -
+                                <?php echo "$" . htmlspecialchars($membresia['precio']); ?>
                                 (<?php echo htmlspecialchars($membresia['duracion']) . " meses"; ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
-                    <!-- Campo para editar la fecha de inicio de la membresía -->
-                    <label for="fecha_inicio">Fecha de Inicio de la Membresía:</label>
-                    <input type="date" id="fecha_inicio" name="fecha_inicio" value="<?php echo htmlspecialchars($fecha_inicio); ?>" required aria-label="Fecha de inicio de la membresía">
 
-                    <!-- Campo para editar la fecha de fin de la membresía -->
+                    <label for="fecha_inicio">Fecha de Inicio de la Membresía:</label>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" value="<?php echo htmlspecialchars($fecha_inicio); ?>" required>
+
                     <label for="fecha_fin">Fecha de Fin de la Membresía:</label>
-                    <input type="date" id="fecha_fin" name="fecha_fin" value="<?php echo htmlspecialchars($fecha_fin); ?>" required aria-label="Fecha de fin de la membresía">
+                    <input type="date" id="fecha_fin" name="fecha_fin" value="<?php echo htmlspecialchars($fecha_fin); ?>" required>
+
 
                     <!-- Campo para seleccionar múltiples entrenamientos con checkboxes -->
                     <label>Entrenamientos:</label>
