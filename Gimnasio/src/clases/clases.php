@@ -96,35 +96,35 @@ include '../admin/admin_header.php';
         </section>
 
         <h1>Calendario semanal de clases</h1>
-        <link rel="stylesheet" href="../assets/css/estilos_clases.css">
-            <section class="form_container">
-            
-                <div class="infoCalendario">
-                    <div class="semanaPrev" id="semanaPrevia">&#9664;</div>
-                    <div class="semana" id="semana"></div>
-                    <div class="mes" id="mes"></div>
-                    <div class="anyo" id="anyo"></div>
-                    <div class="semanaPos" id="semanaPosterior">&#9654;</div>
-                </div>
-                <div class="calendarioSemana">
-                    <div class="calendarioDia calendarioItem">Lunes</div>
-                    <div class="calendarioDia calendarioItem">Martes</div>
-                    <div class="calendarioDia calendarioItem">Miércoles</div>
-                    <div class="calendarioDia calendarioItem">Jueves</div>
-                    <div class="calendarioDia calendarioItem">Viernes</div>
-                    <div class="calendarioDia calendarioItem">Sábado</div>
-                    <div class="calendarioDia calendarioItem">Domingo</div>
-                </div>
-                <div class="calendarioFechas" id="fechas"></div>
+        <link rel="stylesheet" href="../../assets/css/estilos_clases.css">
+        <section class="form_container">
 
-            
-            </section>
+            <div class="infoCalendario">
+                <div class="semanaPrev" id="semanaPrevia">&#9664;</div>
+                <div class="semana" id="semana"></div>
+                <div class="mes" id="mes"></div>
+                <div class="anyo" id="anyo"></div>
+                <div class="semanaPos" id="semanaPosterior">&#9654;</div>
+            </div>
+            <div class="calendarioSemana">
+                <div class="calendarioDia calendarioItem">Lunes</div>
+                <div class="calendarioDia calendarioItem">Martes</div>
+                <div class="calendarioDia calendarioItem">Miércoles</div>
+                <div class="calendarioDia calendarioItem">Jueves</div>
+                <div class="calendarioDia calendarioItem">Viernes</div>
+                <div class="calendarioDia calendarioItem">Sábado</div>
+                <div class="calendarioDia calendarioItem">Domingo</div>
+            </div>
+            <div class="calendarioFechas" id="fechas"></div>
+
+
+        </section>
 
 
     </main>
     <?php include '../includes/footer.php'; ?>
 
     <!-- Incluir el archivo de JavaScript externo -->
-    <script src="../assets/js/clases.js"></script>
-    <script src="../assets/js/calendario.js"></script>
+    <script src="../../assets/js/clases.js"></script>
+    <script src="../../assets/js/calendario.js"></script>
 </body>
