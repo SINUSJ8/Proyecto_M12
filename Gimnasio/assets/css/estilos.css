@@ -90,7 +90,7 @@ main {
 }
 
 .semanaPrev, .semanaPos{
-    color: #27ae60;
+    color: #10a182;
     cursor: pointer;
 }
 
@@ -102,18 +102,50 @@ main {
     margin-left: auto;
 }
 
-
-.calendarioSemana{
+.calendario{
+    display: flex;
+}
+.calendarioHoras {
+    flex: 0 0 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.calendarioContenido {
+    flex: 1;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-gap: 10px;
-    align-items: right;
+}
+.calendarioDiaFecha {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+    border: 1px solid #5a5858; 
+    padding: 10px;
 }
 
-.calendarioDia{
+.calendarioDia, .calendarioFecha { 
+    text-align: center; 
+}
+
+.calendarioHora {
+    width: 100%;
+    height: 50px;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
 }
 
+.claseEvento { 
+    background-color: #add8e6; 
+    margin: 5px 0; 
+    padding: 5px; 
+    border-radius: 5px; 
+    font-size: 0.9em; 
+}
 
 
 .especialidades-lista {
