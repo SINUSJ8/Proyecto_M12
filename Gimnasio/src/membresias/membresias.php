@@ -41,7 +41,7 @@ include '../admin/admin_header.php';
 <head>
     <meta charset="UTF-8">
     <title>Detalles de Membresías</title>
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="../../assets/css/estilos.css">
 </head>
 
 <body>
@@ -87,8 +87,8 @@ include '../admin/admin_header.php';
             <p>No hay membresías registradas para mostrar.</p>
         <?php endif; ?>
     </main>
-    
+
     <?php
-        include '../includes/footer.php';
-        $conn->close();
-        ?>
+    include '../includes/footer.php';
+    $conn->close();
+    ?>

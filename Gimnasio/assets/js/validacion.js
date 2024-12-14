@@ -126,6 +126,41 @@ function validarFormularioEdicion(tipoFormulario) {
 }
 
 
+function actualizarFechasMembresia() {
+    const selectMembresia = document.getElementById('tipo_membresia');
+    const fechaInicioInput = document.getElementById('fecha_inicio');
+    const fechaFinInput = document.getElementById('fecha_fin');
+
+    // Verificar que los elementos existan en el DOM
+    if (!selectMembresia || !fechaInicioInput || !fechaFinInput) {
+        console.error("No se encontraron los elementos necesarios.");
+        return;
+    }
+
+    // Obtener la duración de la membresía seleccionada
+    const duracionMeses = parseInt(selectMembresia.options[selectMembresia.selectedIndex].getAttribute('data-duracion'), 10);
+    if (isNaN(duracionMeses)) {
+        console.error("Duración de la membresía seleccionada no es válida.");
+        return;
+    }
+
+    // Calcular la fecha de inicio (hoy)
+    const fechaInicio = new Date();
+
+    // Calcular la fecha de fin
+    const fechaFin = new Date(fechaInicio);
+    fechaFin.setMonth(fechaFin.getMonth() + duracionMeses);
+
+    // Formatear las fechas en formato "YYYY-MM-DD"
+    const fechaInicioFormateada = fechaInicio.toISOString().split('T')[0];
+    const fechaFinFormateada = fechaFin.toISOString().split('T')[0];
+
+    // Actualizar los campos de fecha
+    fechaInicioInput.value = fechaInicioFormateada;
+    fechaFinInput.value = fechaFinFormateada;
+}
+
+
 
 
 

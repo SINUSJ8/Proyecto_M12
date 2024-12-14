@@ -1,6 +1,6 @@
 <?php
-require_once 'includes/class_functions.php';
-require_once('includes/admin_functions.php');
+require_once 'class_functions.php';
+require_once('../admin/admin_functions.php');
 verificarAdmin();
 $conn = obtenerConexion();
 

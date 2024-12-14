@@ -112,6 +112,26 @@ include '../admin/admin_header.php';
                 <div class="calendarioContenido" id="calendarioContenido">
                 </div>
             </div>
+
+            <div class="infoCalendario">
+                <div class="semanaPrev" id="semanaPrevia">&#9664;</div>
+                <div class="semana" id="semana"></div>
+                <div class="mes" id="mes"></div>
+                <div class="anyo" id="anyo"></div>
+                <div class="semanaPos" id="semanaPosterior">&#9654;</div>
+            </div>
+            <div class="calendarioSemana">
+                <div class="calendarioDia calendarioItem">Lunes</div>
+                <div class="calendarioDia calendarioItem">Martes</div>
+                <div class="calendarioDia calendarioItem">Miércoles</div>
+                <div class="calendarioDia calendarioItem">Jueves</div>
+                <div class="calendarioDia calendarioItem">Viernes</div>
+                <div class="calendarioDia calendarioItem">Sábado</div>
+                <div class="calendarioDia calendarioItem">Domingo</div>
+            </div>
+            <div class="calendarioFechas" id="fechas"></div>
+
+
         </section>
 
 
@@ -121,7 +141,7 @@ include '../admin/admin_header.php';
     <!-- Incluir el archivo de JavaScript externo -->
     <script src="../../assets/js/clases.js"></script>
     <script src="../../assets/js/calendario.js"></script>
-    
+
     <script type="text/javascript">
         let clases = <?= $clases_json; ?>; 
     </script>

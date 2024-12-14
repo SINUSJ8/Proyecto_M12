@@ -18,7 +18,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'miembro') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($title) ? $title : "Mi Gimnasio"; ?></title>
     <link rel="stylesheet" href="../../assets/css/estilos.css">
-    <script src="../assets/js/validacion.js"></script>
+    <script src="../../assets/js/validacion.js"></script>
 </head>
 
 <body>

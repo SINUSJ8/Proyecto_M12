@@ -62,7 +62,7 @@ include '../admin/admin_header.php';
 <head>
     <meta charset="UTF-8">
     <title>Configuración de Membresías</title>
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="../../assets/css/estilos.css">
 </head>
 
 <body>

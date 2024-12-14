@@ -116,7 +116,7 @@ $conn->close();
                     <?php endif; ?>
                 </ul>
 
-                <form action="proceso_pago.php" method="POST">
+                <form action="../pagos/proceso_pago.php" method="POST">
                     <input type="hidden" name="id_membresia" value="<?php echo $id; ?>">
                     <label for="metodo_pago">Método de Pago:</label>
                     <select name="metodo_pago" id="metodo_pago" required>

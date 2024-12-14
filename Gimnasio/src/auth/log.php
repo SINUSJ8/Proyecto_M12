@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <div class="button-container">
-        <button onclick="window.location.href='../index.php'">Volver a la Página Principal</button>
+        <button onclick="window.location.href='../../index.php'">Volver a la Página Principal</button>
     </div>
 
     <script src="../../assets/js/validacion.js"></script>
