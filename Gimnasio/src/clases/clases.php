@@ -24,6 +24,7 @@ $filtros = [
 ];
 
 $clases = obtenerClases($conn, $filtros);
+$clases_json = json_encode($clases);
 
 
 $title = "Listado de Clases";
@@ -98,6 +99,19 @@ include '../admin/admin_header.php';
         <h1>Calendario semanal de clases</h1>
         <link rel="stylesheet" href="../../assets/css/estilos_clases.css">
         <section class="form_container">
+            <div class="infoCalendario">
+                <div class="semanaPrev" id="semanaPrevia">&#9664;</div>Semana 
+                <div class="semana" id="semana"></div> del mes de 
+                <div class="mes" id="mes"> </div>
+                <div class="anyo" id="anyo"> </div>
+                <div class="semanaPos" id="semanaPosterior">&#9654;</div>
+            </div>
+            <br>
+            <div class = "calendario">
+                <div class = "calendarioHoras" id="horas"></div>
+                <div class="calendarioContenido" id="calendarioContenido">
+                </div>
+            </div>
 
             <div class="infoCalendario">
                 <div class="semanaPrev" id="semanaPrevia">&#9664;</div>
@@ -121,10 +135,16 @@ include '../admin/admin_header.php';
         </section>
 
 
-    </main>
+    
     <?php include '../includes/footer.php'; ?>
 
     <!-- Incluir el archivo de JavaScript externo -->
     <script src="../../assets/js/clases.js"></script>
     <script src="../../assets/js/calendario.js"></script>
+
+    <script type="text/javascript">
+        let clases = <?= $clases_json; ?>; 
+    </script>
+
+    </main>
 </body>
