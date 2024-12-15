@@ -117,7 +117,6 @@ function validarFormularioEdicion(tipoFormulario) {
         }
     }
 
-    // Validación específica para 'miembro' - otros requisitos específicos podrían añadirse aquí
 
     // Confirmación final para asegurarse
     const mensajeConfirmacion = "Estás a punto de actualizar los datos del " + tipoFormulario + ".\n\n" +
@@ -159,8 +158,29 @@ function actualizarFechasMembresia() {
     fechaInicioInput.value = fechaInicioFormateada;
     fechaFinInput.value = fechaFinFormateada;
 }
+function actualizarEntrenamientos() {
+    const selectMembresia = document.getElementById('tipo_membresia');
+    const entrenamientosCheckboxes = document.querySelectorAll('.entrenamientos-checkboxes input[type="checkbox"]');
 
+    // Obtener los IDs de entrenamientos de la membresía seleccionada
+    const entrenamientosIds = selectMembresia.options[selectMembresia.selectedIndex].getAttribute('data-entrenamientos');
 
+    // Desmarcar todos los checkboxes por defecto
+    entrenamientosCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+
+    if (entrenamientosIds) {
+        const entrenamientosArray = entrenamientosIds.split(',').map(id => id.trim());
+
+        // Marcar los checkboxes que coincidan con los IDs de la membresía seleccionada
+        entrenamientosCheckboxes.forEach(checkbox => {
+            if (entrenamientosArray.includes(checkbox.value)) {
+                checkbox.checked = true;
+            }
+        });
+    }
+}
 
 
 
