@@ -455,3 +455,73 @@ function actualizarMembresia($conn, $id_miembro, $id_membresia_nueva, $fecha_ini
 
     return ["success" => true, "message" => "Membresía actualizada correctamente."];
 }
+function obtenerUsuarios($conn)
+{
+    $sql = "SELECT id_usuario, nombre, email FROM usuario ORDER BY nombre ASC";
+    $result = $conn->query($sql);
+
+    $usuarios = [];
+    if ($result) {
+        $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    return $usuarios;
+}
+function obtenerUsuarioPorId($conn, $id_usuario)
+{
+    $sql = "SELECT id_usuario, nombre, email FROM usuario WHERE id_usuario = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $usuario = [];
+    if ($result) {
+        $usuario = $result->fetch_assoc();
+    }
+    $stmt->close();
+
+    return $usuario ? [$usuario] : []; // Devolver un array con un solo usuario
+}
+function obtenerUsuariosPorRol($conn, $rol)
+{
+    $sql = "SELECT id_usuario, nombre, email FROM usuario WHERE rol = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $rol);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $usuarios = [];
+    if ($result) {
+        $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    $stmt->close();
+
+    return $usuarios;
+}
+function obtenerNotificacionesPorUsuario($conn, $id_usuario)
+{
+    $sql = "SELECT mensaje, fecha, leida 
+            FROM notificacion 
+            WHERE id_usuario = ? 
+            ORDER BY fecha DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $notificaciones = [];
+    if ($result) {
+        $notificaciones = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    $stmt->close();
+
+    return $notificaciones;
+}
+function marcarNotificacionesComoLeidas($conn, $id_usuario)
+{
+    $sql = "UPDATE notificacion SET leida = 1 WHERE id_usuario = ? AND leida = 0";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $stmt->close();
+}

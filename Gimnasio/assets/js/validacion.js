@@ -182,6 +182,11 @@ function actualizarEntrenamientos() {
     }
 }
 
+function toggleDestinatario() {
+    const destinatario = document.getElementById('destinatario').value;
+    document.getElementById('grupo_destinatario').style.display = destinatario === 'grupo' ? 'block' : 'none';
+    document.getElementById('usuario_destinatario').style.display = destinatario === 'usuario' ? 'block' : 'none';
+}
 
 
 

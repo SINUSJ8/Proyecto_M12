@@ -24,16 +24,25 @@ function obtenerConteoMonitores($conn)
 }
 
 // Función para obtener las notificaciones
-function obtenerNotificaciones($conn, $limit = 5)
+function obtenerNotificaciones($conn, $id_usuario, $limit = 5, $soloNoLeidas = true)
 {
-    $stmt = $conn->prepare("SELECT * FROM notificacion WHERE leida = 0 ORDER BY fecha DESC LIMIT ?");
-    $stmt->bind_param("i", $limit);
+    $sql = "SELECT * FROM notificacion WHERE id_usuario = ?";
+    if ($soloNoLeidas) {
+        $sql .= " AND leida = 0";
+    }
+    $sql .= " ORDER BY fecha DESC LIMIT ?";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $id_usuario, $limit);
     $stmt->execute();
     $result = $stmt->get_result();
     $notificaciones = $result->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
     return $notificaciones;
 }
+
+
+
 function agregarEspecialidad($conn, $nombre_especialidad)
 {
     if (empty($nombre_especialidad)) {

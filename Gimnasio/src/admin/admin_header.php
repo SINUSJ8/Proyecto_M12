@@ -24,6 +24,7 @@
                 <a href="../clases/clases.php">Clases</a>
                 <a href="../membresias/membresias.php">Membresías</a>
                 <a href="../config/configuracion.php">Administración</a>
+                <a href="../admin/notificaciones.php">Notificaciones</a>
             <?php endif; ?>
 
             <form action="../includes/general.php" method="post" style="display: inline;">

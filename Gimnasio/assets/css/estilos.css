@@ -23,7 +23,7 @@ header {
     padding: 20px;
     text-align: center;
     width: 100%;
-    position: sticky; 
+    position: sticky;
     top: 0;
     z-index: 10;
 }
@@ -81,7 +81,7 @@ main {
     margin-bottom: 20px;
 }
 
-.infoCalendario{
+.infoCalendario {
     display: flex;
     align-items: center;
     padding: 0 2em;
@@ -89,45 +89,50 @@ main {
     padding: .5em 1em,
 }
 
-.semanaPrev, .semanaPos{
+.semanaPrev,
+.semanaPos {
     color: #10a182;
     cursor: pointer;
 }
 
-.semanaPrev{
+.semanaPrev {
     margin-right: auto;
 }
 
-.semanaPos{
+.semanaPos {
     margin-left: auto;
 }
 
-.calendario{
+.calendario {
     display: flex;
 }
+
 .calendarioHoras {
     flex: 0 0 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
 .calendarioContenido {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-gap: 10px;
 }
+
 .calendarioDiaFecha {
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    text-align: center; 
-    border: 1px solid #5a5858; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #5a5858;
     padding: 10px;
 }
 
-.calendarioDia, .calendarioFecha { 
-    text-align: center; 
+.calendarioDia,
+.calendarioFecha {
+    text-align: center;
 }
 
 .calendarioHora {
@@ -139,12 +144,12 @@ main {
     border: 1px solid #ccc;
 }
 
-.claseEvento { 
-    background-color: #add8e6; 
-    margin: 5px 0; 
-    padding: 5px; 
-    border-radius: 5px; 
-    font-size: 0.9em; 
+.claseEvento {
+    background-color: #add8e6;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.9em;
 }
 
 
@@ -562,6 +567,21 @@ table.styled-table th.sortable.sorted-desc:after {
 .btn-general:hover {
     background-color: #2b7a78;
 }
+
+/* Estilo para notificaciones nuevas */
+.notificacion-nueva {
+    background-color: #d4edda;
+    /* Verde claro */
+    font-weight: bold;
+}
+
+/* Estilo para notificaciones leídas */
+.notificacion-leida {
+    background-color: #f8f9fa;
+    /* Gris claro */
+    font-weight: normal;
+}
+
 
 @media (max-width: 768px) {
     .menu {
