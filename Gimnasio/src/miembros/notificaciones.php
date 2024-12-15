@@ -4,7 +4,7 @@ require_once('../miembros/member_functions.php');
 
 
 
-// Verifica que el monitor ha iniciado sesión 
+// Verifica que el mimebro ha iniciado sesión 
 if (!isset($_SESSION['id_usuario'])) { 
     header("Location: index.php?error=Acceso+denegado"); 
     exit(); 
@@ -15,7 +15,7 @@ $id_usuario = $_SESSION['id_usuario'];
 $conn = obtenerConexion();
 
 
-// Obtener las notificaciones del monitor iniciado
+// Obtener las notificaciones del miembro iniciado
 $notificaciones = [];
 $result = $conn->query("
     SELECT n.id_notificacion, u.nombre, n.mensaje, n.fecha, n.leida 
@@ -61,10 +61,7 @@ if ($result) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
-            <form method="POST" action="monitor.php">
-                <input type="hidden" name="volverAPanel">
-                <button type="submit" class="volver">Volver</button>
-            </form>
+
         <?php endif; ?>
     </section>
 </main>

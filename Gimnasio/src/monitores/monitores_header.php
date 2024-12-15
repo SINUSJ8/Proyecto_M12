@@ -16,9 +16,8 @@
     <header>
         <h1>Panel de Monitor</h1>
         <nav id="navegacion-rapida">
-            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
                 <a href="../clases/clases.php">Clases</a>
-            <?php endif; ?>
+                <a href="../monitores/notificaciones.php">Notificaciones</a>
 
             <form action="../includes/general.php" method="post" style="display: inline;">
                 <input type="hidden" name="accion" value="logout">
