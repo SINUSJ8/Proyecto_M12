@@ -88,41 +88,54 @@ function valFormUsuario() {
 function validarFormularioEdicion(tipoFormulario) {
     const nombre = document.getElementById('nombre').value;
     const email = document.getElementById('email').value;
+    const telefono = document.getElementById('telefono') ? document.getElementById('telefono').value : null;
     const experiencia = document.getElementById('experiencia') ? document.getElementById('experiencia').value : null;
     const disponibilidad = document.getElementById('disponibilidad') ? document.getElementById('disponibilidad').value : null;
 
-    // Validación del nombre: debe contener al menos una letra
+    // Validación del nombre
     const nombreRegex = /[a-zA-Z]/;
     if (!nombreRegex.test(nombre)) {
         alert("Por favor, ingresa un nombre válido con al menos una letra.");
         return false;
     }
 
-    // Validación del campo de email
+    // Validación del correo electrónico
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         alert("Por favor, ingresa un correo electrónico válido.");
         return false;
     }
 
-    // Validación específica para 'monitor' - experiencia y disponibilidad
+    // Validación del teléfono si está presente
+    if (telefono) {
+        const telefonoRegex = /^\d{9}$/;
+        if (!telefonoRegex.test(telefono)) {
+            alert("El teléfono debe tener exactamente 9 dígitos.");
+            return false;
+        }
+    }
+
+    // Validaciones específicas para monitores
     if (tipoFormulario === 'monitor') {
         if (experiencia === null || isNaN(experiencia) || experiencia < 0) {
             alert("Por favor, ingresa un número válido para la experiencia (años). Puede ser cero o mayor.");
             return false;
         }
-        if (disponibilidad === null || disponibilidad.trim() === "") {
-            alert("Por favor, selecciona la disponibilidad.");
+        if (!disponibilidad) {
+            alert("Por favor, selecciona una disponibilidad.");
             return false;
         }
     }
 
+    // Validaciones específicas para otros formularios
+    // Añade aquí las validaciones específicas si son necesarias para otros tipos de formularios
 
     // Confirmación final para asegurarse
     const mensajeConfirmacion = "Estás a punto de actualizar los datos del " + tipoFormulario + ".\n\n" +
         "Esta acción no se puede deshacer. ¿Deseas continuar con la actualización de los datos?";
     return confirm(mensajeConfirmacion);
 }
+
 
 
 function actualizarFechasMembresia() {

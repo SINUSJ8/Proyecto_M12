@@ -455,7 +455,7 @@ function actualizarMembresia($conn, $id_miembro, $id_membresia_nueva, $fecha_ini
 
     return ["success" => true, "message" => "Membresía actualizada correctamente."];
 }
-function obtenerUsuarios($conn)
+function obtenerUsuariosSinFiltro($conn)
 {
     $sql = "SELECT id_usuario, nombre, email FROM usuario ORDER BY nombre ASC";
     $result = $conn->query($sql);

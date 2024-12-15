@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $usuarios = [];
 
         if ($destinatario === 'todos') {
-            $usuarios = obtenerUsuarios($conn); // Todos los usuarios
+            $usuarios = obtenerUsuariosSinFiltro($conn); // Todos los usuarios
         } elseif ($destinatario === 'grupo') {
             $grupo = $_POST['grupo'] ?? null;
             if ($grupo) {
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Obtener lista de usuarios para el formulario
-$usuarios = obtenerUsuarios($conn);
+$usuarios = obtenerUsuariosSinFiltro($conn);
 
 // Obtener las notificaciones ya enviadas
 $notificaciones = [];
