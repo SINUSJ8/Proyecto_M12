@@ -30,7 +30,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {
         <nav id="navegacion-rapida">
             <a href="../monitores/monitor.php">Perfil</a>
             <a href="../clases/clases_monitor.php">Mis Clases</a>
-            <a href="../monitores/notificaciones_miembro.php">Mis Notificaciones</a>
+            <a href="../monitores/notificaciones_monitor.php">Mis Notificaciones</a>
             <form action="../includes/general.php" method="post" style="display: inline;">
                 <input type="hidden" name="accion" value="logout">
                 <button type="submit" class="logout-link">Cerrar Sesión</button>
