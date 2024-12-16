@@ -1,8 +1,12 @@
 <?php
+session_start(); // Asegúrate de iniciar la sesión al comienzo
+
 $title = "Editar Perfil";
 include '../miembros/miembro_header.php';
 require_once '../miembros/member_functions.php';
+require_once 'perfil_functions.php';
 
+// Conexión a la base de datos
 $conn = obtenerConexion();
 $id_usuario = $_SESSION['id_usuario'];
 
@@ -10,22 +14,44 @@ $id_usuario = $_SESSION['id_usuario'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre'];
     $email = $_POST['email'];
-    $fecha_registro = $_POST['fecha_registro'];
-    $id_membresia = $_POST['id_membresia'] ?? null;
+    $telefono = $_POST['telefono'];
+    $id_membresia = isset($_POST['id_membresia']) ? $_POST['id_membresia'] : null;
+
+    // Validación de datos
+    $errores = [];
+    if (empty($nombre) || !preg_match('/[a-zA-Z]/', $nombre)) {
+        $errores[] = "Por favor, ingresa un nombre válido.";
+    }
+    if (!empty($telefono) && !preg_match('/^\d{9}$/', $telefono)) {
+        $errores[] = "El teléfono debe tener exactamente 9 dígitos.";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errores[] = "Por favor, ingresa un correo electrónico válido.";
+    }
+
+    if (!empty($errores)) {
+        // Almacena los errores en la sesión
+        $_SESSION['error'] = implode('<br>', $errores);
+        header('Location: editar_perfil.php');
+        exit;
+    }
 
     // Llama a la función para actualizar los datos
-    $resultado = actualizarMiembro($conn, $id_usuario, $nombre, $email, $fecha_registro, $id_membresia);
+    $resultado = actualizarPerfil($conn, $id_usuario, $nombre, $email, $telefono, $id_membresia);
 
     if ($resultado['success']) {
-        header('Location: miembro.php?mensaje=perfil_actualizado');
+        $_SESSION['mensaje'] = "Perfil actualizado correctamente.";
+        header('Location: editar_perfil.php');
         exit;
     } else {
-        $error = "Error: " . $resultado['message'];
+        $_SESSION['error'] = "Error: " . $resultado['message'];
+        header('Location: editar_perfil.php');
+        exit;
     }
 }
 
 // Obtener la información del miembro para mostrar en el formulario
-$miembro = obtenerMiembroPorID($conn, $id_usuario);
+$miembro = obtenerMiembroPorIDPerfil($conn, $id_usuario);
 
 if (!$miembro) {
     echo "No se encontró información para este miembro.";
@@ -40,11 +66,21 @@ $membresias = obtenerMembresias($conn);
 <main class="form_container">
     <h1>Editar Perfil</h1>
 
-    <?php if (isset($error)): ?>
-        <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
-    <?php endif; ?>
+    <!-- Mostrar mensajes de error o confirmación -->
+    <?php
+    if (isset($_SESSION['error'])) {
+        echo "<p class='mensaje-error'>{$_SESSION['error']}</p>";
+        unset($_SESSION['error']);
+    }
 
-    <form action="editar_perfil.php" method="POST">
+    if (isset($_SESSION['mensaje'])) {
+        echo "<p class='mensaje-confirmacion'>{$_SESSION['mensaje']}</p>";
+        unset($_SESSION['mensaje']);
+    }
+    ?>
+
+    <!-- Formulario de edición -->
+    <form action="editar_perfil.php" method="POST" onsubmit="return valFormUsuario();">
         <!-- Nombre -->
         <label for="nombre">Nombre Completo:</label>
         <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($miembro['nombre']); ?>" required>
@@ -53,9 +89,9 @@ $membresias = obtenerMembresias($conn);
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($miembro['email']); ?>" required>
 
-        <!-- Fecha de Registro -->
-        <label for="fecha_registro">Fecha de Registro:</label>
-        <input type="date" id="fecha_registro" name="fecha_registro" value="<?php echo htmlspecialchars($miembro['fecha_registro']); ?>" required>
+        <!-- Teléfono -->
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($miembro['telefono']); ?>" pattern="\d{9}" title="Debe tener exactamente 9 dígitos." required>
 
         <!-- Membresía Actual -->
         <label for="id_membresia">Membresía:</label>
@@ -74,4 +110,8 @@ $membresias = obtenerMembresias($conn);
     </form>
 </main>
 
+<!-- Footer -->
 <?php include '../includes/footer.php'; ?>
+
+<!-- Enlace al archivo de validación -->
+<script src="../assets/js/validacion.js"></script>

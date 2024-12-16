@@ -117,7 +117,6 @@ function validarFormularioEdicion(tipoFormulario) {
         }
     }
 
-    // Validación específica para 'miembro' - otros requisitos específicos podrían añadirse aquí
 
     // Confirmación final para asegurarse
     const mensajeConfirmacion = "Estás a punto de actualizar los datos del " + tipoFormulario + ".\n\n" +
@@ -126,7 +125,68 @@ function validarFormularioEdicion(tipoFormulario) {
 }
 
 
+function actualizarFechasMembresia() {
+    const selectMembresia = document.getElementById('tipo_membresia');
+    const fechaInicioInput = document.getElementById('fecha_inicio');
+    const fechaFinInput = document.getElementById('fecha_fin');
 
+    // Verificar que los elementos existan en el DOM
+    if (!selectMembresia || !fechaInicioInput || !fechaFinInput) {
+        console.error("No se encontraron los elementos necesarios.");
+        return;
+    }
+
+    // Obtener la duración de la membresía seleccionada
+    const duracionMeses = parseInt(selectMembresia.options[selectMembresia.selectedIndex].getAttribute('data-duracion'), 10);
+    if (isNaN(duracionMeses)) {
+        console.error("Duración de la membresía seleccionada no es válida.");
+        return;
+    }
+
+    // Calcular la fecha de inicio (hoy)
+    const fechaInicio = new Date();
+
+    // Calcular la fecha de fin
+    const fechaFin = new Date(fechaInicio);
+    fechaFin.setMonth(fechaFin.getMonth() + duracionMeses);
+
+    // Formatear las fechas en formato "YYYY-MM-DD"
+    const fechaInicioFormateada = fechaInicio.toISOString().split('T')[0];
+    const fechaFinFormateada = fechaFin.toISOString().split('T')[0];
+
+    // Actualizar los campos de fecha
+    fechaInicioInput.value = fechaInicioFormateada;
+    fechaFinInput.value = fechaFinFormateada;
+}
+function actualizarEntrenamientos() {
+    const selectMembresia = document.getElementById('tipo_membresia');
+    const entrenamientosCheckboxes = document.querySelectorAll('.entrenamientos-checkboxes input[type="checkbox"]');
+
+    // Obtener los IDs de entrenamientos de la membresía seleccionada
+    const entrenamientosIds = selectMembresia.options[selectMembresia.selectedIndex].getAttribute('data-entrenamientos');
+
+    // Desmarcar todos los checkboxes por defecto
+    entrenamientosCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+
+    if (entrenamientosIds) {
+        const entrenamientosArray = entrenamientosIds.split(',').map(id => id.trim());
+
+        // Marcar los checkboxes que coincidan con los IDs de la membresía seleccionada
+        entrenamientosCheckboxes.forEach(checkbox => {
+            if (entrenamientosArray.includes(checkbox.value)) {
+                checkbox.checked = true;
+            }
+        });
+    }
+}
+
+function toggleDestinatario() {
+    const destinatario = document.getElementById('destinatario').value;
+    document.getElementById('grupo_destinatario').style.display = destinatario === 'grupo' ? 'block' : 'none';
+    document.getElementById('usuario_destinatario').style.display = destinatario === 'usuario' ? 'block' : 'none';
+}
 
 
 

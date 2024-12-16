@@ -14,18 +14,10 @@
 
 <body>
     <header>
-        <h1>Panel de Administración</h1>
+        <h1>Panel de Monitor</h1>
         <nav id="navegacion-rapida">
-            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-                <a href="../admin/admin.php">Panel Principal</a>
-                <a href="../usuarios/usuarios.php">Usuarios</a>
-                <a href="../miembros/miembros.php">Miembros</a>
-                <a href="../monitores/monitores.php">Monitores</a>
                 <a href="../clases/clases.php">Clases</a>
-                <a href="../membresias/membresias.php">Membresías</a>
-                <a href="../config/configuracion.php">Administración</a>
-                <a href="../admin/notificaciones.php">Notificaciones</a>
-            <?php endif; ?>
+                <a href="../monitores/notificaciones.php">Notificaciones</a>
 
             <form action="../includes/general.php" method="post" style="display: inline;">
                 <input type="hidden" name="accion" value="logout">

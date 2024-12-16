@@ -57,7 +57,7 @@ if (isset($_SESSION['mensaje'])) {
         </form>
     </div>
     <div class="button-container">
-        <a href="/Gimnasio/index.php" class="btn-general">Volver al inicio</a>
+        <a href="../../index.php" class="btn-general">Volver al inicio</a>
     </div>
 
 

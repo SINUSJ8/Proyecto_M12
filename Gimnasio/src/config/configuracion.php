@@ -37,7 +37,7 @@ include '../admin/admin_header.php';
 <head>
     <meta charset="UTF-8">
     <title>Administración de Especialidades</title>
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="../../assets/css/estilos.css">
 </head>
 
 <body>
@@ -76,6 +76,6 @@ include '../admin/admin_header.php';
 
     </main>
     <?php
-        include '../includes/footer.php';
-        $conn->close();
-        ?>
+    include '../includes/footer.php';
+    $conn->close();
+    ?>

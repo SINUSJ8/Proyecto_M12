@@ -78,7 +78,7 @@ include '../admin/admin_header.php';
             <p>No hay membresías registradas para mostrar.</p>
         <?php endif; ?>
     </main>
-    
+
     <?php
         include '../includes/footer.php';
         $conn->close();

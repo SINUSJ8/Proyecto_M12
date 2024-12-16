@@ -18,7 +18,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'miembro') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($title) ? $title : "Mi Gimnasio"; ?></title>
     <link rel="stylesheet" href="../../assets/css/estilos.css">
-    <script src="../assets/js/validacion.js"></script>
+    <script src="../../assets/js/validacion.js"></script>
 </head>
 
 <body>
@@ -33,6 +33,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'miembro') {
             <a href="../clases/mis_clases.php">Mis Clases</a>
             <a href="../membresias/mi_membresia.php">Mi Membresía</a>
             <a href="../miembros/miembro.php">Mi Perfil</a>
+            <a href="../miembros/mis_notificaciones.php">Mis Notificaciones</a>
             <form action="../includes/general.php" method="post" style="display: inline;">
                 <input type="hidden" name="accion" value="logout">
                 <button type="submit" class="logout-link">Cerrar Sesión</button>

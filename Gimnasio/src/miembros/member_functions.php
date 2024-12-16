@@ -156,16 +156,19 @@ function actualizarMiembro($conn, $id_usuario, $nombre, $email, $fecha_registro,
         $stmtActualizarMiembro->bind_param("sii", $fecha_registro, $id_membresia, $id_miembro);
         $stmtActualizarMiembro->execute();
 
+        // Cambiar el estado de la membresía actual a "no activa"
+        $queryActualizarEstado = "UPDATE miembro_membresia 
+                                  SET estado = 'no activa' 
+                                  WHERE id_miembro = ? AND estado = 'activa'";
+        $stmtActualizarEstado = $conn->prepare($queryActualizarEstado);
+        $stmtActualizarEstado->bind_param("i", $id_miembro);
+        if (!$stmtActualizarEstado->execute()) {
+            throw new Exception("Error al desactivar la membresía actual: " . $stmtActualizarEstado->error);
+        }
+        $stmtActualizarEstado->close();
+
         // Registrar el cambio en la tabla miembro_membresia
         $fecha_actual = date('Y-m-d');
-        $fecha_fin = date('Y-m-d', strtotime("+1 month")); // Cambiar según la duración de la membresía
-        $sqlInsertarMembresia = "
-            INSERT INTO miembro_membresia (id_miembro, id_membresia, monto_pagado, fecha_inicio, fecha_fin, estado, renovacion_automatica) 
-            VALUES (?, ?, ?, ?, ?, 'activa', FALSE)
-        ";
-        $stmtInsertarMembresia = $conn->prepare($sqlInsertarMembresia);
-
-        // Obtener el precio de la membresía para registrar el monto pagado
         $sqlPrecioMembresia = "SELECT precio, duracion FROM membresia WHERE id_membresia = ?";
         $stmtPrecioMembresia = $conn->prepare($sqlPrecioMembresia);
         $stmtPrecioMembresia->bind_param("i", $id_membresia);
@@ -178,7 +181,11 @@ function actualizarMiembro($conn, $id_usuario, $nombre, $email, $fecha_registro,
             $duracion_meses = $membresia['duracion'];
             $fecha_fin = date('Y-m-d', strtotime("+$duracion_meses months", strtotime($fecha_actual)));
 
-            // Registrar la nueva membresía
+            $sqlInsertarMembresia = "
+                INSERT INTO miembro_membresia (id_miembro, id_membresia, monto_pagado, fecha_inicio, fecha_fin, estado, renovacion_automatica) 
+                VALUES (?, ?, ?, ?, ?, 'activa', FALSE)
+            ";
+            $stmtInsertarMembresia = $conn->prepare($sqlInsertarMembresia);
             $stmtInsertarMembresia->bind_param("iisss", $id_miembro, $id_membresia, $monto_pagado, $fecha_actual, $fecha_fin);
             $stmtInsertarMembresia->execute();
         } else {
@@ -276,16 +283,31 @@ function actualizarEntrenamientosMiembro($conn, $id_miembro, $entrenamientos)
 
 function obtenerMembresias($conn)
 {
-    $sql = "SELECT id_membresia, tipo, precio, duracion, beneficios FROM membresia";
+    $sql = "
+        SELECT 
+            m.id_membresia, 
+            m.tipo, 
+            m.precio, 
+            m.duracion, 
+            m.beneficios,
+            GROUP_CONCAT(me.id_entrenamiento) AS entrenamientos_ids
+        FROM membresia m
+        LEFT JOIN membresia_entrenamiento me ON m.id_membresia = me.id_membresia
+        GROUP BY m.id_membresia
+    ";
+
     $result = $conn->query($sql);
 
     $membresias = [];
     while ($row = $result->fetch_assoc()) {
+        // Convertir los IDs de entrenamientos en un array
+        $row['entrenamientos_ids'] = $row['entrenamientos_ids'] ? explode(',', $row['entrenamientos_ids']) : [];
         $membresias[] = $row;
     }
 
     return $membresias;
 }
+
 function obtenerIdMiembroPorUsuario($conn, $id_usuario)
 {
     $sql = "SELECT id_miembro FROM miembro WHERE id_usuario = ?";
@@ -396,4 +418,111 @@ function informacionMembresia($id_usuario)
     $datosMiembro['especialidades'] = $especialidades;
 
     return $datosMiembro;
+}
+function obtenerDetalleCompletoMiembro($conn, $id_usuario)
+{
+    $miembro = obtenerMiembroPorID($conn, $id_usuario);
+    if ($miembro) {
+        $miembro['id_miembro'] = obtenerIdMiembroPorUsuario($conn, $id_usuario);
+        $miembro['fechas_membresia'] = obtenerFechasMembresiaActiva($conn, $miembro['id_miembro']);
+    }
+    return $miembro;
+}
+function actualizarMembresia($conn, $id_miembro, $id_membresia_nueva, $fecha_inicio_nueva = null, $fecha_fin_nueva = null)
+{
+    $stmt = $conn->prepare("SELECT precio, duracion FROM membresia WHERE id_membresia = ?");
+    $stmt->bind_param("i", $id_membresia_nueva);
+    $stmt->execute();
+    $stmt->bind_result($precio, $duracion);
+
+    if (!$stmt->fetch()) {
+        $stmt->close();
+        return ["success" => false, "message" => "Membresía no encontrada."];
+    }
+    $stmt->close();
+
+    $fecha_inicio = isset($fecha_inicio_nueva) ? $fecha_inicio_nueva : date("Y-m-d");
+    $fecha_fin = isset($fecha_fin_nueva) ? $fecha_fin_nueva : date("Y-m-d", strtotime("+$duracion months"));
+
+
+    $query = "INSERT INTO miembro_membresia (id_miembro, id_membresia, monto_pagado, fecha_inicio, fecha_fin, estado)
+              VALUES (?, ?, ?, ?, ?, 'activa')";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("iisss", $id_miembro, $id_membresia_nueva, $precio, $fecha_inicio, $fecha_fin);
+
+    if (!$stmt->execute()) {
+        return ["success" => false, "message" => "Error al registrar la membresía: " . $stmt->error];
+    }
+
+    return ["success" => true, "message" => "Membresía actualizada correctamente."];
+}
+function obtenerUsuarios($conn)
+{
+    $sql = "SELECT id_usuario, nombre, email FROM usuario ORDER BY nombre ASC";
+    $result = $conn->query($sql);
+
+    $usuarios = [];
+    if ($result) {
+        $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    return $usuarios;
+}
+function obtenerUsuarioPorId($conn, $id_usuario)
+{
+    $sql = "SELECT id_usuario, nombre, email FROM usuario WHERE id_usuario = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $usuario = [];
+    if ($result) {
+        $usuario = $result->fetch_assoc();
+    }
+    $stmt->close();
+
+    return $usuario ? [$usuario] : []; // Devolver un array con un solo usuario
+}
+function obtenerUsuariosPorRol($conn, $rol)
+{
+    $sql = "SELECT id_usuario, nombre, email FROM usuario WHERE rol = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $rol);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $usuarios = [];
+    if ($result) {
+        $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    $stmt->close();
+
+    return $usuarios;
+}
+function obtenerNotificacionesPorUsuario($conn, $id_usuario)
+{
+    $sql = "SELECT mensaje, fecha, leida 
+            FROM notificacion 
+            WHERE id_usuario = ? 
+            ORDER BY fecha DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $notificaciones = [];
+    if ($result) {
+        $notificaciones = $result->fetch_all(MYSQLI_ASSOC);
+    }
+    $stmt->close();
+
+    return $notificaciones;
+}
+function marcarNotificacionesComoLeidas($conn, $id_usuario)
+{
+    $sql = "UPDATE notificacion SET leida = 1 WHERE id_usuario = ? AND leida = 0";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $stmt->close();
 }
