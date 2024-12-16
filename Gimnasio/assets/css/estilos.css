@@ -495,6 +495,53 @@ table.styled-table th.sortable.sorted-desc:after {
     background-color: #2b7a78;
 }
 
+.clases-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.clase-card {
+    width: 300px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;  
+}
+
+.clase-card h2 {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.clase-card img {
+    width: 100%;                
+    height: 200px;             
+    object-fit: cover;          
+    border-radius: 5px;      
+    margin-bottom: 15px;        
+}
+
+.clase-card p, .clase-card ul {
+    text-align: justify; 
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.clase-card ul {
+    list-style-type: square; 
+    padding-left: 20px;  
+    margin-top: 10px;
+}
+
+.clase-card ul li {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
 @media (max-width: 768px) {
     .menu {
         flex-direction: column;

@@ -29,6 +29,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'miembro') {
         </div>
 
         <nav id="navegacion-rapida">
+            <a href="../clases/clases_disponibles.php">Clases Disponibles</a>
             <a href="../clases/mis_clases.php">Mis Clases</a>
             <a href="../membresias/mi_membresia.php">Mi Membresía</a>
             <a href="../miembros/miembro.php">Mi Perfil</a>
