@@ -41,7 +41,7 @@ include '../admin/admin_header.php';
 
 <body>
     <main>
-        <h1>Clases Existentes</h1>
+        <h2>Clases Existentes</h2>
         <!-- Formulario de búsqueda -->
 
         <form method="GET" action="clases.php" class="search-form">
