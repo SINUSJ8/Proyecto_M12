@@ -1,12 +1,31 @@
 <?php
 require_once('../includes/general.php');
 require_once('../miembros/member_functions.php');
+require_once('../admin/admin_functions.php');
 
 // Verificar que el usuario sea administrador
 verificarAdmin();
 
 $conn = obtenerConexion();
 $title = "Gestión de Notificaciones";
+
+// Manejar solicitudes AJAX para búsqueda dinámica
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'true') {
+    if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
+        http_response_code(403); // Respuesta prohibida
+        echo "Acceso no autorizado";
+        exit;
+    }
+
+    // Realizar la búsqueda de usuarios
+    $termino = $_GET['q'];
+    $usuarios = buscarUsuariosPorTermino($conn, $termino);
+    foreach ($usuarios as $usuario) {
+        echo '<option value="' . htmlspecialchars($usuario['id_usuario']) . '">' .
+            htmlspecialchars($usuario['nombre']) . ' (' . htmlspecialchars($usuario['email']) . ')</option>';
+    }
+    exit;
+}
 
 // Manejo del formulario de creación de notificaciones
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -22,6 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $grupo = $_POST['grupo'] ?? null;
             if ($grupo) {
                 switch ($grupo) {
+                    case 'usuarios':
+                        $usuarios = obtenerUsuariosPorRol($conn, 'usuario');
+                        break;
                     case 'miembros':
                         $usuarios = obtenerUsuariosPorRol($conn, 'miembro');
                         break;
@@ -81,7 +103,7 @@ include 'admin_header.php';
 
     <!-- Mostrar mensajes de éxito o error -->
     <?php if (isset($success)): ?>
-        <div class="mensaje-exito"><?php echo htmlspecialchars($success); ?></div>
+        <div class="mensaje-confirmacion"><?php echo htmlspecialchars($success); ?></div>
     <?php endif; ?>
     <?php if (isset($error)): ?>
         <div class="mensaje-error"><?php echo htmlspecialchars($error); ?></div>
@@ -90,16 +112,6 @@ include 'admin_header.php';
     <!-- Formulario para enviar notificaciones -->
     <section>
         <h3>Enviar Notificación</h3>
-
-        <!-- Mostrar mensajes de éxito o error -->
-        <?php if (isset($success)): ?>
-            <div class="mensaje-confirmacion"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
-        <?php if (isset($error)): ?>
-            <div class="mensaje-error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-
         <form method="POST" action="notificaciones.php" class="form_container">
             <label for="destinatario">Seleccionar Destinatario:</label>
             <select name="destinatario" id="destinatario" required onchange="toggleDestinatario()">
@@ -112,6 +124,7 @@ include 'admin_header.php';
             <div id="grupo_destinatario" style="display: none;">
                 <label for="grupo">Seleccionar Grupo:</label>
                 <select name="grupo" id="grupo">
+                    <option value="usuarios">Usuarios</option>
                     <option value="miembros">Miembros</option>
                     <option value="monitores">Monitores</option>
                     <option value="administradores">Administradores</option>
@@ -119,16 +132,16 @@ include 'admin_header.php';
             </div>
 
             <div id="usuario_destinatario" style="display: none;">
+                <label for="buscar_usuario">Buscar Usuario:</label>
+                <input type="text" id="buscar_usuario" placeholder="Escribe para buscar usuarios..." onkeyup="buscarUsuario(this.value)">
+
                 <label for="id_usuario">Seleccionar Usuario:</label>
                 <select name="id_usuario" id="id_usuario">
                     <option value="">-- Selecciona un usuario --</option>
-                    <?php foreach ($usuarios as $usuario): ?>
-                        <option value="<?php echo $usuario['id_usuario']; ?>">
-                            <?php echo htmlspecialchars($usuario['nombre']); ?> (<?php echo htmlspecialchars($usuario['email']); ?>)
-                        </option>
-                    <?php endforeach; ?>
+                    <!-- Resultados dinámicos insertados -->
                 </select>
             </div>
+
 
             <label for="mensaje">Mensaje:</label>
             <textarea name="mensaje" id="mensaje" rows="5" required></textarea>
@@ -136,7 +149,6 @@ include 'admin_header.php';
             <button type="submit" class="btn-general">Enviar Notificación</button>
         </form>
     </section>
-
 
     <!-- Lista de notificaciones enviadas -->
     <section>
@@ -166,7 +178,6 @@ include 'admin_header.php';
                     <?php endforeach; ?>
                 </tbody>
             </table>
-
         <?php endif; ?>
     </section>
 </main>

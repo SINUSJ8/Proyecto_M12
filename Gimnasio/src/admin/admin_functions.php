@@ -209,3 +209,20 @@ function asignarMembresiaAlMiembro($conn, $id_miembro, $id_membresia)
         return "La membresía especificada no existe.";
     }
 }
+function buscarUsuariosPorTermino($conn, $termino, $limite = 10)
+{
+    $sql = "SELECT id_usuario, nombre, email FROM usuario WHERE nombre LIKE ? OR email LIKE ? LIMIT ?";
+    $stmt = $conn->prepare($sql);
+    $likeTermino = '%' . $termino . '%';
+    $stmt->bind_param("ssi", $likeTermino, $likeTermino, $limite);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $usuarios = [];
+    while ($usuario = $result->fetch_assoc()) {
+        $usuarios[] = $usuario;
+    }
+
+    $stmt->close();
+    return $usuarios;
+}

@@ -128,7 +128,7 @@ function validarFormularioEdicion(tipoFormulario) {
     }
 
     // Validaciones específicas para otros formularios
-    // Añade aquí las validaciones específicas si son necesarias para otros tipos de formularios
+    // Otras validaciones específicas para otros tipos de formularios se pueden añadir.
 
     // Confirmación final para asegurarse
     const mensajeConfirmacion = "Estás a punto de actualizar los datos del " + tipoFormulario + ".\n\n" +
@@ -199,6 +199,28 @@ function toggleDestinatario() {
     const destinatario = document.getElementById('destinatario').value;
     document.getElementById('grupo_destinatario').style.display = destinatario === 'grupo' ? 'block' : 'none';
     document.getElementById('usuario_destinatario').style.display = destinatario === 'usuario' ? 'block' : 'none';
+}
+function buscarUsuario(termino) {
+    const selectUsuario = document.getElementById('id_usuario');
+
+    if (termino.trim() === '') {
+        selectUsuario.innerHTML = '<option value="">-- Selecciona un usuario --</option>';
+        return;
+    }
+
+    fetch(`notificaciones.php?ajax=true&q=${encodeURIComponent(termino)}`)
+        .then(response => response.text())
+        .then(html => {
+            if (html.trim() === '') {
+                selectUsuario.innerHTML = '<option value="">No se encontraron resultados</option>';
+            } else {
+                selectUsuario.innerHTML = '<option value="">-- Selecciona un usuario --</option>' + html;
+            }
+        })
+        .catch(error => {
+            console.error('Error al buscar usuarios:', error);
+            selectUsuario.innerHTML = '<option value="">Error al buscar usuarios</option>';
+        });
 }
 
 
