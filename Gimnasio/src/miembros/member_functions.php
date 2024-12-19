@@ -441,8 +441,9 @@ function actualizarMembresia($conn, $id_miembro, $id_membresia_nueva, $fecha_ini
     }
     $stmt->close();
 
-    $fecha_inicio = $fecha_inicio_nueva ?? date("Y-m-d");
-    $fecha_fin = $fecha_fin_nueva ?? date("Y-m-d", strtotime("+$duracion months"));
+    $fecha_inicio = isset($fecha_inicio_nueva) ? $fecha_inicio_nueva : date("Y-m-d");
+    $fecha_fin = isset($fecha_fin_nueva) ? $fecha_fin_nueva : date("Y-m-d", strtotime("+$duracion months"));
+
 
     $query = "INSERT INTO miembro_membresia (id_miembro, id_membresia, monto_pagado, fecha_inicio, fecha_fin, estado)
               VALUES (?, ?, ?, ?, ?, 'activa')";

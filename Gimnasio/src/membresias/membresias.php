@@ -35,18 +35,9 @@ $title = "Membresías y Miembros";
 include '../admin/admin_header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Detalles de Membresías</title>
-    <link rel="stylesheet" href="../../assets/css/estilos.css">
-</head>
-
 <body>
-    <main class="form_container">
-        <h2>Detalles de Membresías por Miembro</h2>
+    <main>
+        <h2>Detalles de Membresías por Miembros</h2>
         <div class="form_container">
             <a href="crear_membresia.php" class="btn-general">Crear Nueva Membresía</a>
         </div>
@@ -89,6 +80,6 @@ include '../admin/admin_header.php';
     </main>
 
     <?php
-    include '../includes/footer.php';
-    $conn->close();
-    ?>
+        include '../includes/footer.php';
+        $conn->close();
+        ?>

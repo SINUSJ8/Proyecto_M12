@@ -26,7 +26,6 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {
             <h1>Gimnasio - Monitor</h1>
             <span class="user-name"><?php echo htmlspecialchars($_SESSION['nombre']); ?></span>
         </div>
-
         <nav id="navegacion-rapida">
             <a href="../monitores/monitor.php">Perfil</a>
             <a href="../clases/clases_monitor.php">Mis Clases</a>
