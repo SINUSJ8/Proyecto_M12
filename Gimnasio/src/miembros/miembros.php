@@ -68,7 +68,7 @@ include '../admin/admin_header.php';
                     <td><?php echo htmlspecialchars($miembro['tipo']); ?></td>
                     <td>
                         <?php
-                            echo htmlspecialchars(isset($miembro['entrenamientos']) ? $miembro['entrenamientos'] : 'N/A', ENT_QUOTES, 'UTF-8');
+                        echo htmlspecialchars(isset($miembro['entrenamientos']) ? $miembro['entrenamientos'] : 'N/A', ENT_QUOTES, 'UTF-8');
                         ?>
                     </td>
                     <td class="acciones">
