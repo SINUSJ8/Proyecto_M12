@@ -9,33 +9,29 @@
 </head>
 
 <body>
-    <?php
-    if (isset($_GET['error'])) {
-        echo "<p class='mensaje-error'>" . htmlspecialchars($_GET['error']) . "</p>";
-    }
-    if (isset($_GET['mensaje'])) {
-        echo "<p class='mensaje-confirmacion'>" . htmlspecialchars($_GET['mensaje']) . "</p>";
-    }
-    ?>
-    <!-- Imagen de portada del gimnasio -->
-    <div class="image-container">
-        <img src="assets/imgs/gym.webp" alt="Gimnasio" class="gym-image">
-    </div>
+    <main>
+        <!-- Mensajes de error o confirmación -->
+        <?php if (isset($_GET['error'])): ?>
+            <p class="mensaje-error"><?php echo htmlspecialchars($_GET['error']); ?></p>
+        <?php endif; ?>
+        <?php if (isset($_GET['mensaje'])): ?>
+            <p class="mensaje-confirmacion"><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
+        <?php endif; ?>
 
-    <h2>Bienvenido al Gimnasio</h2>
-    <p>Elige una opción para continuar:</p>
+        <!-- Imagen de portada -->
+        <div class="image-container">
+            <img src="assets/imgs/gym.webp" alt="Gimnasio" class="gym-image">
+        </div>
 
-    <div class="button-container">
-        <!-- Botón para redirigir a la página de registro -->
-        <a href="src/auth/reg.php">
-            <button>Registrarse</button>
-        </a>
+        <h2 class="section-title">Bienvenido al Gimnasio</h2>
+        <p>Elige una opción para continuar:</p>
 
-        <!-- Botón para redirigir a la página de inicio de sesión -->
-        <a href="src/auth/log.php">
-            <button>Iniciar Sesión</button>
-        </a>
-    </div>
+        <!-- Botones de acción -->
+        <div class="button-container">
+            <a href="src/auth/reg.php" class="btn-general">Registrarse</a>
+            <a href="src/auth/log.php" class="btn-general">Iniciar Sesión</a>
+        </div>
+    </main>
 </body>
 
 </html>

@@ -38,7 +38,7 @@ include '../admin/admin_header.php';
 
 <body>
     <main>
-        <h2>Gestión de Monitores</h2>
+        <h2 class="section-title">Gestión de Monitores</h2>
 
         <!-- Mostrar mensaje de confirmación si existe -->
         <?php if (isset($_GET['mensaje'])): ?>
@@ -48,12 +48,15 @@ include '../admin/admin_header.php';
         <?php endif; ?>
 
         <!-- Formulario de búsqueda -->
-        <div class="form_container">
-            <form method="GET" action="monitores.php">
-                <input type="text" name="busqueda" placeholder="Buscar monitor..." value="<?php echo htmlspecialchars($busqueda); ?>">
+        <form method="GET" action="monitores.php" class="form-container">
+            <div class="form-group">
+                <label for="busqueda">Buscar Monitor:</label>
+                <input type="text" id="busqueda" name="busqueda" placeholder="Buscar monitor..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-large">
+            </div>
 
-                <!-- Menú desplegable para buscar por especialidad -->
-                <select name="especialidad">
+            <div class="form-group">
+                <label for="especialidad">Especialidad:</label>
+                <select id="especialidad" name="especialidad" class="select-large">
                     <option value="">Todas las especialidades</option>
                     <?php foreach ($especialidades as $especialidad): ?>
                         <option value="<?php echo htmlspecialchars($especialidad['id_especialidad']); ?>" <?php echo ($especialidad_filtro == $especialidad['id_especialidad']) ? 'selected' : ''; ?>>
@@ -61,56 +64,69 @@ include '../admin/admin_header.php';
                         </option>
                     <?php endforeach; ?>
                 </select>
+            </div>
 
-                <!-- Menú desplegable para buscar por disponibilidad -->
+            <div class="form-group">
                 <label for="disponibilidad">Disponibilidad:</label>
-                <select name="disponibilidad" id="disponibilidad">
+                <select id="disponibilidad" name="disponibilidad" class="select-large">
                     <option value="">Cualquiera</option>
                     <option value="Disponible" <?php echo ($disponibilidad_filtro === 'Disponible') ? 'selected' : ''; ?>>Disponible</option>
                     <option value="No disponible" <?php echo ($disponibilidad_filtro === 'No disponible') ? 'selected' : ''; ?>>No disponible</option>
                 </select>
+            </div>
 
-                <button type="submit">Buscar</button>
-            </form>
+            <button type="submit" class="btn-general">Buscar</button>
+            <button type="button" class="btn-general reset-button" onclick="limpiarFormulario()">Limpiar</button>
+        </form>
+
+
+        <!-- Botón para crear monitor -->
+        <div class="button-container">
+            <a href="crear_monitor.php" class="button">Crear Monitor</a>
         </div>
 
         <!-- Tabla con lista de monitores y acciones -->
-        <table>
-            <tr>
-                <th><a href="?orden=nombre&direccion=<?php echo ($orden_columna == 'nombre' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Nombre</a></th>
-                <th><a href="?orden=email&direccion=<?php echo ($orden_columna == 'email' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Email</a></th>
-                <th><a href="?orden=especialidades&direccion=<?php echo ($orden_columna == 'especialidades' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Especialidades</a></th>
-                <th><a href="?orden=experiencia&direccion=<?php echo ($orden_columna == 'experiencia' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Experiencia</a></th>
-                <th><a href="?orden=disponibilidad&direccion=<?php echo ($orden_columna == 'disponibilidad' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Disponibilidad</a></th>
-                <th>Acciones</th>
-            </tr>
-            <?php foreach ($monitores as $monitor): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($monitor['nombre']); ?></td>
-                    <td><?php echo htmlspecialchars($monitor['email']); ?></td>
-                    <td><?php echo htmlspecialchars($monitor['especialidades']); ?></td>
-                    <td><?php echo htmlspecialchars($monitor['experiencia']); ?></td>
-                    <td><?php echo htmlspecialchars($monitor['disponibilidad']); ?></td>
-                    <td class="acciones">
-                        <div class="button-container">
-                            <!-- Acción de eliminar -->
-                            <form action="monitores.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="id_usuario" value="<?php echo $monitor['id_usuario']; ?>">
-                                <button type="submit" name="eliminar_usuario" onclick="return confirm('¿Estás seguro de que deseas eliminar este monitor? Esta acción no se puede deshacer.')" title="Eliminar definitivamente este monitor">Eliminar</button>
-                            </form>
-                            <!-- Acción de editar -->
-                            <form action="edit_monitor.php" method="GET" style="display:inline;">
-                                <input type="hidden" name="id_usuario" value="<?php echo $monitor['id_usuario']; ?>">
-                                <button type="submit" name="editar_usuario" title="Modificar el perfil de este monitor">Modificar Perfil</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+        <section class="form_container">
+            <table id="tabla-monitores" class="styled-table">
+                <thead>
+                    <tr>
+                        <th onclick="ordenarTablaM(0, 'tabla-monitores')" class="sortable">Nombre</th>
+                        <th onclick="ordenarTablaM(1, 'tabla-monitores')" class="sortable">Email</th>
+                        <th onclick="ordenarTablaM(2, 'tabla-monitores')" class="sortable">Especialidades</th>
+                        <th onclick="ordenarTablaM(3, 'tabla-monitores')" class="sortable">Experiencia</th>
+                        <th onclick="ordenarTablaM(4, 'tabla-monitores')" class="sortable">Disponibilidad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($monitores as $monitor): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($monitor['nombre']); ?></td>
+                            <td><?php echo htmlspecialchars($monitor['email']); ?></td>
+                            <td><?php echo htmlspecialchars($monitor['especialidades']); ?></td>
+                            <td><?php echo htmlspecialchars($monitor['experiencia']); ?> años</td>
+                            <td><?php echo htmlspecialchars($monitor['disponibilidad']); ?></td>
+                            <td>
+                                <form method="POST" action="monitores.php" onsubmit="return confirmarEliminacion();" style="margin-bottom: 5px;">
+                                    <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($monitor['id_usuario']); ?>">
+                                    <button type="submit" class="btn-general delete-button" name="eliminar_usuario">Eliminar</button>
+                                </form>
+                                <a href="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($monitor['id_usuario']); ?>" class="btn-general edit-button">Editar</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </section>
+
     </main>
-    
+
     <?php
-        include '../includes/footer.php';
-        $conn->close();
-        ?>
+    include '../includes/footer.php';
+    $conn->close();
+    ?>
+
+    <script src="../../assets/js/clases.js"></script>
+</body>
+
+</html>

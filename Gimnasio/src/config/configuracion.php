@@ -42,7 +42,7 @@ include '../admin/admin_header.php';
 
 <body>
     <main class="form_container">
-        <h2>Administración de Especialidades</h2>
+        <h2 class="section-title">Administración de Especialidades</h2>
 
         <!-- Mensaje de confirmación o error -->
         <?php if (!empty($mensaje)): ?>
@@ -55,20 +55,20 @@ include '../admin/admin_header.php';
         <form method="POST" action="configuracion.php">
             <h3>Añadir Nueva Especialidad</h3>
             <label for="nueva_especialidad">Nombre de la Especialidad:</label>
-            <input type="text" id="nueva_especialidad" name="nueva_especialidad" required>
-            <button type="submit">Añadir Especialidad</button>
+            <input type="text" id="nueva_especialidad" name="nueva_especialidad" class="input-general" required>
+            <button type="submit" class="btn-general">Añadir Especialidad</button>
         </form>
 
         <!-- Listado de especialidades con opciones de edición y eliminación -->
         <h3>Especialidades Disponibles</h3>
-        <ul>
+        <ul class="especialidades-lista">
             <?php foreach ($especialidades as $especialidad): ?>
-                <li style="display: flex; align-items: center; margin-bottom: 10px;">
-                    <form method="POST" action="configuracion.php" style="display: inline-flex; align-items: center;">
+                <li class="especialidad-item">
+                    <form method="POST" action="configuracion.php" class="especialidad-form">
                         <input type="hidden" name="id_especialidad" value="<?php echo $especialidad['id_especialidad']; ?>">
-                        <input type="text" name="nombre_especialidad" value="<?php echo htmlspecialchars($especialidad['nombre']); ?>" required style="width: 200px; margin-right: 10px;">
-                        <button type="submit" name="editar_especialidad" style="margin-right: 5px;">Editar</button>
-                        <button type="submit" name="eliminar_especialidad" onclick="return confirm('¿Estás seguro de que deseas eliminar esta especialidad?')">Eliminar</button>
+                        <input type="text" name="nombre_especialidad" value="<?php echo htmlspecialchars($especialidad['nombre']); ?>" class="input-general" required>
+                        <button type="submit" name="editar_especialidad" class="btn-general edit-button">Editar</button>
+                        <button type="submit" name="eliminar_especialidad" class="btn-general delete-button" onclick="return confirm('¿Estás seguro de que deseas eliminar esta especialidad?')">Eliminar</button>
                     </form>
                 </li>
             <?php endforeach; ?>
@@ -79,3 +79,6 @@ include '../admin/admin_header.php';
     include '../includes/footer.php';
     $conn->close();
     ?>
+</body>
+
+</html>

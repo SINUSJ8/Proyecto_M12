@@ -24,7 +24,7 @@ try {
     // Procesar formulario para apuntarse o borrarse
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_clase = $_POST['id_clase'];
-        $accion = $_POST['accion']; // 'apuntarse' o 'borrarse'
+        $accion = $_POST['accion'];
 
         if ($accion === 'apuntarse') {
             $mensaje = apuntarseClase($conn, $id_clase, $id_miembro);
@@ -40,7 +40,7 @@ try {
     $sqlEspecialidades = "
         SELECT e.id_especialidad, e.nombre 
         FROM miembro_entrenamiento me
-        INNER JOIN especialidad e ON me.id_especialidad = e.id_especialidad
+        INNER JOIN especialidad e ON me.id_especialidad = e.id_especialidad 
         WHERE me.id_miembro = ?
     ";
     $stmtEspecialidades = $conn->prepare($sqlEspecialidades);
@@ -83,17 +83,16 @@ try {
         $resultadoClases = false;
     }
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    echo "<p class='mensaje-error'>Error: " . $e->getMessage() . "</p>";
     exit;
 }
 ?>
 
-
 <main class="form_container">
-    <h1>Mis Clases</h1>
+    <h1 class="section-title">Mis Clases</h1>
 
     <?php if (isset($_GET['mensaje'])): ?>
-        <p style="color: green;">
+        <p class="mensaje-confirmacion">
             <?php if ($_GET['mensaje'] === 'apuntado'): ?>
                 ¡Te has inscrito correctamente en la clase!
             <?php elseif ($_GET['mensaje'] === 'ya_inscrito'): ?>
@@ -105,9 +104,11 @@ try {
             <?php endif; ?>
         </p>
     <?php endif; ?>
+
+    <!-- Clases Inscritas -->
     <?php if ($resultadoClasesInscritas && $resultadoClasesInscritas->num_rows > 0): ?>
         <h2>Clases Inscritas</h2>
-        <table>
+        <table class="styled-table">
             <thead>
                 <tr>
                     <th>Nombre de la Clase</th>
@@ -119,7 +120,6 @@ try {
                     <tr>
                         <td><?php echo htmlspecialchars($claseInscrita['nombre']); ?></td>
                         <td>
-                            <!-- Botón para borrarse -->
                             <form method="POST" style="display: inline;">
                                 <input type="hidden" name="id_clase" value="<?php echo $claseInscrita['id_clase']; ?>">
                                 <input type="hidden" name="accion" value="borrarse">
@@ -131,13 +131,13 @@ try {
             </tbody>
         </table>
     <?php else: ?>
-        <p>No estás inscrito en ninguna clase.</p>
+        <p class="mensaje-info">No estás inscrito en ninguna clase.</p>
     <?php endif; ?>
 
-
-
+    <!-- Clases Disponibles -->
     <?php if ($resultadoClases && $resultadoClases->num_rows > 0): ?>
-        <table>
+        <h2>Clases Disponibles</h2>
+        <table class="styled-table">
             <thead>
                 <tr>
                     <th>Nombre de la Clase</th>
@@ -162,29 +162,20 @@ try {
                             <?php if ($clase['inscrito']): ?>
                                 <span style="color: green;">Ya inscrito</span>
                             <?php else: ?>
-                                <!-- Botón para apuntarse -->
                                 <form method="POST" style="display: inline;">
                                     <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
                                     <input type="hidden" name="accion" value="apuntarse">
                                     <button type="submit" class="btn-general">Apuntarme</button>
                                 </form>
                             <?php endif; ?>
-                            <!-- Botón para borrarse -->
-                            <?php if ($clase['inscrito']): ?>
-                                <form method="POST" style="display: inline;">
-                                    <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
-                                    <input type="hidden" name="accion" value="borrarse">
-                                    <button type="submit" class="btn-general btn-danger">Borrarme</button>
-                                </form>
-                            <?php endif; ?>
                         </td>
-
                     </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
     <?php else: ?>
-        <p>No hay clases disponibles para tus especialidades.</p>
+        <p class="mensaje-info">No hay clases disponibles para tus especialidades.</p>
     <?php endif; ?>
 </main>
+
 <?php include '../includes/footer.php'; ?>

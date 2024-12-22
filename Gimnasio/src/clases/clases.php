@@ -35,10 +35,6 @@ include '../admin/admin_header.php';
 <?php endif; ?>
 
 
-<head>
-    <link rel="stylesheet" href="../../assets/css/estilos_clases.css">
-</head>
-
 <body>
     <main>
         <h2>Clases Existentes</h2>
@@ -63,13 +59,13 @@ include '../admin/admin_header.php';
             <table id="tabla-clases" class="styled-table">
                 <thead>
                     <tr>
-                        <th onclick="ordenarTabla(0)" class="sortable">Nombre</th>
-                        <th onclick="ordenarTabla(1)" class="sortable">Especialidad</th>
-                        <th onclick="ordenarTabla(2)" class="sortable">Monitor</th>
-                        <th onclick="ordenarTabla(3)" class="sortable">Fecha</th>
-                        <th onclick="ordenarTabla(4)" class="sortable">Horario</th>
-                        <th onclick="ordenarTabla(5)" class="sortable">Duración</th>
-                        <th onclick="ordenarTabla(6)" class="sortable">Capacidad</th>
+                        <th onclick="ordenarTabla(0, 'tabla-clases')" class="sortable">Nombre</th>
+                        <th onclick="ordenarTabla(1, 'tabla-clases')" class="sortable">Especialidad</th>
+                        <th onclick="ordenarTabla(2, 'tabla-clases')" class="sortable">Monitor</th>
+                        <th onclick="ordenarTabla(3, 'tabla-clases')" class="sortable">Fecha</th>
+                        <th onclick="ordenarTabla(4, 'tabla-clases')" class="sortable">Horario</th>
+                        <th onclick="ordenarTabla(5, 'tabla-clases')" class="sortable">Duración</th>
+                        <th onclick="ordenarTabla(6, 'tabla-clases')" class="sortable">Capacidad</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -90,17 +86,15 @@ include '../admin/admin_header.php';
                                 </form>
                                 <a href="crear_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="edit-button">Editar</a>
                             </td>
-
-
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
-
             </table>
+
         </section>
 
         <h1>Calendario semanal de clases</h1>
-        <link rel="stylesheet" href="../../assets/css/estilos_clases.css">
+        <link rel="stylesheet" href="../../assets/css/estilos.css">
         <section class="form_container">
             <div class="infoCalendario">
                 <div class="semanaPrev" id="semanaPrevia">&#9664;</div>Semana

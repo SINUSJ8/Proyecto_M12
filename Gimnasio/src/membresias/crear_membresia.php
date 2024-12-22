@@ -8,7 +8,7 @@ $conn = obtenerConexion();
 // Manejar la inserción, edición o eliminación de membresías
 $mensaje = '';
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $entrenamientos_seleccionados = isset($_POST['entrenamientos']) ? $_POST['entrenamientos'] : [];
+    $entrenamientos_seleccionados = $_POST['entrenamientos'] ?? [];
 
     if (isset($_POST['nueva_membresia'])) {
         $tipo = trim($_POST['tipo']);
@@ -51,23 +51,15 @@ if ($result) {
         $membresias[] = $row;
     }
 }
-$entrenamientos = obtenerEntrenamientos($conn); // Obtener entrenamientos disponibles
+$entrenamientos = obtenerEntrenamientos($conn);
 $title = "Membresías";
 include '../admin/admin_header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Configuración de Membresías</title>
-    <link rel="stylesheet" href="../../assets/css/estilos.css">
-</head>
-
 <body>
     <main class="form_container form_container_large">
-        <h2>Administración de Membresías</h2>
+        <h2 class="section-title">Administración de Membresías</h2>
+
         <!-- Mensaje de confirmación o error -->
         <?php if (!empty($mensaje)): ?>
             <div class="<?php echo strpos($mensaje, 'Error') === false ? 'mensaje-confirmacion' : 'mensaje-error'; ?>">
@@ -80,19 +72,19 @@ include '../admin/admin_header.php';
             <h3>Añadir Nueva Membresía</h3>
             <div class="membresia-form-item">
                 <label for="tipo">Tipo:</label>
-                <input type="text" id="tipo" name="tipo" required>
+                <input type="text" id="tipo" name="tipo" class="input-general" required>
             </div>
             <div class="membresia-form-item">
                 <label for="precio">Precio:</label>
-                <input type="number" id="precio" name="precio" step="0.01" required>
+                <input type="number" id="precio" name="precio" class="input-general" step="0.01" required>
             </div>
             <div class="membresia-form-item">
                 <label for="duracion">Duración (meses):</label>
-                <input type="number" id="duracion" name="duracion" required>
+                <input type="number" id="duracion" name="duracion" class="input-general" required>
             </div>
             <div class="membresia-form-item">
                 <label for="beneficios">Beneficios:</label>
-                <textarea id="beneficios" name="beneficios" rows="3"></textarea>
+                <textarea id="beneficios" name="beneficios" class="input-general" rows="3"></textarea>
             </div>
 
             <!-- Checkboxes para asignar entrenamientos -->
@@ -107,7 +99,7 @@ include '../admin/admin_header.php';
                     <?php endforeach; ?>
                 </div>
             </div>
-            <button type="submit" name="nueva_membresia">Añadir Membresía</button>
+            <button type="submit" name="nueva_membresia" class="btn-general">Añadir Membresía</button>
         </form>
 
         <!-- Listado de membresías con opciones de edición y eliminación -->
@@ -121,48 +113,45 @@ include '../admin/admin_header.php';
                         <!-- Campos de edición para la membresía -->
                         <label>
                             Tipo:
-                            <input type="text" name="tipo" value="<?php echo htmlspecialchars($membresia['tipo']); ?>" required>
+                            <input type="text" name="tipo" class="input-general" value="<?php echo htmlspecialchars($membresia['tipo']); ?>" required>
                         </label>
 
                         <label>
                             Precio:
-                            <input type="number" name="precio" value="<?php echo htmlspecialchars($membresia['precio']); ?>" step="0.01" required>
+                            <input type="number" name="precio" class="input-general" value="<?php echo htmlspecialchars($membresia['precio']); ?>" step="0.01" required>
                         </label>
 
                         <label>
                             Duración (meses):
-                            <input type="number" name="duracion" value="<?php echo htmlspecialchars($membresia['duracion']); ?>" required>
+                            <input type="number" name="duracion" class="input-general" value="<?php echo htmlspecialchars($membresia['duracion']); ?>" required>
                         </label>
 
                         <label>
                             Beneficios:
-                            <textarea name="beneficios" rows="1"><?php echo htmlspecialchars($membresia['beneficios']); ?></textarea>
+                            <textarea name="beneficios" class="input-general" rows="1"><?php echo htmlspecialchars($membresia['beneficios']); ?></textarea>
                         </label>
 
                         <!-- Checkboxes para asignar entrenamientos al editar -->
                         <div class="checkbox-group">
                             <?php foreach ($entrenamientos as $entrenamiento): ?>
                                 <label>
-                                    <?php echo htmlspecialchars($entrenamiento['nombre']); ?>
                                     <input type="checkbox" name="entrenamientos[]" value="<?php echo $entrenamiento['id_especialidad']; ?>"
                                         <?php echo in_array($entrenamiento['id_especialidad'], $membresia['entrenamientos']) ? 'checked' : ''; ?>>
+                                    <?php echo htmlspecialchars($entrenamiento['nombre']); ?>
                                 </label>
                             <?php endforeach; ?>
                         </div>
 
-
                         <!-- Botones de edición y eliminación -->
                         <div class="membresia-botones">
-                            <button type="submit" name="editar_membresia">Editar</button>
+                            <button type="submit" name="editar_membresia" class="btn-general">Editar</button>
                             <button type="submit" name="eliminar_membresia"
-                                class="<?php echo ($membresia['id_membresia'] == 1) ? 'btn-disabled' : ''; ?>"
+                                class="btn-general delete-button <?php echo ($membresia['id_membresia'] == 1) ? 'btn-disabled' : ''; ?>"
                                 onclick="return confirm('¿Estás seguro de que deseas eliminar esta membresía?')"
-                                <?php echo ($membresia['id_membresia'] == 1) ? 'disabled title="Esta membresía no se puede eliminar."' : ''; ?>>
+                                <?php echo ($membresia['id_membresia'] == 1) ? 'disabled title=\"Esta membresía no se puede eliminar.\"' : ''; ?>>
                                 Eliminar
                             </button>
                         </div>
-
-
                     </form>
                 </li>
             <?php endforeach; ?>

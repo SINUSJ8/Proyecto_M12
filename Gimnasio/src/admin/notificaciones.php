@@ -99,7 +99,7 @@ include 'admin_header.php';
 ?>
 
 <main>
-    <h2>Gestión de Notificaciones</h2>
+    <h2 class="section-title">Gestión de Notificaciones</h2>
 
     <!-- Mostrar mensajes de éxito o error -->
     <?php if (isset($success)): ?>
@@ -114,7 +114,7 @@ include 'admin_header.php';
         <h3>Enviar Notificación</h3>
         <form method="POST" action="notificaciones.php" class="form_container">
             <label for="destinatario">Seleccionar Destinatario:</label>
-            <select name="destinatario" id="destinatario" required onchange="toggleDestinatario()">
+            <select name="destinatario" id="destinatario" required class="select-general" onchange="toggleDestinatario()">
                 <option value="">-- Selecciona un destinatario --</option>
                 <option value="todos">Todos los Usuarios</option>
                 <option value="grupo">Grupo Específico</option>
@@ -123,7 +123,7 @@ include 'admin_header.php';
 
             <div id="grupo_destinatario" style="display: none;">
                 <label for="grupo">Seleccionar Grupo:</label>
-                <select name="grupo" id="grupo">
+                <select name="grupo" id="grupo" class="select-general">
                     <option value="usuarios">Usuarios</option>
                     <option value="miembros">Miembros</option>
                     <option value="monitores">Monitores</option>
@@ -133,18 +133,16 @@ include 'admin_header.php';
 
             <div id="usuario_destinatario" style="display: none;">
                 <label for="buscar_usuario">Buscar Usuario:</label>
-                <input type="text" id="buscar_usuario" placeholder="Escribe para buscar usuarios..." onkeyup="buscarUsuario(this.value)">
+                <input type="text" id="buscar_usuario" placeholder="Escribe para buscar usuarios..." class="input-general" onkeyup="buscarUsuario(this.value)">
 
                 <label for="id_usuario">Seleccionar Usuario:</label>
-                <select name="id_usuario" id="id_usuario">
+                <select name="id_usuario" id="id_usuario" class="select-general">
                     <option value="">-- Selecciona un usuario --</option>
-                    <!-- Resultados dinámicos insertados -->
                 </select>
             </div>
 
-
             <label for="mensaje">Mensaje:</label>
-            <textarea name="mensaje" id="mensaje" rows="5" required></textarea>
+            <textarea name="mensaje" id="mensaje" rows="5" required class="input-general"></textarea>
 
             <button type="submit" class="btn-general">Enviar Notificación</button>
         </form>

@@ -21,13 +21,13 @@ marcarNotificacionesComoLeidas($conn, $id_usuario);
 include 'miembro_header.php';
 ?>
 
-<main>
-    <h2>Mis Notificaciones</h2>
+<main class="form_container">
+    <h2 class="section-title">Mis Notificaciones</h2>
 
     <?php if (empty($notificaciones)): ?>
-        <p>No tienes notificaciones.</p>
+        <p class="mensaje-info">No tienes notificaciones.</p>
     <?php else: ?>
-        <table>
+        <table class="styled-table">
             <thead>
                 <tr>
                     <th>Mensaje</th>

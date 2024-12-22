@@ -55,33 +55,35 @@ include '../monitores/monitores_header.php';
     <?php if (empty($clases)): ?>
         <p class="mensaje-info">No tienes clases asignadas.</p>
     <?php else: ?>
-        <?php foreach ($clases as $clase): ?>
-            <div class="clase-container">
-                <h3 class="clase-titulo"><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
-                <p><strong>Especialidad:</strong> <?php echo htmlspecialchars($clase['especialidad']); ?></p>
-                <p><strong>Fecha:</strong> <?php echo htmlspecialchars($clase['fecha']); ?></p>
-                <p><strong>Hora:</strong> <?php echo htmlspecialchars($clase['horario']); ?></p>
-                <p><strong>Duración:</strong> <?php echo htmlspecialchars($clase['duracion']); ?> minutos</p>
+        <div class="clases-grid">
+            <?php foreach ($clases as $clase): ?>
+                <div class="clase-card">
+                    <h3 class="clase-titulo"><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
+                    <p><strong>Especialidad:</strong> <?php echo htmlspecialchars($clase['especialidad']); ?></p>
+                    <p><strong>Fecha:</strong> <?php echo htmlspecialchars($clase['fecha']); ?></p>
+                    <p><strong>Hora:</strong> <?php echo htmlspecialchars($clase['horario']); ?></p>
+                    <p><strong>Duración:</strong> <?php echo htmlspecialchars($clase['duracion']); ?> minutos</p>
 
-                <!-- Lista de participantes -->
-                <h4 class="participantes-titulo">Participantes:</h4>
-                <?php
-                $participantes = obtenerParticipantesClase($conn, $clase['id_clase']);
-                if (empty($participantes)):
-                ?>
-                    <p class="mensaje-info">No hay participantes inscritos en esta clase.</p>
-                <?php else: ?>
-                    <ul class="participantes-lista">
-                        <?php foreach ($participantes as $participante): ?>
-                            <li class="participante-item">
-                                <?php echo htmlspecialchars($participante['nombre']); ?> -
-                                <em><?php echo htmlspecialchars($participante['email']); ?></em>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
+                    <!-- Lista de participantes -->
+                    <h4 class="participantes-titulo">Participantes:</h4>
+                    <?php
+                    $participantes = obtenerParticipantesClase($conn, $clase['id_clase']);
+                    if (empty($participantes)):
+                    ?>
+                        <p class="mensaje-info">No hay participantes inscritos en esta clase.</p>
+                    <?php else: ?>
+                        <ul class="participantes-lista">
+                            <?php foreach ($participantes as $participante): ?>
+                                <li class="participante-item">
+                                    <?php echo htmlspecialchars($participante['nombre']); ?> -
+                                    <em><?php echo htmlspecialchars($participante['email']); ?></em>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 </main>
 

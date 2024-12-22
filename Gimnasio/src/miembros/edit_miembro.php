@@ -56,44 +56,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include '../admin/admin_header.php';
 ?>
 
-
-
 <body>
     <main>
-        <h2>Editar Miembro</h2>
+        <h2 class="section-title">Editar Miembro</h2>
 
         <?php if (isset($mensaje)): ?>
-            <div class="mensaje-confirmacion">
+            <div class="<?php echo strpos($mensaje, 'Error') === false ? 'mensaje-confirmacion' : 'mensaje-error'; ?>">
                 <p><?php echo htmlspecialchars($mensaje); ?></p>
             </div>
         <?php endif; ?>
 
-
         <div class="form_container">
             <?php if ($miembro): ?>
-                <form method="POST" action="edit_miembro.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>" onsubmit="habilitarFechaRegistro(); return validarFormularioEdicion('miembro');">
+                <form method="POST" action="edit_miembro.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>" class="form_general" onsubmit="habilitarFechaRegistro(); return validarFormularioEdicion('miembro');">
 
                     <!-- Campo para editar el nombre -->
                     <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($miembro['nombre']); ?>" required aria-label="Nombre completo del miembro">
+                    <input type="text" id="nombre" name="nombre" class="input-general" value="<?php echo htmlspecialchars($miembro['nombre']); ?>" required aria-label="Nombre completo del miembro">
 
                     <!-- Campo para editar el email -->
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($miembro['email']); ?>" required title="Introduce el email del miembro" aria-label="Correo electrónico del miembro">
+                    <input type="email" id="email" name="email" class="input-general" value="<?php echo htmlspecialchars($miembro['email']); ?>" required title="Introduce el email del miembro" aria-label="Correo electrónico del miembro">
 
                     <!-- Campo para editar la fecha de registro -->
                     <label for="fecha_registro">Fecha de Registro:</label>
-                    <input type="date" id="fecha_registro" name="fecha_registro" value="<?php echo htmlspecialchars($miembro['fecha_registro']); ?>" required aria-label="Fecha de registro del miembro" title="Introduce la fecha de registro del miembro" disabled>
+                    <input type="date" id="fecha_registro" name="fecha_registro" class="input-general" value="<?php echo htmlspecialchars($miembro['fecha_registro']); ?>" required aria-label="Fecha de registro del miembro" title="Introduce la fecha de registro del miembro" disabled>
 
                     <!-- Checkbox para habilitar la edición de la fecha de registro -->
-                    <div style="display: flex; align-items: center; gap: 5px;">
+                    <div class="checkbox-group">
                         <input type="checkbox" id="editar_fecha" onclick="toggleFechaRegistro();">
                         <label for="editar_fecha">Editar Fecha de Registro</label>
                     </div>
 
                     <!-- Campo para editar el tipo de membresía -->
                     <label for="tipo_membresia">Tipo de Membresía:</label>
-                    <select id="tipo_membresia" name="id_membresia" required onchange="actualizarFechasMembresia()">
+                    <select id="tipo_membresia" name="id_membresia" class="select-general" required onchange="actualizarFechasMembresia()">
                         <?php foreach ($membresias as $membresia): ?>
                             <option value="<?php echo htmlspecialchars($membresia['id_membresia']); ?>"
                                 data-duracion="<?php echo htmlspecialchars($membresia['duracion']); ?>"
@@ -103,39 +100,35 @@ include '../admin/admin_header.php';
                                 <?php echo "$" . htmlspecialchars($membresia['precio']); ?>
                                 (<?php echo htmlspecialchars($membresia['duracion']) . " meses"; ?>)
                             </option>
-
                         <?php endforeach; ?>
                     </select>
 
                     <label for="fecha_inicio">Fecha de Inicio de la Membresía:</label>
-                    <input type="date" id="fecha_inicio" name="fecha_inicio" value="<?php echo htmlspecialchars($fecha_inicio); ?>" required>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" class="input-general" value="<?php echo htmlspecialchars($fecha_inicio); ?>" required>
 
                     <label for="fecha_fin">Fecha de Fin de la Membresía:</label>
-                    <input type="date" id="fecha_fin" name="fecha_fin" value="<?php echo htmlspecialchars($fecha_fin); ?>" required>
-
+                    <input type="date" id="fecha_fin" name="fecha_fin" class="input-general" value="<?php echo htmlspecialchars($fecha_fin); ?>" required>
 
                     <!-- Campo para seleccionar múltiples entrenamientos con checkboxes -->
                     <label>Entrenamientos:</label>
                     <div class="entrenamientos-checkboxes">
                         <?php foreach ($entrenamientos as $entrenamiento): ?>
                             <div class="entrenamiento-item">
-                                <label for="entrenamiento_<?php echo $entrenamiento['id_especialidad']; ?>">
-                                    <?php echo htmlspecialchars($entrenamiento['nombre']); ?>
-                                </label>
                                 <input
                                     type="checkbox"
                                     id="entrenamiento_<?php echo $entrenamiento['id_especialidad']; ?>"
                                     name="entrenamiento[]"
                                     value="<?php echo $entrenamiento['id_especialidad']; ?>"
                                     <?php echo in_array($entrenamiento['id_especialidad'], $miembro['entrenamientos']) ? 'checked' : ''; ?>>
+                                <label for="entrenamiento_<?php echo $entrenamiento['id_especialidad']; ?>">
+                                    <?php echo htmlspecialchars($entrenamiento['nombre']); ?>
+                                </label>
                             </div>
                         <?php endforeach; ?>
                     </div>
 
-
-
                     <!-- Botón para guardar los cambios -->
-                    <button type="submit">Guardar Cambios</button>
+                    <button type="submit" class="btn-general">Guardar Cambios</button>
                 </form>
             <?php else: ?>
                 <p>Miembro no encontrado.</p>
@@ -157,7 +150,6 @@ include '../admin/admin_header.php';
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Asociar la función de actualización al evento onchange
             const selectMembresia = document.getElementById('tipo_membresia');
             if (selectMembresia) {
                 selectMembresia.addEventListener('change', () => {
@@ -165,7 +157,6 @@ include '../admin/admin_header.php';
                     actualizarEntrenamientos();
                 });
 
-                // Ejecutar las funciones al cargar la página
                 actualizarFechasMembresia();
                 actualizarEntrenamientos();
             }

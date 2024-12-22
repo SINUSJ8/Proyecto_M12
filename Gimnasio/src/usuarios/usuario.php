@@ -29,8 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $conn->close();
 ?>
 
-<main>
-    <h2>Perfil del Usuario</h2>
+<main class="form_container">
+    <h2 class="section-title">Perfil del Usuario</h2>
 
     <?php if (isset($_GET['mensaje'])): ?>
         <div class="mensaje-confirmacion">
@@ -38,26 +38,27 @@ $conn->close();
         </div>
     <?php endif; ?>
 
-    <div class="form_container">
-        <form action="usuario.php" method="POST" onsubmit="return valFormUsuario();">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($datos_usuario['nombre']); ?>" required>
+    <form action="usuario.php" method="POST" onsubmit="return valFormUsuario();">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($datos_usuario['nombre']); ?>" required>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($datos_usuario['email']); ?>" disabled>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($datos_usuario['email']); ?>" disabled>
 
-            <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($datos_usuario['telefono']); ?>" maxlength="9" pattern="\d{9}" title="Debe contener exactamente 9 dígitos numéricos" autocomplete="off">
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($datos_usuario['telefono']); ?>" maxlength="9" pattern="\d{9}" title="Debe contener exactamente 9 dígitos numéricos" autocomplete="off">
 
-            <label for="contrasenya">Contraseña (dejar en blanco para no cambiarla):</label>
-            <input type="password" id="contrasenya" name="contrasenya" autocomplete="new-password">
+        <label for="contrasenya">Contraseña (dejar en blanco para no cambiarla):</label>
+        <input type="password" id="contrasenya" name="contrasenya" autocomplete="new-password">
 
-            <label for="confirmar_contrasenya">Confirmar Contraseña:</label>
-            <input type="password" id="confirmar_contrasenya" name="confirmar_contrasenya" autocomplete="new-password">
+        <label for="confirmar_contrasenya">Confirmar Contraseña:</label>
+        <input type="password" id="confirmar_contrasenya" name="confirmar_contrasenya" autocomplete="new-password">
 
-            <button type="submit">Actualizar Datos</button>
-        </form>
-    </div>
+        <div class="button-container">
+            <button type="submit" class="btn-general">Actualizar Datos</button>
+            <button type="button" class="btn-general" onclick="window.location.href='../../index.php'">Volver</button>
+        </div>
+    </form>
 </main>
 
 <?php include '../includes/footer.php'; ?>

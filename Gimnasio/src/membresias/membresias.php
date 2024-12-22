@@ -37,12 +37,12 @@ include '../admin/admin_header.php';
 
 <body>
     <main>
-        <h2>Detalles de Membresías por Miembros</h2>
+        <h2 class="section-title">Detalles de Membresías por Miembros</h2>
         <div class="form_container">
             <a href="crear_membresia.php" class="btn-general">Crear Nueva Membresía</a>
         </div>
         <?php if (!empty($membresias_miembros)): ?>
-            <table class="tabla">
+            <table class="styled-table">
                 <thead>
                     <tr>
                         <th>Nombre Miembro</th>
@@ -80,6 +80,9 @@ include '../admin/admin_header.php';
     </main>
 
     <?php
-        include '../includes/footer.php';
-        $conn->close();
-        ?>
+    include '../includes/footer.php';
+    $conn->close();
+    ?>
+</body>
+
+</html>

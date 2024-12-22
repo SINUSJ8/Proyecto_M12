@@ -33,7 +33,7 @@ include '../admin/admin_header.php';
 
 <body>
     <main>
-        <h2>Gestión de Miembros</h2>
+        <h2 class="section-title">Gestión de Miembros</h2>
 
         <!-- Mostrar mensaje de confirmación si existe -->
         <?php if (isset($_GET['mensaje'])): ?>
@@ -46,48 +46,53 @@ include '../admin/admin_header.php';
         <div class="form_container">
             <form method="GET" action="miembros.php">
                 <input type="text" name="busqueda" placeholder="Buscar miembro..." value="<?php echo htmlspecialchars($busqueda); ?>">
-                <button type="submit">Buscar</button>
+                <button type="submit" class="btn-general">Buscar</button>
             </form>
         </div>
 
         <!-- Tabla con lista de miembros y acciones -->
-        <table>
-            <tr>
-                <th><a href="?orden=nombre&direccion=<?php echo ($orden_columna == 'nombre' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Nombre</a></th>
-                <th><a href="?orden=email&direccion=<?php echo ($orden_columna == 'email' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Email</a></th>
-                <th><a href="?orden=fecha_registro&direccion=<?php echo ($orden_columna == 'fecha_registro' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Fecha de Registro</a></th>
-                <th><a href="?orden=tipo&direccion=<?php echo ($orden_columna == 'tipo' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Tipo de Membresía</a></th>
-                <th><a href="?orden=entrenamiento&direccion=<?php echo ($orden_columna == 'entrenamiento' && $orden_direccion == 'ASC') ? 'DESC' : 'ASC'; ?>">Entrenamientos</a></th>
-                <th>Acciones</th>
-            </tr>
-            <?php foreach ($miembros as $miembro): ?>
+        <table id="tabla-miembros" class="styled-table">
+            <thead>
                 <tr>
-                    <td><?php echo htmlspecialchars($miembro['nombre']); ?></td>
-                    <td><?php echo htmlspecialchars($miembro['email']); ?></td>
-                    <td><?php echo htmlspecialchars($miembro['fecha_registro']); ?></td>
-                    <td><?php echo htmlspecialchars($miembro['tipo']); ?></td>
-                    <td>
-                        <?php
-                        echo htmlspecialchars(isset($miembro['entrenamientos']) ? $miembro['entrenamientos'] : 'N/A', ENT_QUOTES, 'UTF-8');
-                        ?>
-                    </td>
-                    <td class="acciones">
-                        <div class="button-container">
-                            <!-- Acción de eliminar -->
-                            <form action="miembros.php" method="POST" style="display:inline;">
-                                <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
-                                <button type="submit" name="eliminar_usuario" onclick="return confirm('¿Estás seguro de que deseas eliminar este miembro? Esta acción no se puede deshacer.')" title="Eliminar definitivamente este miembro">Eliminar</button>
-                            </form>
-                            <!-- Acción de editar -->
-                            <form action="edit_miembro.php" method="GET" style="display:inline;">
-                                <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
-                                <button type="submit" name="editar_usuario" title="Modificar el perfil de este miembro">Modificar Perfil</button>
-                            </form>
-                        </div>
-                    </td>
+                    <th onclick="ordenarTablaMi(0, 'tabla-miembros')" class="sortable">Nombre</th>
+                    <th onclick="ordenarTablaMi(1, 'tabla-miembros')" class="sortable">Email</th>
+                    <th onclick="ordenarTablaMi(2, 'tabla-miembros')" class="sortable">Miembro desde</th>
+                    <th onclick="ordenarTablaMi(3, 'tabla-miembros')" class="sortable">Tipo de Membresía</th>
+                    <th onclick="ordenarTablaMi(4, 'tabla-miembros')" class="sortable">Entrenamientos</th>
+                    <th>Acciones</th>
                 </tr>
-            <?php endforeach; ?>
+            </thead>
+            <tbody>
+                <?php foreach ($miembros as $miembro): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($miembro['nombre']); ?></td>
+                        <td><?php echo htmlspecialchars($miembro['email']); ?></td>
+                        <td><?php echo htmlspecialchars($miembro['fecha_registro']); ?></td>
+                        <td><?php echo htmlspecialchars($miembro['tipo']); ?></td>
+                        <td>
+                            <?php
+                            echo htmlspecialchars(isset($miembro['entrenamientos']) ? $miembro['entrenamientos'] : 'N/A', ENT_QUOTES, 'UTF-8');
+                            ?>
+                        </td>
+                        <td class="acciones">
+                            <div class="button-container">
+                                <!-- Acción de eliminar -->
+                                <form action="miembros.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
+                                    <button type="submit" class="btn-general delete-button" name="eliminar_usuario" onclick="return confirm('¿Estás seguro de que deseas eliminar este miembro? Esta acción no se puede deshacer.')" title="Eliminar definitivamente este miembro">Eliminar</button>
+                                </form>
+                                <!-- Acción de editar -->
+                                <form action="edit_miembro.php" method="GET" style="display:inline;">
+                                    <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
+                                    <button type="submit" class="btn-general edit-button" name="editar_usuario" title="Modificar el perfil de este miembro">Modificar Perfil</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
         </table>
+
 
     </main>
 
@@ -95,6 +100,7 @@ include '../admin/admin_header.php';
     include '../includes/footer.php';
     $conn->close();
     ?>
+    <script src="../../assets/js/clases.js"></script>
 </body>
 
 </html>

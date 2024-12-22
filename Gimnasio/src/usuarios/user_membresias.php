@@ -53,41 +53,45 @@ $conn->close();
 </head>
 
 <body>
-    <h1>Elige tu Membresía</h1>
-    <div class="membresia-container">
-        <?php foreach ($membresias as $id => $membresia): ?>
-            <div class="membresia-card">
-                <h2><?php echo htmlspecialchars($membresia['tipo']); ?></h2>
-                <p>Precio: <?php echo htmlspecialchars($membresia['precio']); ?> €</p>
-                <p>Duración: <?php echo htmlspecialchars($membresia['duracion']); ?> mes(es)</p>
-                <p>Beneficios: <?php echo htmlspecialchars($membresia['beneficios']); ?></p>
+    <main class="form_container">
+        <h1 class="section-title">Elige tu Membresía</h1>
+        <p class="intro-text">Selecciona la membresía que mejor se adapte a tus objetivos y empieza a disfrutar de los beneficios.</p>
 
-                <h3>Entrenamientos Incluidos:</h3>
-                <ul>
-                    <?php if (!empty($membresia['entrenamientos'])): ?>
-                        <?php foreach ($membresia['entrenamientos'] as $entrenamiento): ?>
-                            <li><?php echo htmlspecialchars($entrenamiento); ?></li>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <li>No incluye entrenamientos específicos.</li>
-                    <?php endif; ?>
-                </ul>
+        <div class="membresia-container">
+            <?php foreach ($membresias as $id => $membresia): ?>
+                <div class="membresia-card">
+                    <h2><?php echo htmlspecialchars($membresia['tipo']); ?></h2>
+                    <p><strong>Precio:</strong> <?php echo htmlspecialchars($membresia['precio']); ?> €</p>
+                    <p><strong>Duración:</strong> <?php echo htmlspecialchars($membresia['duracion']); ?> mes(es)</p>
+                    <p><strong>Beneficios:</strong> <?php echo htmlspecialchars($membresia['beneficios']); ?></p>
 
-                <form action="../pagos/proceso_pago.php" method="POST">
-                    <input type="hidden" name="id_membresia" value="<?php echo $id; ?>">
-                    <label for="metodo_pago">Método de Pago:</label>
-                    <select name="metodo_pago" id="metodo_pago" required>
-                        <option value="tarjeta">Tarjeta</option>
-                        <option value="efectivo">Efectivo</option>
-                        <option value="transferencia">Transferencia</option>
-                        <option value="Paypal">Paypal</option>
-                        <option value="Bizum">Bizum</option>
-                    </select>
-                    <button type="submit">Elegir Membresía</button>
-                </form>
-            </div>
-        <?php endforeach; ?>
-    </div>
+                    <h3>Entrenamientos Incluidos:</h3>
+                    <ul>
+                        <?php if (!empty($membresia['entrenamientos'])): ?>
+                            <?php foreach ($membresia['entrenamientos'] as $entrenamiento): ?>
+                                <li><?php echo htmlspecialchars($entrenamiento); ?></li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li>No incluye entrenamientos específicos.</li>
+                        <?php endif; ?>
+                    </ul>
+
+                    <form action="../pagos/proceso_pago.php" method="POST">
+                        <input type="hidden" name="id_membresia" value="<?php echo $id; ?>">
+                        <label for="metodo_pago_<?php echo $id; ?>">Método de Pago:</label>
+                        <select name="metodo_pago" id="metodo_pago_<?php echo $id; ?>" required>
+                            <option value="tarjeta">Tarjeta</option>
+                            <option value="efectivo">Efectivo</option>
+                            <option value="transferencia">Transferencia</option>
+                            <option value="Paypal">Paypal</option>
+                            <option value="Bizum">Bizum</option>
+                        </select>
+                        <button type="submit" class="btn-general">Elegir Membresía</button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </main>
 
 </body>
 
