@@ -79,12 +79,6 @@ include '../admin/admin_header.php';
             <button type="button" class="btn-general reset-button" onclick="limpiarFormulario()">Limpiar</button>
         </form>
 
-
-        <!-- Botón para crear monitor -->
-        <div class="button-container">
-            <a href="crear_monitor.php" class="button">Crear Monitor</a>
-        </div>
-
         <!-- Tabla con lista de monitores y acciones -->
         <section class="form_container">
             <table id="tabla-monitores" class="styled-table">

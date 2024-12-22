@@ -104,58 +104,51 @@ include '../admin/admin_header.php';
 
         <!-- Listado de membresías con opciones de edición y eliminación -->
         <h3>Membresías Disponibles</h3>
-        <ul class="membresias-lista">
+        <div class="membresia-container">
             <?php foreach ($membresias as $membresia): ?>
-                <li>
-                    <form method="POST" action="crear_membresia.php" class="membresia-item">
-                        <input type="hidden" name="id_membresia" value="<?php echo $membresia['id_membresia']; ?>">
-
-                        <!-- Campos de edición para la membresía -->
-                        <label>
-                            Tipo:
-                            <input type="text" name="tipo" class="input-general" value="<?php echo htmlspecialchars($membresia['tipo']); ?>" required>
-                        </label>
-
-                        <label>
-                            Precio:
-                            <input type="number" name="precio" class="input-general" value="<?php echo htmlspecialchars($membresia['precio']); ?>" step="0.01" required>
-                        </label>
-
-                        <label>
-                            Duración (meses):
-                            <input type="number" name="duracion" class="input-general" value="<?php echo htmlspecialchars($membresia['duracion']); ?>" required>
-                        </label>
-
-                        <label>
-                            Beneficios:
-                            <textarea name="beneficios" class="input-general" rows="1"><?php echo htmlspecialchars($membresia['beneficios']); ?></textarea>
-                        </label>
-
-                        <!-- Checkboxes para asignar entrenamientos al editar -->
-                        <div class="checkbox-group">
-                            <?php foreach ($entrenamientos as $entrenamiento): ?>
-                                <label>
-                                    <input type="checkbox" name="entrenamientos[]" value="<?php echo $entrenamiento['id_especialidad']; ?>"
-                                        <?php echo in_array($entrenamiento['id_especialidad'], $membresia['entrenamientos']) ? 'checked' : ''; ?>>
-                                    <?php echo htmlspecialchars($entrenamiento['nombre']); ?>
-                                </label>
+                <div class="membresia-card">
+                    <div class="membresia-section">
+                        <h2><?php echo htmlspecialchars($membresia['tipo']); ?></h2>
+                        <p><strong>Precio:</strong> <?php echo htmlspecialchars($membresia['precio']); ?> €</p>
+                        <p><strong>Duración:</strong> <?php echo htmlspecialchars($membresia['duracion']); ?> meses</p>
+                    </div>
+                    <div class="membresia-section sombreado">
+                        <p><strong>Beneficios:</strong></p>
+                        <ul>
+                            <?php foreach (explode(',', $membresia['beneficios']) as $beneficio): ?>
+                                <li><?php echo htmlspecialchars($beneficio); ?></li>
                             <?php endforeach; ?>
-                        </div>
-
-                        <!-- Botones de edición y eliminación -->
-                        <div class="membresia-botones">
-                            <button type="submit" name="editar_membresia" class="btn-general">Editar</button>
-                            <button type="submit" name="eliminar_membresia"
-                                class="btn-general delete-button <?php echo ($membresia['id_membresia'] == 1) ? 'btn-disabled' : ''; ?>"
-                                onclick="return confirm('¿Estás seguro de que deseas eliminar esta membresía?')"
-                                <?php echo ($membresia['id_membresia'] == 1) ? 'disabled title=\"Esta membresía no se puede eliminar.\"' : ''; ?>>
-                                Eliminar
-                            </button>
-                        </div>
+                        </ul>
+                    </div>
+                    <div class="membresia-section">
+                        <p><strong>Entrenamientos:</strong></p>
+                        <ul>
+                            <?php foreach ($membresia['entrenamientos'] as $id_entrenamiento): ?>
+                                <li>
+                                    <?php
+                                    $entrenamiento = array_filter($entrenamientos, fn($e) => $e['id_especialidad'] == $id_entrenamiento);
+                                    echo htmlspecialchars(current($entrenamiento)['nombre']);
+                                    ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <form method="POST" action="crear_membresia.php">
+                        <input type="hidden" name="id_membresia" value="<?php echo $membresia['id_membresia']; ?>">
+                        <button type="submit" name="editar_membresia" class="btn-general">Editar</button>
+                        <button type="submit" name="eliminar_membresia"
+                            class="btn-general delete-button <?php echo ($membresia['id_membresia'] == 1) ? 'btn-disabled' : ''; ?>"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta membresía?')"
+                            <?php echo ($membresia['id_membresia'] == 1) ? 'disabled title="Esta membresía no se puede eliminar."' : ''; ?>>
+                            Eliminar
+                        </button>
                     </form>
-                </li>
+                </div>
+
+
             <?php endforeach; ?>
-        </ul>
+        </div>
+
     </main>
 </body>
 
