@@ -4,7 +4,17 @@ require_once('../admin/admin_functions.php');
 verificarAdmin();
 $conn = obtenerConexion();
 
-// Manejar el formulario de creación de clase
+$id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
+
+if ($id_clase) {
+    // Obtener datos de la clase
+    $clase = $conn->query("SELECT * FROM clase WHERE id_clase = $id_clase")->fetch_assoc();
+    if (!$clase) {
+        die("Clase no encontrada.");
+    }
+}
+
+// Manejar el formulario de creación o edición
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nombre = $_POST['nombre'];
     $id_monitor = intval($_POST['id_monitor']);
@@ -14,11 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $duracion = $_POST['duracion'];
     $capacidad = $_POST['capacidad'];
 
-    // Validar campos obligatorios
     if (empty($nombre) || empty($id_monitor) || empty($id_especialidad) || empty($fecha) || empty($horario) || empty($duracion) || empty($capacidad)) {
         $error = "Todos los campos son obligatorios.";
     } else {
-        // Validar la relación entre monitor y especialidad
         $validacion = $conn->query("
             SELECT 1 
             FROM monitor_especialidad 
@@ -28,12 +36,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($validacion->num_rows === 0) {
             $error = "El monitor seleccionado no pertenece a la especialidad elegida.";
         } else {
-            // Si pasa la validación, crear la clase
-            crearClase($conn, $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad);
-            $success = "Clase creada exitosamente.";
+            if ($id_clase) {
+                // Editar la clase existente
+                $conn->query("
+                    UPDATE clase SET 
+                        nombre = '$nombre',
+                        id_monitor = $id_monitor,
+                        id_especialidad = $id_especialidad,
+                        fecha = '$fecha',
+                        horario = '$horario',
+                        duracion = $duracion,
+                        capacidad_maxima = $capacidad
+                    WHERE id_clase = $id_clase
+                ");
+                $success = "Clase actualizada exitosamente.";
+            } else {
+                // Crear una nueva clase
+                crearClase($conn, $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad);
+                $success = "Clase creada exitosamente.";
+            }
         }
     }
 }
+
 
 // Consulta para Monitores
 $monitores = $conn->query("
@@ -76,37 +101,58 @@ include '../admin/admin_header.php';
         <section class="form_container">
             <form method="POST">
                 <label for="nombre">Nombre de la Clase:</label>
-                <input type="text" id="nombre" name="nombre" required>
+                <input type="text" id="nombre" name="nombre"
+                    value="<?= htmlspecialchars($clase['nombre'] ?? '') ?>" required>
+
                 <label for="id_especialidad">Especialidad:</label>
                 <select id="id_especialidad" name="id_especialidad" required>
-                    <option value="" disabled selected>Seleccionar especialidad</option>
+                    <option value="" disabled <?= !$id_clase ? 'selected' : '' ?>>Seleccionar especialidad</option>
                     <?php while ($especialidad = $especialidades->fetch_assoc()): ?>
                         <option value="<?= $especialidad['id_especialidad']; ?>"
-                            data-monitores="<?= $especialidad['monitores']; ?>">
+                            data-monitores="<?= $especialidad['monitores']; ?>"
+                            <?= isset($clase['id_especialidad']) && $clase['id_especialidad'] == $especialidad['id_especialidad'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($especialidad['especialidad_nombre']); ?>
                         </option>
                     <?php endwhile; ?>
                 </select>
 
                 <label for="id_monitor">Monitor:</label>
-                <select id="id_monitor" name="id_monitor" disabled required>
-                    <option value="" disabled selected>Seleccionar monitor</option>
+                <select id="id_monitor" name="id_monitor" required>
+                    <option value="" disabled <?= !$id_clase ? 'selected' : '' ?>>Seleccionar monitor</option>
+                    <?php
+                    if (isset($clase['id_monitor'])):
+                        $monitoresClase = explode(',', $especialidades->fetch_assoc()['monitores']);
+                        foreach ($monitoresClase as $monitorData):
+                            list($id_monitor, $nombre_monitor) = explode(':', $monitorData);
+                    ?>
+                            <option value="<?= $id_monitor ?>" <?= $id_monitor == $clase['id_monitor'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($nombre_monitor) ?>
+                            </option>
+                    <?php
+                        endforeach;
+                    endif;
+                    ?>
                 </select>
 
                 <label for="fecha">Fecha:</label>
-                <input type="date" id="fecha" name="fecha" required>
+                <input type="date" id="fecha" name="fecha"
+                    value="<?= htmlspecialchars($clase['fecha'] ?? '') ?>" required>
 
                 <label for="horario">Horario:</label>
-                <input type="time" id="horario" name="horario" required>
+                <input type="time" id="horario" name="horario"
+                    value="<?= htmlspecialchars($clase['horario'] ?? '') ?>" required>
 
                 <label for="duracion">Duración (min):</label>
-                <input type="number" id="duracion" name="duracion" required>
+                <input type="number" id="duracion" name="duracion"
+                    value="<?= htmlspecialchars($clase['duracion'] ?? '') ?>" required>
 
                 <label for="capacidad">Capacidad Máxima:</label>
-                <input type="number" id="capacidad" name="capacidad" required>
+                <input type="number" id="capacidad" name="capacidad"
+                    value="<?= htmlspecialchars($clase['capacidad_maxima'] ?? '') ?>" required>
 
-                <button type="submit" class="button-container">Crear Clase</button>
+                <button type="submit" class="button-container"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
             </form>
+
         </section>
     </main>
     <script src="../../assets/js/dinamica_especialidades.js"></script>
