@@ -106,33 +106,21 @@ include '../admin/admin_header.php';
 
                 <label for="id_especialidad">Especialidad:</label>
                 <select id="id_especialidad" name="id_especialidad" required>
-                    <option value="" disabled <?= !$id_clase ? 'selected' : '' ?>>Seleccionar especialidad</option>
+                    <option value="" selected disabled>Seleccionar especialidad</option>
                     <?php while ($especialidad = $especialidades->fetch_assoc()): ?>
-                        <option value="<?= $especialidad['id_especialidad']; ?>"
-                            data-monitores="<?= $especialidad['monitores']; ?>"
-                            <?= isset($clase['id_especialidad']) && $clase['id_especialidad'] == $especialidad['id_especialidad'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($especialidad['especialidad_nombre']); ?>
+                        <option value="<?= htmlspecialchars($especialidad['id_especialidad']) ?>"
+                            data-monitores="<?= htmlspecialchars($especialidad['monitores']) ?>">
+                            <?= htmlspecialchars($especialidad['especialidad_nombre']) ?>
                         </option>
                     <?php endwhile; ?>
                 </select>
 
+
                 <label for="id_monitor">Monitor:</label>
-                <select id="id_monitor" name="id_monitor" required>
-                    <option value="" disabled <?= !$id_clase ? 'selected' : '' ?>>Seleccionar monitor</option>
-                    <?php
-                    if (isset($clase['id_monitor'])):
-                        $monitoresClase = explode(',', $especialidades->fetch_assoc()['monitores']);
-                        foreach ($monitoresClase as $monitorData):
-                            list($id_monitor, $nombre_monitor) = explode(':', $monitorData);
-                    ?>
-                            <option value="<?= $id_monitor ?>" <?= $id_monitor == $clase['id_monitor'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($nombre_monitor) ?>
-                            </option>
-                    <?php
-                        endforeach;
-                    endif;
-                    ?>
+                <select id="id_monitor" name="id_monitor" required disabled>
+                    <option value="" selected disabled>Seleccionar monitor</option>
                 </select>
+
 
                 <label for="fecha">Fecha:</label>
                 <input type="date" id="fecha" name="fecha"

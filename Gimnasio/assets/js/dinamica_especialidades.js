@@ -7,11 +7,14 @@ function configurarMonitoresPorEspecialidad(especialidadSelectId, monitorSelectI
     const especialidadSelect = document.getElementById(especialidadSelectId);
     const monitorSelect = document.getElementById(monitorSelectId);
 
+    // Inicialmente, el select de monitores está deshabilitado
+    monitorSelect.disabled = true;
+
     especialidadSelect.addEventListener('change', function () {
         const especialidadOption = this.options[this.selectedIndex];
         const monitoresData = especialidadOption.getAttribute('data-monitores');
 
-        // Limpiar y deshabilitar el desplegable mientras se actualiza
+        // Limpia el select de monitores y lo deshabilita mientras actualiza
         monitorSelect.innerHTML = '<option value="" disabled selected>Cargando monitores...</option>';
         monitorSelect.disabled = true;
 
@@ -20,17 +23,18 @@ function configurarMonitoresPorEspecialidad(especialidadSelectId, monitorSelectI
             monitorSelect.innerHTML = '<option value="" disabled selected>Seleccionar monitor</option>';
             monitores.forEach(monitor => {
                 const [id, nombre, disponibilidad] = monitor.split(':');
-                if (disponibilidad === 'disponible') { // Solo añadir monitores disponibles
+                if (disponibilidad === 'disponible') {
                     const option = document.createElement('option');
                     option.value = id;
                     option.textContent = nombre;
                     monitorSelect.appendChild(option);
                 }
             });
-            monitorSelect.disabled = false;
 
-            // Si no hay monitores disponibles
-            if (monitorSelect.options.length === 1) {
+            // Habilitar el select si hay monitores disponibles
+            if (monitorSelect.options.length > 1) {
+                monitorSelect.disabled = false;
+            } else {
                 monitorSelect.innerHTML = '<option value="" disabled selected>No hay monitores disponibles</option>';
             }
         } else {
@@ -38,3 +42,4 @@ function configurarMonitoresPorEspecialidad(especialidadSelectId, monitorSelectI
         }
     });
 }
+
