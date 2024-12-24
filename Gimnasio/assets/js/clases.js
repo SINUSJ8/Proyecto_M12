@@ -160,6 +160,54 @@ function ordenarTablaU(columna) {
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
 
+function ordenarTablaMe(columna, idTabla = 'tabla-membresias') {
+    const tabla = document.getElementById(idTabla);
+    if (!tabla) {
+        console.error(`Tabla con ID "${idTabla}" no encontrada.`);
+        return;
+    }
+
+    const filas = Array.from(tabla.tBodies[0].rows);
+    const th = tabla.tHead.rows[0].cells[columna];
+    const tipoOrden = th.classList.contains('sorted-asc') ? 'desc' : 'asc';
+
+    // Limpiar clases de orden en todas las columnas
+    Array.from(tabla.tHead.rows[0].cells).forEach(cell => {
+        cell.classList.remove('sorted-asc', 'sorted-desc');
+    });
+
+    // Lógica para ordenar las filas según el tipo de columna
+    filas.sort((a, b) => {
+        let celdaA = a.cells[columna].innerText.trim();
+        let celdaB = b.cells[columna].innerText.trim();
+
+        // Verificar si la columna es de tipo fecha
+        if (columna === 6 || columna === 7) {  // Fecha de Inicio y Fecha de Fin
+            const fechaA = new Date(celdaA);
+            const fechaB = new Date(celdaB);
+            return tipoOrden === 'asc' ? fechaA - fechaB : fechaB - fechaA;
+        }
+
+        // Si la columna es numérica (Precio y Duración)
+        if (columna === 4 || columna === 5) {  // Precio y Duración
+            return tipoOrden === 'asc'
+                ? parseFloat(celdaA) - parseFloat(celdaB)
+                : parseFloat(celdaB) - parseFloat(celdaA);
+        }
+
+        // Si la columna es de texto (Nombre, Email, Teléfono, Tipo de Membresía)
+        return tipoOrden === 'asc'
+            ? celdaA.localeCompare(celdaB)
+            : celdaB.localeCompare(celdaA);
+    });
+
+    // Aplicar la nueva clase de orden (ascendente o descendente)
+    th.classList.add(tipoOrden === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+    // Reinsertar las filas ordenadas en la tabla
+    filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
+}
+
 function confirmarEliminacion() {
     return confirm("¿Estás seguro de que deseas eliminar esta clase? Esta acción no se puede deshacer.");
 }
