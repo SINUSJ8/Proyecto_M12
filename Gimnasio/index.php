@@ -9,6 +9,9 @@
 </head>
 
 <body>
+    <header>
+    <?php include 'src/Includes/header.php'; ?>
+    </header>
     <main>
         <!-- Mensajes de error o confirmación -->
         <?php if (isset($_GET['error'])): ?>
@@ -33,5 +36,7 @@
         </div>
     </main>
 </body>
+
+<?php include 'src/includes/footer.php'; ?>
 
 </html>
