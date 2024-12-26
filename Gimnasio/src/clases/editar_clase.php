@@ -6,20 +6,21 @@ $conn = obtenerConexion();
 
 $id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
 
-$id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
-
-if ($id_clase) {
-    $stmt = $conn->prepare("SELECT * FROM clase WHERE id_clase = ?");
-    $stmt->bind_param('i', $id_clase);
-    $stmt->execute();
-    $clase = $stmt->get_result()->fetch_assoc();
-    if (!$clase) {
-        die("Clase no encontrada.");
-    }
-    $stmt->close();
+if (!$id_clase) {
+    die("No se especificó una clase para editar.");
 }
 
-// Manejar el formulario de creación o edición
+// Obtener datos de la clase
+$stmt = $conn->prepare("SELECT * FROM clase WHERE id_clase = ?");
+$stmt->bind_param('i', $id_clase);
+$stmt->execute();
+$clase = $stmt->get_result()->fetch_assoc();
+if (!$clase) {
+    die("Clase no encontrada.");
+}
+$stmt->close();
+
+// Manejar la edición de la clase
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nombre = $_POST['nombre'];
     $id_monitor = intval($_POST['id_monitor']);
@@ -32,67 +33,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($nombre) || empty($id_monitor) || empty($id_especialidad) || empty($fecha) || empty($horario) || empty($duracion) || empty($capacidad)) {
         $error = "Todos los campos son obligatorios.";
     } else {
-        $validacion = $conn->query("
-            SELECT 1 
+        $validacion = $conn->query(
+            "SELECT 1 
             FROM monitor_especialidad 
-            WHERE id_monitor = $id_monitor AND id_especialidad = $id_especialidad
-        ");
+            WHERE id_monitor = $id_monitor AND id_especialidad = $id_especialidad"
+        );
 
         if ($validacion->num_rows === 0) {
             $error = "El monitor seleccionado no pertenece a la especialidad elegida.";
         } else {
-            if ($id_clase) {
-                // Editar la clase existente
-                $conn->query("
-                    UPDATE clase SET 
-                        nombre = '$nombre',
-                        id_monitor = $id_monitor,
-                        id_especialidad = $id_especialidad,
-                        fecha = '$fecha',
-                        horario = '$horario',
-                        duracion = $duracion,
-                        capacidad_maxima = $capacidad
-                    WHERE id_clase = $id_clase
-                ");
-                $success = "Clase actualizada exitosamente.";
-            } else {
-                // Crear una nueva clase
-                crearClase($conn, $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad);
-                $success = "Clase creada exitosamente.";
-            }
+            $stmt = $conn->prepare("UPDATE clase SET nombre = ?, id_monitor = ?, id_especialidad = ?, fecha = ?, horario = ?, duracion = ?, capacidad_maxima = ? WHERE id_clase = ?");
+            $stmt->bind_param('siissiii', $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad, $id_clase);
+            $stmt->execute();
+            $stmt->close();
+
+            $success = "Clase actualizada exitosamente.";
         }
     }
 }
 
 // Consulta para Monitores
-$monitores = $conn->query("
-    SELECT mo.id_monitor, u.nombre AS monitor_nombre, 
+$monitores = $conn->query(
+    "SELECT mo.id_monitor, u.nombre AS monitor_nombre, 
            GROUP_CONCAT(e.id_especialidad, ':', e.nombre SEPARATOR ',') AS especialidades
     FROM monitor mo
     JOIN usuario u ON mo.id_usuario = u.id_usuario
     LEFT JOIN monitor_especialidad me ON mo.id_monitor = me.id_monitor
     LEFT JOIN especialidad e ON me.id_especialidad = e.id_especialidad
-    GROUP BY mo.id_monitor
-");
+    GROUP BY mo.id_monitor"
+);
 
 // Consulta para Especialidades
-$especialidades = $conn->query("
-    SELECT e.id_especialidad, e.nombre AS especialidad_nombre, 
+$especialidades = $conn->query(
+    "SELECT e.id_especialidad, e.nombre AS especialidad_nombre, 
            GROUP_CONCAT(mo.id_monitor, ':', u.nombre, ':', mo.disponibilidad SEPARATOR ',') AS monitores
     FROM especialidad e
     LEFT JOIN monitor_especialidad me ON e.id_especialidad = me.id_especialidad
     LEFT JOIN monitor mo ON me.id_monitor = mo.id_monitor
     LEFT JOIN usuario u ON mo.id_usuario = u.id_usuario
-    GROUP BY e.id_especialidad
-");
+    GROUP BY e.id_especialidad"
+);
 
-$title = "Crear Nueva Clase";
+$title = "Editar Clase";
 include '../admin/admin_header.php';
 ?>
 
 <body>
     <main>
-        <h1>Crear Nueva Clase</h1>
+        <h1>Editar Clase</h1>
 
         <!-- Mensajes de error o éxito -->
         <?php if (isset($success)): ?>
@@ -101,7 +89,7 @@ include '../admin/admin_header.php';
             <p class="mensaje-error"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
 
-        <!-- Formulario para crear clase -->
+        <!-- Formulario para editar clase -->
         <section class="form_container">
             <form method="POST">
                 <label for="nombre">Nombre de la Clase:</label>
@@ -122,9 +110,28 @@ include '../admin/admin_header.php';
 
                 <label for="id_monitor">Monitor:</label>
                 <select id="id_monitor" name="id_monitor"
-                    <?= isset($clase['id_monitor']) ? "data-selected-monitor='" . htmlspecialchars($clase['id_monitor']) . "'" : ''; ?>
+                    data-selected-monitor="<?= htmlspecialchars($clase['id_monitor'] ?? '') ?>"
                     required>
-                    <option value="" selected disabled>Seleccionar monitor</option>
+                    <option value="" disabled>Seleccionar monitor</option>
+                    <?php
+                    $stmt = $conn->prepare("
+        SELECT mo.id_monitor, u.nombre, mo.disponibilidad
+        FROM monitor_especialidad me
+        JOIN monitor mo ON me.id_monitor = mo.id_monitor
+        JOIN usuario u ON mo.id_usuario = u.id_usuario
+        WHERE me.id_especialidad = ?
+    ");
+                    $stmt->bind_param('i', $clase['id_especialidad']);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+
+                    while ($monitor = $result->fetch_assoc()): ?>
+                        <option value="<?= htmlspecialchars($monitor['id_monitor']); ?>"
+                            <?= $monitor['id_monitor'] == $clase['id_monitor'] ? 'selected' : ''; ?>>
+                            <?= htmlspecialchars($monitor['nombre']); ?>
+                        </option>
+                    <?php endwhile; ?>
+                    <?php $stmt->close(); ?>
                 </select>
 
                 <label for="fecha">Fecha:</label>
@@ -143,14 +150,16 @@ include '../admin/admin_header.php';
                 <input type="number" id="capacidad" name="capacidad"
                     value="<?= htmlspecialchars($clase['capacidad_maxima'] ?? '') ?>" required>
 
-                <button type="submit" class="button-container"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
+                <button type="submit" class="button-container">Actualizar Clase</button>
             </form>
-
         </section>
     </main>
     <script src="../../assets/js/dinamica_especialidades.js"></script>
     <script>
-        configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
+        document.addEventListener('DOMContentLoaded', () => {
+            configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
+        });
     </script>
+
     <?php include '../includes/footer.php'; ?>
 </body>

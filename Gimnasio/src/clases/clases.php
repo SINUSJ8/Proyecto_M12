@@ -34,7 +34,6 @@ include '../admin/admin_header.php';
     <p class="success-message">La clase se ha eliminado correctamente.</p>
 <?php endif; ?>
 
-
 <body>
     <main>
         <h2>Clases Existentes</h2>
@@ -84,7 +83,7 @@ include '../admin/admin_header.php';
                                     <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
                                     <button type="submit" class="delete-button">Eliminar</button>
                                 </form>
-                                <a href="crear_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="edit-button">Editar</a>
+                                <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="edit-button">Editar</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
