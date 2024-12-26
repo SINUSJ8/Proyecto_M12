@@ -515,6 +515,16 @@ button.btn-general {
     justify-content: flex-end;
 }
 
+.mensaje-inscrito {
+    color: green;
+    font-weight: bold;
+}
+
+.mensaje-completa {
+    color: red;
+    font-weight: bold;
+}
+
 
 
 
