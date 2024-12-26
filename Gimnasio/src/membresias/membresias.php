@@ -22,8 +22,16 @@ $sql = "
     INNER JOIN miembro mb ON mm.id_miembro = mb.id_miembro
     INNER JOIN usuario u ON mb.id_usuario = u.id_usuario
     INNER JOIN membresia m ON mm.id_membresia = m.id_membresia
-    ORDER BY mm.fecha_inicio DESC
+    ORDER BY 
+        CASE 
+            WHEN m.tipo = 'anual' THEN 1
+            WHEN m.tipo = 'mensual' THEN 2
+            WHEN m.tipo = 'limitada' THEN 3
+            ELSE 4
+        END,
+        m.precio ASC
 ";
+
 $result = $conn->query($sql);
 $membresias_miembros = [];
 if ($result) {
@@ -42,20 +50,20 @@ include '../admin/admin_header.php';
             <a href="crear_membresia.php" class="btn-general">Crear Nueva Membresía</a>
         </div>
         <?php if (!empty($membresias_miembros)): ?>
-            <table class="styled-table">
+            <table id="tabla-membresias" class="styled-table">
                 <thead>
-                    <tr>
-                        <th>Nombre Miembro</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Membresía</th>
-                        <th>Precio</th>
-                        <th>Duración</th>
-                        <th>Fecha Inicio</th>
-                        <th>Fecha Fin</th>
-                        <th>Estado</th>
-                        <th>Renovación Automática</th>
-                    </tr>
+                <tr>
+                    <th onclick="ordenarTablaMe(0)" class="sortable">Nombre Miembro</th>
+                    <th onclick="ordenarTablaMe(1)" class="sortable">Email</th>
+                    <th onclick="ordenarTablaMe(2)" class="sortable">Teléfono</th>
+                    <th onclick="ordenarTablaMe(3)" class="sortable">Membresía</th>
+                    <th onclick="ordenarTablaMe(4)" class="sortable">Precio</th>
+                    <th onclick="ordenarTablaMe(5)" class="sortable">Duración</th>
+                    <th onclick="ordenarTablaMe(6)" class="sortable">Fecha Inicio</th>
+                    <th onclick="ordenarTablaMe(7)" class="sortable">Fecha Fin</th>
+                    <th onclick="ordenarTablaMe(8)" class="sortable">Estado</th>
+                    <th onclick="ordenarTablaMe(9)" class="sortable">Renovación Automática</th>
+                </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($membresias_miembros as $dato): ?>
@@ -74,6 +82,7 @@ include '../admin/admin_header.php';
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
         <?php else: ?>
             <p>No hay membresías registradas para mostrar.</p>
         <?php endif; ?>
@@ -83,6 +92,6 @@ include '../admin/admin_header.php';
     include '../includes/footer.php';
     $conn->close();
     ?>
+        <script src="../../assets/js/clases.js"></script>
 </body>
-
 </html>

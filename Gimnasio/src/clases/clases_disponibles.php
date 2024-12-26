@@ -1,6 +1,15 @@
 <?php
 $title = "Clases Disponibles";
-include '../miembros/miembro_header.php';
+// Obtener la URL de referencia de donde se accede aquí
+$referer = $_SERVER['HTTP_REFERER'];
+
+// Verificar la URL de referencia y decidir qué header incluir
+if (strpos($referer, 'index.php') !== false) {
+    include '../Includes/header.php';
+} else {
+    include '../miembros/miembro_header.php';
+}
+
 ?>
 
 <main class="form_container">
@@ -68,6 +77,16 @@ include '../miembros/miembro_header.php';
             </ul>
         </div>
     </div>
+    
+    <?php
+    // Cuando se acede desde index, se habilita botón Volver a pagina principal
+    if (strpos($referer, 'index.php') !== false) {
+    
+        echo '<div class="button-container">
+            <a href="../../index.php" class="button">Volver a la Página Principal</a>
+        </div>';
+    }        
+    ?>
 </main>
 
 <?php include '../includes/footer.php'; ?>
