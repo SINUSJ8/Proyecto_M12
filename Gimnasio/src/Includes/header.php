@@ -11,13 +11,16 @@
     <body>
         <header>
             <div class="header-content">
-                <h1>Gimnasio</h1>
+                <img src="assets/imgs/FitBay.png" alt="FitBay" class="logo" width= "20%">
             </div>
             <nav id="navegacion-rapida">
                 <a href="src/clases/clases_disponibles.php">Oferta de Clases</a>
                 <a href="src/usuarios/user_membresias.php">Membresías</a>
                 <a href="src/inicio/contacto.php">Contacto</a>
                 <a href="src/inicio/about.php">Acerca de</a>
+                <a href="src/auth/log.php">
+                    <img src="assets/imgs/icono.png" alt="FitBay" class="logo" width="3%">
+                </a>
                 <form action="../includes/general.php" method="post" style="display: inline;">
                 </form>
             </nav>

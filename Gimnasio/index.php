@@ -21,13 +21,35 @@
             <p class="mensaje-confirmacion"><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
         <?php endif; ?>
 
-        <!-- Imagen de portada -->
-        <div class="image-container">
-            <img src="assets/imgs/gym.webp" alt="Gimnasio" class="gym-image">
-        </div>
+            <!-- Imagen de portada -->
+            <div class="image-container">
+                <img src="assets/imgs/portada2.jpg" alt="Gimnasio" class="slide-in-left" width="100%">
+                <img src="assets/imgs/gym-portada2.jpg" alt="Gimnasio" class="slide-in-right" width="100%">
+            </div>
+            <br>
+        
 
-        <h2 class="section-title">Bienvenido al Gimnasio</h2>
-        <p>Elige una opción para continuar:</p>
+        <!-- Slider -->
+        <img src="assets/imgs/Bienvenida.png" alt="Gimnasio" class="gym-image"width="70%">
+        <div class="slider">
+            <!-- Botones de navegación -->
+            <input type="radio" name="radio-btn" id="radio1" checked>
+            <input type="radio" name="radio-btn" id="radio2">
+            <input type="radio" name="radio-btn" id="radio3">
+            <input type="radio" name="radio-btn" id="radio4">
+            <input type="radio" name="radio-btn" id="radio5">
+        
+            <!-- Imágenes -->
+            <div class="slides">
+                <div class="slide first"><img src="assets/imgs/cardio2.png" alt="Image 1"></div>
+                <div class="slide"><img src="assets/imgs/entrenamiento_funcional2.jpg" alt="Image 2"></div>
+                <div class="slide"><img src="assets/imgs/pesas.avif" alt="Image 3"></div>
+                <div class="slide"><img src="assets/imgs/pilates2.jpg" alt="Image 4"></div>
+                <div class="slide"><img src="assets/imgs/yoga2.jpg" alt="Image 5"></div>
+            </div>
+        </div>    
+    <script src="assets/js/slider.js"></script>
+        <p>¡Únete al equipo!</p>
 
         <!-- Botones de acción -->
         <div class="button-container">
@@ -35,6 +57,7 @@
             <a href="src/auth/log.php" class="btn-general">Iniciar Sesión</a>
         </div>
     </main>
+    <img src="assets/imgs/redes.jpg" alt="redes" width="50%">
 </body>
 
 <?php include 'src/includes/footer.php'; ?>

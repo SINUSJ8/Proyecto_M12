@@ -19,7 +19,7 @@ body {
 }
 
 main {
-    padding: 20px;
+    padding: 0px;
     max-width: 1900px;
     width: 100%;
     text-align: center;
@@ -60,6 +60,99 @@ header nav a:hover,
 header nav .logout-link:hover {
     color: #2b7a78;
 }
+
+/*IMAGENES PORTADA*/
+.image-container{
+    overflow: hidden;
+}
+
+.slide-in-left { 
+    transform: translateX(-100%); 
+    opacity: 0; 
+    transition: transform 1s ease-in-out, opacity 1s ease-in-out; 
+} 
+.slide-in-left.active { 
+    transform: translateX(0); 
+    opacity: 1; 
+}
+
+.slide-in-right { 
+    transform: translateX(100%); 
+    opacity: 0; 
+    transition: transform 3s ease-in-out, opacity 3s ease-in-out; 
+} 
+.slide-in-right.active { 
+    transform: translateX(0); 
+    opacity: 1; 
+}
+
+
+/*SLIDER*/
+.slider {
+    width: 100%;
+    margin: auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.slides {
+    display: flex;
+    width: 500%;
+    transition: transform 0.5s ease;
+}
+
+.slide {
+    width: 20%;
+    flex-shrink: 0;
+}
+
+.slide img {
+    width: 100%;
+    display: block;
+}
+
+.navigation-manual {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.manual-btn {
+    border: 2px solid #40D3DC;
+    padding: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 1s;
+}
+
+.manual-btn:not(:last-child) {
+    margin-right: 10px;
+}
+
+.manual-btn:hover {
+    background: #40D3DC;
+}
+
+#radio1:checked ~ .slides {
+    transform: translateX(0%);
+}
+
+#radio2:checked ~ .slides {
+    transform: translateX(-20%);
+}
+
+#radio3:checked ~ .slides {
+    transform: translateX(-40%);
+}
+
+#radio4:checked ~ .slides {
+    transform: translateX(-60%);
+}
+
+#radio5:checked ~ .slides {
+    transform: translateX(-80%);
+}
+
 
 /* FORMULARIOS */
 .form_container {
