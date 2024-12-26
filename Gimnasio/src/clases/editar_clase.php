@@ -22,35 +22,66 @@ $stmt->close();
 
 // Manejar la edición de la clase
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Inicializar variables del formulario
     $nombre = $_POST['nombre'];
     $id_monitor = intval($_POST['id_monitor']);
     $id_especialidad = intval($_POST['id_especialidad']);
     $fecha = $_POST['fecha'];
     $horario = $_POST['horario'];
-    $duracion = $_POST['duracion'];
-    $capacidad = $_POST['capacidad'];
+    $duracion = intval($_POST['duracion']);
+    $capacidad = intval($_POST['capacidad']);
 
+    // Validar campos obligatorios
     if (empty($nombre) || empty($id_monitor) || empty($id_especialidad) || empty($fecha) || empty($horario) || empty($duracion) || empty($capacidad)) {
         $error = "Todos los campos son obligatorios.";
     } else {
-        $validacion = $conn->query(
-            "SELECT 1 
-            FROM monitor_especialidad 
-            WHERE id_monitor = $id_monitor AND id_especialidad = $id_especialidad"
-        );
+        // Obtener el monitor anterior
+        $stmt = $conn->prepare("SELECT id_monitor FROM clase WHERE id_clase = ?");
+        $stmt->bind_param('i', $id_clase);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $claseActual = $result->fetch_assoc();
+        $monitorAnterior = $claseActual['id_monitor'];
+        $stmt->close();
 
-        if ($validacion->num_rows === 0) {
-            $error = "El monitor seleccionado no pertenece a la especialidad elegida.";
-        } else {
-            $stmt = $conn->prepare("UPDATE clase SET nombre = ?, id_monitor = ?, id_especialidad = ?, fecha = ?, horario = ?, duracion = ?, capacidad_maxima = ? WHERE id_clase = ?");
-            $stmt->bind_param('siissiii', $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad, $id_clase);
+        // Actualizar la clase
+        $stmt = $conn->prepare("UPDATE clase SET nombre = ?, id_monitor = ?, id_especialidad = ?, fecha = ?, horario = ?, duracion = ?, capacidad_maxima = ? WHERE id_clase = ?");
+        $stmt->bind_param('siissiii', $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad, $id_clase);
+        $stmt->execute();
+        $stmt->close();
+
+        // Notificar al monitor anterior si ha cambiado
+        if ($monitorAnterior != $id_monitor) {
+            $stmt = $conn->prepare("SELECT u.id_usuario, u.nombre FROM monitor m INNER JOIN usuario u ON m.id_usuario = u.id_usuario WHERE m.id_monitor = ?");
+            $stmt->bind_param('i', $monitorAnterior);
             $stmt->execute();
+            $monitorAnteriorDatos = $stmt->get_result()->fetch_assoc();
             $stmt->close();
 
-            $success = "Clase actualizada exitosamente.";
+            if ($monitorAnteriorDatos) {
+                $mensajeAnterior = "Ya no estás asignado a la clase '{$nombre}'.";
+                enviarNotificacion($conn, $monitorAnteriorDatos['id_usuario'], $mensajeAnterior);
+            }
         }
+
+        // Notificar al nuevo monitor
+        $monitor = obtenerMonitorDeClase($conn, $id_clase);
+        if ($monitor) {
+            $mensajeMonitor = "La clase '{$nombre}' que impartes ha sido modificada. Verifica los nuevos detalles.";
+            enviarNotificacion($conn, $monitor['id_usuario'], $mensajeMonitor);
+        }
+
+        // Notificar a los miembros inscritos
+        $miembros = obtenerMiembrosInscritos($conn, $id_clase);
+        foreach ($miembros as $miembro) {
+            $mensaje = "La clase '{$nombre}' ha sido modificada. Verifica los nuevos detalles.";
+            enviarNotificacion($conn, $miembro['id_usuario'], $mensaje);
+        }
+
+        $success = "Clase actualizada exitosamente.";
     }
 }
+
 
 // Consulta para Monitores
 $monitores = $conn->query(
@@ -114,13 +145,13 @@ include '../admin/admin_header.php';
                     required>
                     <option value="" disabled>Seleccionar monitor</option>
                     <?php
-                    $stmt = $conn->prepare("
-        SELECT mo.id_monitor, u.nombre, mo.disponibilidad
-        FROM monitor_especialidad me
-        JOIN monitor mo ON me.id_monitor = mo.id_monitor
-        JOIN usuario u ON mo.id_usuario = u.id_usuario
-        WHERE me.id_especialidad = ?
-    ");
+                    $stmt = $conn->prepare(
+                        "SELECT mo.id_monitor, u.nombre, mo.disponibilidad
+                        FROM monitor_especialidad me
+                        JOIN monitor mo ON me.id_monitor = mo.id_monitor
+                        JOIN usuario u ON mo.id_usuario = u.id_usuario
+                        WHERE me.id_especialidad = ?"
+                    );
                     $stmt->bind_param('i', $clase['id_especialidad']);
                     $stmt->execute();
                     $result = $stmt->get_result();

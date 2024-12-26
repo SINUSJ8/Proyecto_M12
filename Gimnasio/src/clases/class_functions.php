@@ -86,3 +86,44 @@ function actualizarClase($conn, $id_clase, $nombre, $id_monitor, $id_especialida
     $stmt->execute();
     $stmt->close();
 }
+function obtenerMiembrosInscritos($conn, $id_clase)
+{
+    $sql = "
+        SELECT u.id_usuario, u.email, u.nombre
+        FROM asistencia a
+        INNER JOIN miembro m ON a.id_miembro = m.id_miembro
+        INNER JOIN usuario u ON m.id_usuario = u.id_usuario
+        WHERE a.id_clase = ?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_clase);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $miembros = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $miembros;
+}
+function obtenerMonitorDeClase($conn, $id_clase)
+{
+    $sql = "
+        SELECT u.id_usuario, u.email, u.nombre
+        FROM clase c
+        INNER JOIN monitor m ON c.id_monitor = m.id_monitor
+        INNER JOIN usuario u ON m.id_usuario = u.id_usuario
+        WHERE c.id_clase = ?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_clase);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $monitor = $result->fetch_assoc();
+    $stmt->close();
+    return $monitor;
+}
+function enviarNotificacion($conn, $id_usuario, $mensaje)
+{
+    $stmt = $conn->prepare("INSERT INTO notificacion (id_usuario, mensaje) VALUES (?, ?)");
+    $stmt->bind_param("is", $id_usuario, $mensaje);
+    $stmt->execute();
+    $stmt->close();
+}
