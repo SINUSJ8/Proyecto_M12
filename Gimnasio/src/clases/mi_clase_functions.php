@@ -98,11 +98,14 @@ function claseEstaCompleta($conn, $id_clase)
 function obtenerClasesInscritas($conn, $id_miembro)
 {
     $sql = "
-        SELECT c.id_clase, c.nombre
+        SELECT c.id_clase, c.nombre, c.fecha, c.horario
         FROM asistencia a
         INNER JOIN clase c ON a.id_clase = c.id_clase
         WHERE a.id_miembro = ?
+          AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
+        ORDER BY c.fecha, c.horario
     ";
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id_miembro);
     $stmt->execute();
@@ -116,6 +119,7 @@ function obtenerClasesInscritas($conn, $id_miembro)
     $stmt->close();
     return $clases;
 }
+
 /**
  * Obtiene las especialidades de un miembro.
  * 
@@ -173,6 +177,7 @@ function obtenerClasesDisponibles($conn, $especialidades, $id_miembro)
         LEFT JOIN monitor m ON c.id_monitor = m.id_monitor -- Vincular monitores con las clases
         LEFT JOIN usuario u ON m.id_usuario = u.id_usuario -- Obtener el nombre del monitor desde usuario
         WHERE c.id_especialidad IN ($especialidadesStr)
+          AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
         ORDER BY c.fecha, c.horario
     ";
 
