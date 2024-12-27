@@ -1,0 +1,108 @@
+Listado de rutas de carpetas
+El número de serie del volumen es 1063-4645
+C:.
+¦   estructura.txt
+¦   
++---Gimnasio
+    ¦   index.php
+    ¦   
+    +---assets
+    ¦   +---css
+    ¦   ¦       estilos.css
+    ¦   ¦       
+    ¦   +---imgs
+    ¦   ¦       cardio.webp
+    ¦   ¦       entrenamiento_funcional.jpg
+    ¦   ¦       gym.webp
+    ¦   ¦       pesas.avif
+    ¦   ¦       pilates.jpg
+    ¦   ¦       yoga.jpg
+    ¦   ¦       
+    ¦   +---js
+    ¦           calendario.js
+    ¦           clases.js
+    ¦           dinamica_especialidades.js
+    ¦           validacion.js
+    ¦           
+    +---sql
+    ¦       actividad2_db.sql
+    ¦       import_users_members_monitors.sql
+    ¦       
+    +---src
+        +---admin
+        ¦       admin.php
+        ¦       admin_functions.php
+        ¦       admin_header.php
+        ¦       edit_admin.php
+        ¦       notificaciones.php
+        ¦       
+        +---auth
+        ¦       log.php
+        ¦       login.php
+        ¦       logout.php
+        ¦       reg.php
+        ¦       registro.php
+        ¦       
+        +---clases
+        ¦       clases.php
+        ¦       clases_disponibles.php
+        ¦       clases_monitor.php
+        ¦       class_functions.php
+        ¦       crear_clase.php
+        ¦       editar_clase.php
+        ¦       mis_clases.php
+        ¦       mi_clase_functions.php
+        ¦       nueva_clase.php
+        ¦       
+        +---config
+        ¦       configuracion.php
+        ¦       db_connection.php
+        ¦       
+        +---Includes
+        ¦       footer.php
+        ¦       general.php
+        ¦       header.php
+        ¦       
+        +---inicio
+        ¦       about.php
+        ¦       contacto.php
+        ¦       
+        +---membresias
+        ¦       crear_membresia.php
+        ¦       membresias.php
+        ¦       mi_membresia.php
+        ¦       
+        +---miembros
+        ¦       edit_miembro.php
+        ¦       member_functions.php
+        ¦       miembro.php
+        ¦       miembros.php
+        ¦       miembro_header.php
+        ¦       mis_notificaciones.php
+        ¦       
+        +---monitores
+        ¦       edit_monitor.php
+        ¦       monitor.php
+        ¦       monitores.php
+        ¦       monitores_header.php
+        ¦       monitor_functions.php
+        ¦       notificaciones_monitor.php
+        ¦       
+        +---pagos
+        ¦       pago.php
+        ¦       proceso_pago.php
+        ¦       
+        +---perfil
+        ¦       editar_perfil.php
+        ¦       perfil_functions.php
+        ¦       
+        +---usuarios
+                crear_usuario.php
+                edit_usuario.php
+                user_functions.php
+                user_header.php
+                user_membresias.php
+                user_notificaciones.php
+                usuario.php
+                usuarios.php
+                

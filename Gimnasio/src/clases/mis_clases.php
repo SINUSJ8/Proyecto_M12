@@ -1,5 +1,5 @@
 <?php
-$title = "Mis Clases";
+$title = "Clases Disponibles";
 include '../miembros/miembro_header.php';
 require_once '../clases/mi_clase_functions.php';
 
@@ -9,9 +9,6 @@ $id_usuario = $_SESSION['id_usuario'];
 try {
     $id_miembro = obtenerIdMiembro($conn, $id_usuario);
 
-    // Obtener las clases a las que el miembro está inscrito
-    $clasesInscritas = obtenerClasesInscritas($conn, $id_miembro);
-
     // Procesar formulario para apuntarse o borrarse
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_clase = intval($_POST['id_clase']);
@@ -19,18 +16,15 @@ try {
 
         if ($accion === 'apuntarse') {
             if (claseEstaCompleta($conn, $id_clase)) {
-                $mensaje = 'completa';
+                $mensaje = 'La clase está completa. No puedes inscribirte.';
             } elseif (yaInscritoEnClase($conn, $id_clase, $id_miembro)) {
-                $mensaje = 'ya_inscrito';
+                $mensaje = 'Ya estás inscrito en esta clase.';
             } else {
-                $mensaje = apuntarseClase($conn, $id_clase, $id_miembro) ? 'apuntado' : 'error';
+                $mensaje = apuntarseClase($conn, $id_clase, $id_miembro) ? '¡Te has inscrito correctamente!' : 'Error al inscribirte.';
             }
         } elseif ($accion === 'borrarse') {
-            $mensaje = borrarseClase($conn, $id_clase, $id_miembro) ? 'borrado' : 'no_borrado';
+            $mensaje = borrarseClase($conn, $id_clase, $id_miembro) ? 'Te has dado de baja correctamente.' : 'Error al darte de baja.';
         }
-
-        header("Location: mis_clases.php?mensaje=$mensaje");
-        exit;
     }
 
     // Obtener las especialidades del miembro
@@ -40,6 +34,9 @@ try {
     $clasesDisponibles = !empty($especialidades)
         ? obtenerClasesDisponibles($conn, $especialidades, $id_miembro)
         : [];
+
+    // Obtener las clases inscritas
+    $clasesInscritas = obtenerClasesInscritas($conn, $id_miembro);
 } catch (Exception $e) {
     echo "<p class='mensaje-error'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
     exit;
@@ -47,28 +44,16 @@ try {
 ?>
 
 <main class="form_container">
-    <h1 class="section-title">Mis Clases</h1>
+    <h1 class="section-title">Clases Disponibles</h1>
 
-    <?php if (isset($_GET['mensaje'])): ?>
-        <p class="mensaje-confirmacion">
-            <?php if ($_GET['mensaje'] === 'apuntado'): ?>
-                ¡Te has inscrito correctamente en la clase!
-            <?php elseif ($_GET['mensaje'] === 'ya_inscrito'): ?>
-                Ya estás inscrito en esta clase.
-            <?php elseif ($_GET['mensaje'] === 'borrado'): ?>
-                Te has dado de baja de la clase correctamente.
-            <?php elseif ($_GET['mensaje'] === 'no_borrado'): ?>
-                No se pudo borrar tu inscripción. Inténtalo de nuevo.
-            <?php elseif ($_GET['mensaje'] === 'completa'): ?>
-                La clase está completa. No puedes inscribirte.
-            <?php endif; ?>
-        </p>
+    <?php if (!empty($mensaje)): ?>
+        <p class="mensaje-confirmacion"><?= htmlspecialchars($mensaje); ?></p>
     <?php endif; ?>
 
     <!-- Clases Inscritas -->
     <?php if (!empty($clasesInscritas)): ?>
-        <h2>Clases Inscritas</h2>
-        <table class="styled-table">
+        <h2 class="intro-text">Clases Inscritas</h2>
+        <table id="tabla-clases-inscritas" class="styled-table">
             <thead>
                 <tr>
                     <th>Nombre de la Clase</th>
@@ -96,16 +81,17 @@ try {
 
     <!-- Clases Disponibles -->
     <?php if (!empty($clasesDisponibles)): ?>
-        <h2>Clases Disponibles</h2>
-        <table class="styled-table">
+        <h2 class="intro-text">Clases Disponibles</h2>
+        <table id="tabla-clases" class="styled-table">
             <thead>
                 <tr>
-                    <th>Nombre de la Clase</th>
-                    <th>Especialidad</th>
-                    <th>Fecha</th>
-                    <th>Horario</th>
-                    <th>Duración</th>
-                    <th>Capacidad Máxima</th>
+                    <th class="sortable" onclick="ordenarTablaC(0)">Nombre</th>
+                    <th class="sortable" onclick="ordenarTablaC(1)">Especialidad</th>
+                    <th class="sortable" onclick="ordenarTablaC(2)">Fecha</th>
+                    <th class="sortable" onclick="ordenarTablaC(3)">Horario</th>
+                    <th class="sortable" onclick="ordenarTablaC(4)">Duración</th>
+                    <th class="sortable" onclick="ordenarTablaC(5)">Capacidad</th>
+                    <th class="sortable" onclick="ordenarTablaC(6)">Monitor</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -118,11 +104,12 @@ try {
                         <td><?= htmlspecialchars($clase['horario']); ?></td>
                         <td><?= htmlspecialchars($clase['duracion']); ?> minutos</td>
                         <td><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
+                        <td><?= htmlspecialchars($clase['monitor'] ?? ''); ?></td>
                         <td>
                             <?php if ($clase['inscrito']): ?>
-                                <span style="color: green;">Ya inscrito</span>
+                                <span class="mensaje-inscrito">Ya inscrito</span>
                             <?php elseif ($clase['completa']): ?>
-                                <span style="color: red;">Completa</span>
+                                <span class="mensaje-completa">Completa</span>
                             <?php else: ?>
                                 <form method="POST" style="display: inline;">
                                     <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
@@ -141,3 +128,4 @@ try {
 </main>
 
 <?php include '../includes/footer.php'; ?>
+<script src="../../assets/js/clases.js"></script>

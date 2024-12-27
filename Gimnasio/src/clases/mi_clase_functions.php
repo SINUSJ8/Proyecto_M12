@@ -144,14 +144,6 @@ function obtenerEspecialidadesMiembro($conn, $id_miembro)
     $stmt->close();
     return $especialidades;
 }
-/**
- * Obtiene las clases disponibles para un miembro según sus especialidades.
- * 
- * @param mysqli $conn Conexión a la base de datos.
- * @param array $especialidades Lista de IDs de especialidades del miembro.
- * @param int $id_miembro ID del miembro.
- * @return array Lista de clases disponibles.
- */
 function obtenerClasesDisponibles($conn, $especialidades, $id_miembro)
 {
     $especialidadesStr = implode(',', array_map('intval', $especialidades)); // Asegurar valores enteros
@@ -165,6 +157,7 @@ function obtenerClasesDisponibles($conn, $especialidades, $id_miembro)
             c.duracion,
             c.capacidad_maxima,
             e.nombre AS especialidad,
+            u.nombre AS monitor, -- Obtener el nombre del monitor desde la tabla usuario
             (SELECT COUNT(*) FROM asistencia a WHERE a.id_clase = c.id_clase) AS inscritos,
             EXISTS (
                 SELECT 1 
@@ -177,6 +170,8 @@ function obtenerClasesDisponibles($conn, $especialidades, $id_miembro)
             END AS completa
         FROM clase c
         INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
+        LEFT JOIN monitor m ON c.id_monitor = m.id_monitor -- Vincular monitores con las clases
+        LEFT JOIN usuario u ON m.id_usuario = u.id_usuario -- Obtener el nombre del monitor desde usuario
         WHERE c.id_especialidad IN ($especialidadesStr)
         ORDER BY c.fecha, c.horario
     ";

@@ -216,3 +216,41 @@ function limpiarFormulario() {
     form.reset(); // Limpia los valores de los campos
     window.location.href = 'clases.php'; // Opcional: Redirige a la página sin parámetros
 }
+function ordenarTablaC(columna, idTabla = 'tabla-clases') {
+    const tabla = document.getElementById(idTabla);
+    if (!tabla) return;
+
+    const filas = Array.from(tabla.tBodies[0].rows);
+    const th = tabla.tHead.rows[0].cells[columna];
+    const tipoOrden = th.classList.contains('sorted-asc') ? 'desc' : 'asc';
+
+    Array.from(tabla.tHead.rows[0].cells).forEach(cell => {
+        cell.classList.remove('sorted-asc', 'sorted-desc');
+    });
+
+    filas.sort((a, b) => {
+        let celdaA = a.cells[columna]?.innerText.trim();
+        let celdaB = b.cells[columna]?.innerText.trim();
+
+        const esNumerico = !isNaN(celdaA) && !isNaN(celdaB);
+        const esFecha = !isNaN(Date.parse(celdaA)) && !isNaN(Date.parse(celdaB));
+
+        if (esNumerico) {
+            return tipoOrden === 'asc' ?
+                parseFloat(celdaA) - parseFloat(celdaB) :
+                parseFloat(celdaB) - parseFloat(celdaA);
+        } else if (esFecha) {
+            return tipoOrden === 'asc' ?
+                new Date(celdaA) - new Date(celdaB) :
+                new Date(celdaB) - new Date(celdaA);
+        } else {
+            return tipoOrden === 'asc' ?
+                celdaA.localeCompare(celdaB) :
+                celdaB.localeCompare(celdaA);
+        }
+    });
+
+    th.classList.add(tipoOrden === 'asc' ? 'sorted-asc' : 'sorted-desc');
+
+    filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
+}
