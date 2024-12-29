@@ -104,26 +104,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                             <td><?= htmlspecialchars($clase['nombre']); ?></td>
                             <td><?= htmlspecialchars($clase['especialidad']); ?></td>
                             <td><?= htmlspecialchars($clase['monitor']); ?></td>
-                            <td>
-                                <?= date('d-m-Y', strtotime($clase['fecha'])); ?>
-                            </td>
+                            <td><?= date('d-m-Y', strtotime($clase['fecha'])); ?></td>
                             <td><?= htmlspecialchars($clase['horario']); ?></td>
                             <td><?= htmlspecialchars($clase['duracion']); ?> min</td>
                             <td><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
-                            <td>
-                                <?php if ($tipo === 'actuales'): ?>
-                                    <form method="POST" action="clases.php" onsubmit="return confirmarEliminacion();">
-                                        <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
-                                        <button type="submit" class="delete-button">Eliminar</button>
-                                    </form>
-                                    <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="edit-button">Editar</a>
-                                <?php else: ?>
-                                    <span class="btn-disabled">No disponible</span>
-                                <?php endif; ?>
+                            <td class="acciones">
+                                <div class="button-container">
+                                    <!-- Ver Detalle -->
+                                    <a href="detalle_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="button">Ver Detalle</a>
+                                    <!-- Editar -->
+                                    <?php if ($tipo === 'actuales'): ?>
+                                        <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="button">Editar</a>
+                                    <?php else: ?>
+                                        <span class="btn-disabled">Editar no disponible</span>
+                                    <?php endif; ?>
+                                    <!-- Eliminar -->
+                                    <?php if ($tipo === 'actuales'): ?>
+                                        <form method="POST" action="clases.php">
+                                            <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
+                                            <button type="submit" class="delete-button">Eliminar</button>
+                                        </form>
+                                    <?php else: ?>
+                                        <span class="btn-disabled">Eliminar no disponible</span>
+                                    <?php endif; ?>
+                                </div>
                             </td>
+
+
+
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
+
 
             </table>
         </section>

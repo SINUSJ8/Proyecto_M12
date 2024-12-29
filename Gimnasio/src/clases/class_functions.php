@@ -63,7 +63,25 @@ function obtenerClases($conn, $filtros = [], $tipo = 'actuales')
     $stmt->close();
     return $clases;
 }
-
+function obtenerDetallesClase($conn, $id_clase)
+{
+    $sql = "
+        SELECT c.nombre, c.fecha, c.horario, c.duracion, c.capacidad_maxima,
+               m.nombre AS especialidad, u.nombre AS monitor
+        FROM clase c
+        LEFT JOIN monitor mo ON c.id_monitor = mo.id_monitor
+        LEFT JOIN usuario u ON mo.id_usuario = u.id_usuario
+        LEFT JOIN especialidad m ON c.id_especialidad = m.id_especialidad
+        WHERE c.id_clase = ?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_clase);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $clase = $result->fetch_assoc();
+    $stmt->close();
+    return $clase;
+}
 
 
 
