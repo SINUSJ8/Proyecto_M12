@@ -4,6 +4,26 @@ require_once('../admin/admin_functions.php');
 verificarAdmin();
 
 $conn = obtenerConexion();
+
+// Determinar tipo de clases a mostrar (actuales o anteriores)
+$tipo = isset($_GET['tipo']) && $_GET['tipo'] === 'anteriores' ? 'anteriores' : 'actuales';
+
+// Filtros de búsqueda
+$filtros = [
+    'nombre_clase' => isset($_GET['nombre_clase']) ? $_GET['nombre_clase'] : '',
+    'nombre_monitor' => isset($_GET['nombre_monitor']) ? $_GET['nombre_monitor'] : '',
+    'especialidad' => isset($_GET['especialidad']) ? $_GET['especialidad'] : '',
+    'fecha' => isset($_GET['fecha']) ? $_GET['fecha'] : '',
+];
+
+// Obtener las clases según los filtros y el tipo de clase
+$clases = obtenerClases($conn, $filtros, $tipo);
+$clases_json = json_encode($clases);
+
+$title = $tipo === 'anteriores' ? "Clases Anteriores" : "Listado de Clases";
+include '../admin/admin_header.php';
+
+// Eliminar clase y notificar
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
     $id_clase = intval($_POST['id_clase']);
 
@@ -33,19 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
     header('Location: clases.php?mensaje=clase_eliminada');
     exit;
 }
-
-$filtros = [
-    'nombre_clase' => isset($_GET['nombre_clase']) ? $_GET['nombre_clase'] : '',
-    'nombre_monitor' => isset($_GET['nombre_monitor']) ? $_GET['nombre_monitor'] : '',
-    'especialidad' => isset($_GET['especialidad']) ? $_GET['especialidad'] : '',
-    'fecha' => isset($_GET['fecha']) ? $_GET['fecha'] : '',
-];
-
-$clases = obtenerClases($conn, $filtros);
-$clases_json = json_encode($clases);
-
-$title = "Listado de Clases";
-include '../admin/admin_header.php';
 ?>
 
 <?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'clase_eliminada'): ?>
@@ -54,7 +61,17 @@ include '../admin/admin_header.php';
 
 <body>
     <main>
-        <h2>Clases Existentes</h2>
+        <h2><?= $title; ?></h2>
+
+        <!-- Botones de navegación y creación -->
+        <div class="button-container">
+            <?php if ($tipo === 'anteriores'): ?>
+                <a href="clases.php" class="button">Ver Clases Actuales</a>
+            <?php else: ?>
+                <a href="clases.php?tipo=anteriores" class="button">Ver Clases Anteriores</a>
+            <?php endif; ?>
+            <a href="crear_clase.php" class="button">Crear Clase</a>
+        </div>
 
         <!-- Formulario de búsqueda -->
         <form method="GET" action="clases.php" class="search-form">
@@ -65,11 +82,6 @@ include '../admin/admin_header.php';
             <button type="submit">Buscar</button>
             <button type="button" class="reset-button" onclick="limpiarFormulario()">Limpiar</button>
         </form>
-
-        <!-- Botón para crear clase -->
-        <div class="button-container">
-            <a href="crear_clase.php" class="button">Crear Clase</a>
-        </div>
 
         <!-- Tabla para mostrar clases -->
         <section class="form_container">
@@ -92,25 +104,31 @@ include '../admin/admin_header.php';
                             <td><?= htmlspecialchars($clase['nombre']); ?></td>
                             <td><?= htmlspecialchars($clase['especialidad']); ?></td>
                             <td><?= htmlspecialchars($clase['monitor']); ?></td>
-                            <td><?= htmlspecialchars($clase['fecha']); ?></td>
+                            <td>
+                                <?= date('d-m-Y', strtotime($clase['fecha'])); ?>
+                            </td>
                             <td><?= htmlspecialchars($clase['horario']); ?></td>
                             <td><?= htmlspecialchars($clase['duracion']); ?> min</td>
                             <td><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
                             <td>
-                                <form method="POST" action="clases.php" onsubmit="return confirmarEliminacion();">
-                                    <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
-                                    <button type="submit" class="delete-button">Eliminar</button>
-                                </form>
-                                <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="edit-button">Editar</a>
+                                <?php if ($tipo === 'actuales'): ?>
+                                    <form method="POST" action="clases.php" onsubmit="return confirmarEliminacion();">
+                                        <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
+                                        <button type="submit" class="delete-button">Eliminar</button>
+                                    </form>
+                                    <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="edit-button">Editar</a>
+                                <?php else: ?>
+                                    <span class="btn-disabled">No disponible</span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
+
             </table>
         </section>
 
         <?php include '../includes/footer.php'; ?>
-
 
         <!-- Incluir el archivo de JavaScript externo -->
         <script src="../../assets/js/clases.js"></script>

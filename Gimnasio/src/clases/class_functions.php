@@ -1,7 +1,7 @@
 <?php
 require_once('../includes/general.php');
 
-function obtenerClases($conn, $filtros = [])
+function obtenerClases($conn, $filtros = [], $tipo = 'actuales')
 {
     $sql = "SELECT c.id_clase, c.nombre, m.nombre AS especialidad, u.nombre AS monitor, 
                    c.fecha, c.horario, c.duracion, c.capacidad_maxima
@@ -14,6 +14,14 @@ function obtenerClases($conn, $filtros = [])
     $params = [];
     $types = "";
 
+    // Filtrar por tipo de clase
+    if ($tipo === 'actuales') {
+        $sql .= " AND (c.fecha > CURDATE() OR (c.fecha = CURDATE() AND c.horario >= CURTIME()))";
+    } elseif ($tipo === 'anteriores') {
+        $sql .= " AND (c.fecha < CURDATE() OR (c.fecha = CURDATE() AND c.horario < CURTIME()))";
+    }
+
+    // Aplicar filtros adicionales
     if (!empty($filtros['nombre_clase'])) {
         $sql .= " AND c.nombre LIKE ?";
         $params[] = '%' . $filtros['nombre_clase'] . '%';
@@ -55,6 +63,8 @@ function obtenerClases($conn, $filtros = [])
     $stmt->close();
     return $clases;
 }
+
+
 
 
 function crearClase($conn, $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad)
