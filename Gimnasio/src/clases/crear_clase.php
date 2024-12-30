@@ -151,6 +151,7 @@ include '../admin/admin_header.php';
     <script src="../../assets/js/dinamica_especialidades.js"></script>
     <script>
         configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
+        configurarRestriccionesFechaHora('fecha', 'horario');
     </script>
     <?php include '../includes/footer.php'; ?>
 </body>
