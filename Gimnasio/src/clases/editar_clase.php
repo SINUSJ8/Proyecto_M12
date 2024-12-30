@@ -190,6 +190,7 @@ include '../admin/admin_header.php';
         document.addEventListener('DOMContentLoaded', () => {
             configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
         });
+        configurarRestriccionesFechaHora('fecha', 'horario');
     </script>
 
     <?php include '../includes/footer.php'; ?>

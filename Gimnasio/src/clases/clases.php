@@ -75,13 +75,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
 
         <!-- Formulario de búsqueda -->
         <form method="GET" action="clases.php" class="search-form">
-            <input type="text" name="nombre_clase" placeholder="Nombre de la clase" value="<?= htmlspecialchars(isset($_GET['nombre_clase']) ? $_GET['nombre_clase'] : '', ENT_QUOTES, 'UTF-8') ?>">
-            <input type="text" name="nombre_monitor" placeholder="Nombre del monitor" value="<?= htmlspecialchars(isset($_GET['nombre_monitor']) ? $_GET['nombre_monitor'] : '', ENT_QUOTES, 'UTF-8') ?>">
-            <input type="text" name="especialidad" placeholder="Especialidad" value="<?= htmlspecialchars(isset($_GET['especialidad']) ? $_GET['especialidad'] : '', ENT_QUOTES, 'UTF-8') ?>">
-            <input type="date" name="fecha" value="<?= htmlspecialchars(isset($_GET['fecha']) ? $_GET['fecha'] : '', ENT_QUOTES, 'UTF-8') ?>">
+            <!-- Campo oculto para preservar el tipo -->
+            <input type="hidden" name="tipo" value="<?= htmlspecialchars($tipo); ?>">
+
+            <input type="text" name="nombre_clase" placeholder="Nombre de la clase" value="<?= htmlspecialchars($filtros['nombre_clase'], ENT_QUOTES, 'UTF-8') ?>">
+            <input type="text" name="nombre_monitor" placeholder="Nombre del monitor" value="<?= htmlspecialchars($filtros['nombre_monitor'], ENT_QUOTES, 'UTF-8') ?>">
+            <input type="text" name="especialidad" placeholder="Especialidad" value="<?= htmlspecialchars($filtros['especialidad'], ENT_QUOTES, 'UTF-8') ?>">
+            <input type="date" name="fecha" value="<?= htmlspecialchars($filtros['fecha'], ENT_QUOTES, 'UTF-8') ?>">
             <button type="submit">Buscar</button>
-            <button type="button" class="reset-button" onclick="limpiarFormulario()">Limpiar</button>
+            <button type="button" class="reset-button" onclick="window.location.href='clases.php?tipo=<?= htmlspecialchars($tipo); ?>'">Limpiar</button>
+
         </form>
+
 
         <!-- Tabla para mostrar clases -->
         <section class="form_container">
