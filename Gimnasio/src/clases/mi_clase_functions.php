@@ -82,19 +82,21 @@ function yaInscritoEnClase($conn, $id_clase, $id_miembro)
 function claseEstaCompleta($conn, $id_clase)
 {
     $stmt = $conn->prepare("
-        SELECT COUNT(*) AS inscritos, capacidad_maxima
-        FROM asistencia a
-        JOIN clase c ON a.id_clase = c.id_clase
+        SELECT 
+            (SELECT COUNT(*) FROM asistencia WHERE id_clase = ?) AS inscritos, 
+            c.capacidad_maxima 
+        FROM clase c 
         WHERE c.id_clase = ?
     ");
-    $stmt->bind_param('i', $id_clase);
+    $stmt->bind_param('ii', $id_clase, $id_clase);
     $stmt->execute();
     $result = $stmt->get_result();
     $data = $result->fetch_assoc();
     $stmt->close();
 
-    return $data['inscritos'] >= $data['capacidad_maxima'];
+    return intval($data['inscritos']) >= intval($data['capacidad_maxima']);
 }
+
 function obtenerClasesInscritas($conn, $id_miembro)
 {
     $sql = "

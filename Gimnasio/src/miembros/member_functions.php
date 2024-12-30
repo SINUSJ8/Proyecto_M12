@@ -17,14 +17,28 @@ function obtenerMiembros($conn, $busqueda = '', $orden_columna = 'nombre', $orde
         $orden_direccion = 'ASC';
     }
 
-    // Construir la consulta SQL para obtener los miembros con sus membresías y entrenamientos
-    $sql = "SELECT u.id_usuario, u.nombre, u.email, u.rol, m.fecha_registro, mb.tipo, mb.precio, mb.duracion,
-                   GROUP_CONCAT(e.nombre SEPARATOR ', ') AS entrenamientos
-            FROM usuario u
-            INNER JOIN miembro m ON u.id_usuario = m.id_usuario
-            LEFT JOIN membresia mb ON m.id_membresia = mb.id_membresia
-            LEFT JOIN miembro_entrenamiento me ON m.id_miembro = me.id_miembro
-            LEFT JOIN especialidad e ON me.id_especialidad = e.id_especialidad";
+    // Construir la consulta SQL para obtener los miembros con su membresía activa y entrenamientos
+    $sql = "
+        SELECT 
+            u.id_usuario, 
+            u.nombre, 
+            u.email, 
+            m.fecha_registro, 
+            mb.tipo AS tipo, 
+            mb.precio, 
+            mb.duracion,
+            GROUP_CONCAT(e.nombre SEPARATOR ', ') AS entrenamientos
+        FROM usuario u
+        INNER JOIN miembro m ON u.id_usuario = m.id_usuario
+        LEFT JOIN (
+            SELECT id_miembro, id_membresia
+            FROM miembro_membresia
+            WHERE estado = 'activa'
+        ) mm ON m.id_miembro = mm.id_miembro
+        LEFT JOIN membresia mb ON mm.id_membresia = mb.id_membresia
+        LEFT JOIN miembro_entrenamiento me ON m.id_miembro = me.id_miembro
+        LEFT JOIN especialidad e ON me.id_especialidad = e.id_especialidad
+    ";
 
     // Agregar filtro de búsqueda si se proporciona un término
     if ($busqueda) {
@@ -53,6 +67,7 @@ function obtenerMiembros($conn, $busqueda = '', $orden_columna = 'nombre', $orde
     $stmt->close();
     return $miembros;
 }
+
 
 
 
@@ -336,15 +351,21 @@ function obtenerInformacionMiembro($id_usuario)
 {
     $conexion = obtenerConexion();
 
+    // Consulta para obtener los datos básicos del miembro
     $sql = "
         SELECT 
             u.nombre AS nombre_usuario,
             u.email,
             u.telefono,
             u.fecha_creacion,
-            m.fecha_registro
+            m.fecha_registro,
+            mm.fecha_inicio,
+            mm.fecha_fin,
+            mem.tipo AS tipo_membresia
         FROM usuario u
         LEFT JOIN miembro m ON u.id_usuario = m.id_usuario
+        LEFT JOIN miembro_membresia mm ON m.id_miembro = mm.id_miembro AND mm.estado = 'activa'
+        LEFT JOIN membresia mem ON mm.id_membresia = mem.id_membresia
         WHERE u.id_usuario = ?
     ";
 
@@ -356,9 +377,10 @@ function obtenerInformacionMiembro($id_usuario)
     if ($resultado->num_rows > 0) {
         return $resultado->fetch_assoc();
     } else {
-        return null;
+        return null; // Retornar null si no se encuentra información
     }
 }
+
 function informacionMembresia($id_usuario)
 {
     $conexion = obtenerConexion();
@@ -424,10 +446,28 @@ function obtenerDetalleCompletoMiembro($conn, $id_usuario)
     $miembro = obtenerMiembroPorID($conn, $id_usuario);
     if ($miembro) {
         $miembro['id_miembro'] = obtenerIdMiembroPorUsuario($conn, $id_usuario);
-        $miembro['fechas_membresia'] = obtenerFechasMembresiaActiva($conn, $miembro['id_miembro']);
+
+        // Obtener la membresía activa más reciente
+        $sql = "SELECT id_membresia, fecha_inicio, fecha_fin 
+                FROM miembro_membresia 
+                WHERE id_miembro = ? AND estado = 'activa' 
+                ORDER BY fecha_inicio DESC LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $miembro['id_miembro']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            $miembro['id_membresia'] = $row['id_membresia'];
+            $miembro['fechas_membresia'] = ['inicio' => $row['fecha_inicio'], 'fin' => $row['fecha_fin']];
+        } else {
+            $miembro['id_membresia'] = null;
+            $miembro['fechas_membresia'] = null;
+        }
     }
     return $miembro;
 }
+
 function actualizarMembresia($conn, $id_miembro, $id_membresia_nueva, $fecha_inicio_nueva = null, $fecha_fin_nueva = null)
 {
     $stmt = $conn->prepare("SELECT precio, duracion FROM membresia WHERE id_membresia = ?");
@@ -444,7 +484,18 @@ function actualizarMembresia($conn, $id_miembro, $id_membresia_nueva, $fecha_ini
     $fecha_inicio = isset($fecha_inicio_nueva) ? $fecha_inicio_nueva : date("Y-m-d");
     $fecha_fin = isset($fecha_fin_nueva) ? $fecha_fin_nueva : date("Y-m-d", strtotime("+$duracion months"));
 
+    // Cambiar el estado de las membresías anteriores a "no activa"
+    $queryActualizarEstado = "UPDATE miembro_membresia 
+                              SET estado = 'no activa' 
+                              WHERE id_miembro = ? AND estado = 'activa'";
+    $stmtActualizarEstado = $conn->prepare($queryActualizarEstado);
+    $stmtActualizarEstado->bind_param("i", $id_miembro);
+    if (!$stmtActualizarEstado->execute()) {
+        return ["success" => false, "message" => "Error al desactivar la membresía actual: " . $stmtActualizarEstado->error];
+    }
+    $stmtActualizarEstado->close();
 
+    // Registrar la nueva membresía activa
     $query = "INSERT INTO miembro_membresia (id_miembro, id_membresia, monto_pagado, fecha_inicio, fecha_fin, estado)
               VALUES (?, ?, ?, ?, ?, 'activa')";
     $stmt = $conn->prepare($query);
@@ -456,6 +507,7 @@ function actualizarMembresia($conn, $id_miembro, $id_membresia_nueva, $fecha_ini
 
     return ["success" => true, "message" => "Membresía actualizada correctamente."];
 }
+
 function obtenerUsuariosSinFiltro($conn)
 {
     $sql = "SELECT id_usuario, nombre, email FROM usuario ORDER BY nombre ASC";
