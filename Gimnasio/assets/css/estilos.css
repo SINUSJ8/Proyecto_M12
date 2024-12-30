@@ -470,17 +470,15 @@ table.styled-table th.sortable.sorted-desc:after {
 }
 
 .membresia-card {
-    background-color: #fff;
+    background-color: #eee69b;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 15px;
     display: flex;
     flex-direction: column;
     height: 500px;
-    /* Altura fija */
     text-align: center;
     overflow: hidden;
-    /* Evita desbordes */
 }
 
 .membresia-card h2 {
@@ -498,7 +496,13 @@ table.styled-table th.sortable.sorted-desc:after {
     padding: 0;
     margin: 0;
     text-align: left;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 5px;
+    background-color: white;
 }
+
 
 .membresia-card ul li {
     margin-bottom: 5px;
