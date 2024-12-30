@@ -439,6 +439,21 @@ table.styled-table th.sortable.sorted-desc:after {
     margin-bottom: 5px;
 }
 
+/* Estilo para clases sin monitor asignado o no disponible */
+.clase-sin-monitor {
+    background-color: #ffe6e6;
+    /* Fondo rojo claro */
+    color: #d9534f;
+    /* Texto rojo */
+}
+
+.texto-advertencia {
+    font-size: 0.9em;
+    color: #d9534f;
+    /* Rojo */
+    font-style: italic;
+}
+
 .intro-text {
     text-align: center;
     font-size: 1.2em;

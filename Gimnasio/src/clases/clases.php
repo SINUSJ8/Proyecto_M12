@@ -105,10 +105,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                 </thead>
                 <tbody>
                     <?php foreach ($clases as $clase): ?>
-                        <tr>
+                        <?php
+                        // Verificar si el monitor está disponible o no está asignado
+                        $sinMonitor = empty($clase['monitor']) || $clase['monitor_disponible'] === 'no disponible';
+                        ?>
+                        <tr class="<?= $sinMonitor ? 'clase-sin-monitor' : ''; ?>">
                             <td><?= htmlspecialchars($clase['nombre']); ?></td>
                             <td><?= htmlspecialchars($clase['especialidad']); ?></td>
-                            <td><?= htmlspecialchars($clase['monitor']); ?></td>
+                            <td>
+                                <?= htmlspecialchars($clase['monitor'] ?: 'No asignado'); ?>
+                                <?php if ($clase['monitor_disponible'] === 'no disponible'): ?>
+                                    <span class="texto-advertencia">(No disponible)</span>
+                                <?php endif; ?>
+                            </td>
                             <td><?= date('d-m-Y', strtotime($clase['fecha'])); ?></td>
                             <td><?= htmlspecialchars($clase['horario']); ?></td>
                             <td><?= htmlspecialchars($clase['duracion']); ?> min</td>
@@ -134,12 +143,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                                     <?php endif; ?>
                                 </div>
                             </td>
-
-
-
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
+
 
 
             </table>

@@ -3,8 +3,16 @@ require_once('../includes/general.php');
 
 function obtenerClases($conn, $filtros = [], $tipo = 'actuales')
 {
-    $sql = "SELECT c.id_clase, c.nombre, m.nombre AS especialidad, u.nombre AS monitor, 
-                   c.fecha, c.horario, c.duracion, c.capacidad_maxima
+    $sql = "SELECT 
+                c.id_clase, 
+                c.nombre, 
+                m.nombre AS especialidad, 
+                u.nombre AS monitor, 
+                mo.disponibilidad AS monitor_disponible, 
+                c.fecha, 
+                c.horario, 
+                c.duracion, 
+                c.capacidad_maxima
             FROM clase c
             LEFT JOIN monitor mo ON c.id_monitor = mo.id_monitor
             LEFT JOIN usuario u ON mo.id_usuario = u.id_usuario
@@ -57,12 +65,14 @@ function obtenerClases($conn, $filtros = [], $tipo = 'actuales')
     $clases = [];
 
     while ($row = $result->fetch_assoc()) {
+        $row['monitor_disponible'] = $row['monitor_disponible'] ?? 'sin monitor'; // Ajustar si no hay monitor
         $clases[] = $row;
     }
 
     $stmt->close();
     return $clases;
 }
+
 function obtenerDetallesClase($conn, $id_clase)
 {
     $sql = "
