@@ -41,6 +41,7 @@ while ($row = $result->fetch_assoc()) {
     $membresia_id = $row['id_membresia'];
     if (!isset($membresias[$membresia_id])) {
         $membresias[$membresia_id] = [
+            'id_membresia' => $membresia_id, // Asegurarse de incluir el ID aquí
             'tipo' => $row['tipo'],
             'precio' => $row['precio'],
             'duracion' => $row['duracion'],
@@ -52,6 +53,7 @@ while ($row = $result->fetch_assoc()) {
         $membresias[$membresia_id]['entrenamientos'][] = $row['entrenamiento'];
     }
 }
+
 $conn->close();
 ?>
 
@@ -90,8 +92,7 @@ $conn->close();
                     </ul>
 
                     <?php if (strpos($referer, 'index.php') === false): ?>
-                        <form action="../pagos/proceso_pago.php" method="POST">
-                            <input type="hidden" name="id_membresia" value="<?php echo $id; ?>">
+                        <form onsubmit="return mostrarConfirmacion(event, <?php echo htmlspecialchars(json_encode($membresia)); ?>)">
                             <label for="metodo_pago_<?php echo $id; ?>">Método de Pago:</label>
                             <select name="metodo_pago" id="metodo_pago_<?php echo $id; ?>" required>
                                 <option value="tarjeta">Tarjeta</option>
@@ -113,6 +114,21 @@ $conn->close();
             </div>
         <?php endif; ?>
     </main>
+
+    <!-- Modal de confirmación -->
+    <div id="modal-confirmacion" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Confirmar Membresía</h2>
+            <p id="modal-detalles"></p>
+            <form id="form-proceso-pago" action="../pagos/proceso_pago.php" method="POST">
+                <input type="hidden" name="id_membresia" id="id_membresia_modal">
+                <input type="hidden" name="metodo_pago" id="metodo_pago_modal">
+                <button type="submit" class="btn-general">Pagar</button>
+                <button type="button" class="btn-general cancel-button" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+    <script src="../../assets/js/validacion.js"></script>
 </body>
 
 </html>

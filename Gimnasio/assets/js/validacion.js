@@ -222,7 +222,36 @@ function buscarUsuario(termino) {
             selectUsuario.innerHTML = '<option value="">Error al buscar usuarios</option>';
         });
 }
+function mostrarConfirmacion(event, membresia) {
+    event.preventDefault();
 
+    console.log("Datos de membresía recibidos:", membresia);
+
+    const formulario = event.target;
+    const metodoPago = formulario.querySelector('select[name="metodo_pago"]').value;
+
+    if (!membresia.id_membresia || !metodoPago) {
+        alert('Error: Datos incompletos para procesar la membresía.');
+        return false;
+    }
+
+    // Rellenar campos ocultos del modal
+    document.getElementById('id_membresia_modal').value = membresia.id_membresia;
+    document.getElementById('metodo_pago_modal').value = metodoPago;
+
+    document.getElementById('modal-detalles').innerHTML = `
+        <strong>Membresía:</strong> ${membresia.tipo}<br>
+        <strong>Precio:</strong> ${membresia.precio} €<br>
+        <strong>Duración:</strong> ${membresia.duracion} mes(es)<br>
+        <strong>Método de Pago:</strong> ${metodoPago}
+    `;
+
+    document.getElementById('modal-confirmacion').style.display = 'flex';
+}
+
+function cerrarModal() {
+    document.getElementById('modal-confirmacion').style.display = 'none';
+}
 
 
 

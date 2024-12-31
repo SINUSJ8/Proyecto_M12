@@ -12,8 +12,28 @@ if (!isset($_SESSION['id_usuario'])) {
 $id_usuario = $_SESSION['id_usuario'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id_membresia = $_POST['id_membresia'];
-    $metodo_pago = $_POST['metodo_pago'];
+    $id_membresia = $_POST['id_membresia'] ?? null;
+    $metodo_pago = $_POST['metodo_pago'] ?? null;
+
+    // Validar que los datos sean correctos
+    if (!$id_membresia || !$metodo_pago) {
+        header("Location: usuario.php?error=Datos+de+membresía+incompletos.");
+        exit();
+    }
+
+    // Confirmar existencia de la membresía en la base de datos
+    $query_validar = "SELECT COUNT(*) FROM membresia WHERE id_membresia = ?";
+    $stmt_validar = $conn->prepare($query_validar);
+    $stmt_validar->bind_param("i", $id_membresia);
+    $stmt_validar->execute();
+    $stmt_validar->bind_result($existe_membresia);
+    $stmt_validar->fetch();
+    $stmt_validar->close();
+
+    if (!$existe_membresia) {
+        header("Location: usuario.php?error=La+membresía+seleccionada+no+es+válida.");
+        exit();
+    }
 
     // Verificar o crear el id_miembro correspondiente al usuario
     $query_miembro = "SELECT id_miembro FROM miembro WHERE id_usuario = ?";
