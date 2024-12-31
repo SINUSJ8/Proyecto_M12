@@ -6,6 +6,14 @@ verificarAdmin();
 
 $conn = obtenerConexion();
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restaurar_usuario'])) {
+    $id_usuario = intval($_POST['id_usuario']);
+    restaurarUsuario($conn, $id_usuario);
+    $_SESSION['mensaje'] = "El usuario ha sido restaurado correctamente a un rol básico.";
+    header('Location: usuarios.php');
+    exit();
+}
+
 // Capturar el término de búsqueda
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
 
@@ -88,8 +96,16 @@ include '../admin/admin_header.php';
                                                         break;
                                                 }
                                                 ?>" class="btn-general edit-button">Editar</a>
+
+                                    <!-- Botón para restaurar a "usuario" -->
+                                    <form method="POST" action="usuarios.php" style="display:inline;" onsubmit="return confirmarRestauracion();">
+                                        <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
+                                        <button type="submit" name="restaurar_usuario" class="btn-general delete-button">Restaurar</button>
+                                    </form>
+
                                 </div>
                             </td>
+
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

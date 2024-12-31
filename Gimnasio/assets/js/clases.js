@@ -254,3 +254,6 @@ function ordenarTablaC(columna, idTabla = 'tabla-clases') {
 
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
+function confirmarRestauracion() {
+    return confirm("¿Estás seguro de que deseas restaurar este usuario a un rol básico?");
+}

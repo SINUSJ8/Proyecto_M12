@@ -224,6 +224,11 @@ table.styled-table {
     overflow: hidden;
 }
 
+table.styled-table tbody tr.clase-sin-monitor {
+    background-color: #ffe6e6 !important;
+    color: #d9534f;
+}
+
 table.styled-table thead tr {
     background-color: #3aafa9;
     color: #fff;
