@@ -1,5 +1,7 @@
 <?php
 
+define('BASE_URL', '/Proyecto_M12/Gimnasio/');
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }

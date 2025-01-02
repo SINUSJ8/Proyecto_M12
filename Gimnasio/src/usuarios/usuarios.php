@@ -45,11 +45,11 @@ include '../admin/admin_header.php';
         <!-- Formulario de búsqueda -->
         <div class="form_container">
             <form method="GET" action="usuarios.php" class="search-form">
-                <div>
+                <div class="input-container">
                     <input type="text" name="busqueda" placeholder="Buscar usuario..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-general">
-                    <button type="submit" class="btn-general">Buscar</button>
                 </div>
-                <div style="margin-top: 10px;">
+                <div class="buttons-container">
+                    <button type="submit" class="btn-general">Buscar</button>
                     <a href="crear_usuario.php" class="btn-general" title="Crea una nueva cuenta de usuario">Crear Usuario</a>
                 </div>
             </form>

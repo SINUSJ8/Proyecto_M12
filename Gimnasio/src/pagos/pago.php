@@ -74,12 +74,12 @@ if (!$miembro) {
                 <!-- Renovar membresía -->
                 <form action="../membresias/mi_membresia.php" method="POST" style="display:inline;">
                     <input type="hidden" name="id_usuario" value="27">
-                    <button type="submit" name="renovar" onclick="return confirm('¿Estás seguro de que deseas renovar la membresía? Esta acción no se puede deshacer.')" title="renovar membresía">Renovar membresía</button>
+                    <button type="submit" class="btn-general" name="renovar" onclick="return confirm('¿Estás seguro de que deseas renovar la membresía? Esta acción no se puede deshacer.')" title="renovar membresía">Renovar membresía</button>
                 </form>
                 <!-- Acción de solicitar nueva membresía -->
                 <form action="../usuarios/usuario.php" method="GET" style="display:inline;">
                     <input type="hidden" name="id_usuario" value="27">
-                    <button type="submit" name="nueva_membresia" title="Solicitar nueva membresia">Solicitar otra membresia</button>
+                    <button type="submit" class="btn-general" name="nueva_membresia" title="Solicitar nueva membresia">Solicitar otra membresia</button>
                 </form>
             </div>
         </tr>

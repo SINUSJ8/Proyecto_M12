@@ -182,6 +182,7 @@ header nav .logout-link:hover {
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
+    flex-direction: column; 
     flex-wrap: nowrap;
     justify-content: center;
 }
@@ -406,12 +407,18 @@ table.styled-table th.sortable.sorted-desc:after {
 /* Clases Disponibles */
 .clases-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    /* Mínimo 300px por columna */
-    gap: 20px;
-    /* Espacio entre las tarjetas */
+    grid-template-columns: repeat(3, 1fr); /* Tres columnas */
+    gap: 20px; /* Espacio entre las tarjetas */
     margin-top: 20px;
 }
+
+@media (max-width: 768px) {
+    .clases-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+        /* Ajustar automáticamente para pantallas más pequeñas */
+    }
+}
+
 
 .clase-card {
     background-color: #fff;
@@ -434,7 +441,7 @@ table.styled-table th.sortable.sorted-desc:after {
 }
 
 .clase-benefits {
-    list-style-type: none;
+    list-style-type: disc; 
     padding: 0;
     margin: 10px 0;
     text-align: left;
