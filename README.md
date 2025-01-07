@@ -17,7 +17,7 @@ El proyecto consiste en el desarrollo de una plataforma web de gestión de gimna
 <a name="objetivos"></a>
 La razón de la elaboración de este proyecto viene dada por la  la creciente preocupación por la salud y el bienestar físico, especialmente en un contexto donde el sedentarismo es cada vez más común. A nivel técnico, el proyecto tiene como objetivo principal proporcionar funcionalidades útiles y fáciles de usar para los usuarios.
 <a name="tecnologias_escogidas"></a>
-### 3. Tecnologías y herramientas escogidas
+## 3. Tecnologías y herramientas escogidas
 La aplicación dará servicio a distintos tipos distintos de usuarios:
 - `Usuarios`: Pueden crear cuentas, iniciar sesión y gestionar su perfil.
 - `Administrador`: Es el encargador del mantenimiento general, gestiona usuarios, clases, horarios, monitores, y membresías.
