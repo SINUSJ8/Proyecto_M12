@@ -38,7 +38,7 @@ La aplicación dará servicio a distintos tipos distintos de usuarios:
 - **MySQL**: Se utiliza como el sistema de gestión de bases de datos para almacenar la información sobre usuarios, monitores, clases, pagos, etc. La base de datos se gestiona a través de phpMyAdmin.
 <a name="servidor_aplicaciones"><a/>
 ### 3.3. Servidor de aplicaciones
-- **XAMPP**: XAMPP se utiliza como entorno de desarrollo para ejecutar el sistema en un servidor local. Incluye Apache (servidor web), MySQL (base de datos) y PHP (lenguaje de programación). XAMPP permite crear un entorno de desarrollo accesible y fácil de configurar para el desarrollo de aplicaciones web.
+- **XAMPP**: Se utiliza como entorno de desarrollo para ejecutar el sistema en un servidor local. Incluye Apache (servidor web), MySQL (base de datos) y PHP (lenguaje de programación). XAMPP permite crear un entorno de desarrollo accesible y fácil de configurar para el desarrollo de aplicaciones web.
 <a name="diseno"><a/>
 ## 4. Diseño de la aplicación
 <a name="casos_uso"><a/>
@@ -147,16 +147,18 @@ La estructura de la aplicación es la siguiente:
    - `import_users_members_monitors.sql`
 #### Configuración del Proyecto
 1. Copia la carpeta del proyecto `Gimnasio` en el directorio `htdocs` de XAMPP:
-   - Ruta típica: `C:\xampp\htdocs\Gimnasio`
-   - Ruta típica: `C:\xampp\htdocs\ProyectoM12`
+  - Si deseas usar el nombre específico del proyecto:
+     - Ruta típica: `C:\xampp\htdocs\Gimnasio`
+   - Si deseas mantener el nombre del repositorio GitHub:
+     - Ruta típica: `C:\xampp\htdocs\ProyectoM12`
 #### Configuración del Archivo de Conexión a la Base de Datos
 1. Abre el archivo `Gimnasio/src/config/db_connection.php`.
-2. Configura las credenciales de la base de datos:
+2. Configura las credenciales de la base de datos según tu entorno. Por defecto, el archivo contiene lo siguiente:
    ```php
-   define('DB_HOST', 'localhost');
-   define('DB_USER', 'root');
-   define('DB_PASS', '');
-   define('DB_NAME', 'gimnasio');
+   $servername = "localhost"; 
+   $username = "root";         
+   $password = "";             
+   $dbname = "actividad_02";  
 <a name="comprobacion"></a>
 ## 6.4. Comprobación 
 Accede a la aplicación en el navegador con la URL: http://localhost/Gimnasio.
