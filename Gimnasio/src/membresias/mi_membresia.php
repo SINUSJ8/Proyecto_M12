@@ -13,14 +13,38 @@ if (!$miembro) {
     echo "<p class='mensaje-error'>No se encontró información para este miembro.</p>";
     exit;
 }
+
+// Mensaje de confirmación
+$mensaje = "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $renovacion = isset($_POST['renovacion_automatica']) ? (int)$_POST['renovacion_automatica'] : null;
+    $metodo_pago = $_POST['metodo_pago'] ?? null;
+
+    if (actualizarPreferenciasMembresia($id_usuario, $renovacion, $metodo_pago)) {
+        // Redirigir a la misma página para reflejar los cambios
+        header("Location: mi_membresia.php?mensaje=Los cambios han sido guardados exitosamente.");
+        exit();
+    } else {
+        $mensaje = "Hubo un error al guardar los cambios. Por favor, inténtalo de nuevo.";
+    }
+}
+
+// Mostrar mensaje si está presente en la URL
+if (isset($_GET['mensaje'])) {
+    $mensaje = htmlspecialchars($_GET['mensaje']);
+}
+
 ?>
 
 <main class="form_container">
     <h1 class="section-title">Información de Membresía</h1>
     <h2>Bienvenido, <?php echo htmlspecialchars($nombre); ?>!</h2>
-    <h3>Detalles de tu Membresía</h3>
 
-    <!-- Tabla de información -->
+    <?php if ($mensaje): ?>
+        <p class="mensaje-confirmacion"><?php echo htmlspecialchars($mensaje); ?></p>
+    <?php endif; ?>
+
+    <h3>Detalles de tu Membresía</h3>
     <table class="styled-table">
         <tbody>
             <tr>
@@ -82,26 +106,25 @@ if (!$miembro) {
         </tbody>
     </table>
 
-    <!-- Botones de acción -->
-    <div class="button-container">
-        <!-- Proceder al pago -->
-        <form action="../pagos/pago.php" method="POST" style="display:inline;">
-            <input type="hidden" name="id_usuario" value="<?php echo $id_usuario; ?>">
-            <button type="submit" class="btn-general btn-danger" name="pagar" onclick="return confirm('¿Estás seguro de que deseas realizar el pago? Esta acción no se puede deshacer.')" title="Realizar pago">Pagar</button>
-        </form>
+    <h3>Editar Preferencias</h3>
+    <form method="POST" class="form-edit">
+        <label for="renovacion_automatica">Renovación Automática:</label>
+        <select name="renovacion_automatica" id="renovacion_automatica">
+            <option value="1" <?php echo $miembro['renovacion_automatica'] ? 'selected' : ''; ?>>Sí</option>
+            <option value="0" <?php echo !$miembro['renovacion_automatica'] ? 'selected' : ''; ?>>No</option>
+        </select>
 
-        <!-- Acción de editar membresía -->
-        <form action="crear_membresia.php" method="GET" style="display:inline;">
-            <input type="hidden" name="id_usuario" value="<?php echo $id_usuario; ?>">
-            <button type="submit" class="btn-general edit-button" name="editar_perfil" title="Modificar la membresía de este usuario">Modificar Membresía</button>
-        </form>
+        <label for="metodo_pago">Método de Pago:</label>
+        <select name="metodo_pago" id="metodo_pago">
+            <option value="tarjeta" <?php echo $miembro['metodo_pago'] === 'tarjeta' ? 'selected' : ''; ?>>Tarjeta</option>
+            <option value="efectivo" <?php echo $miembro['metodo_pago'] === 'efectivo' ? 'selected' : ''; ?>>Efectivo</option>
+            <option value="transferencia" <?php echo $miembro['metodo_pago'] === 'transferencia' ? 'selected' : ''; ?>>Transferencia</option>
+            <option value="paypal" <?php echo $miembro['metodo_pago'] === 'paypal' ? 'selected' : ''; ?>>PayPal</option>
+            <option value="bizum" <?php echo $miembro['metodo_pago'] === 'bizum' ? 'selected' : ''; ?>>Bizum</option>
+        </select>
 
-        <!-- Acción de eliminar membresía -->
-        <form action="crear_membresia.php" method="GET" style="display:inline;">
-            <input type="hidden" name="id_usuario" value="<?php echo $id_usuario; ?>">
-            <button type="submit" class="btn-general delete-button" name="eliminar_membresía" title="Eliminar membresía de este usuario">Eliminar Membresía</button>
-        </form>
-    </div>
+        <button type="submit" class="btn-general">Guardar Cambios</button>
+    </form>
 </main>
 
 <?php include '../includes/footer.php'; ?>

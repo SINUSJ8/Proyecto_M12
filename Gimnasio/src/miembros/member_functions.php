@@ -578,3 +578,50 @@ function marcarNotificacionesComoLeidas($conn, $id_usuario)
     $stmt->execute();
     $stmt->close();
 }
+/**
+ * Actualiza las preferencias de membresía de un usuario.
+ *
+ * @param int $id_usuario El ID del usuario.
+ * @param int|null $renovacion_automatica La preferencia de renovación automática (1 o 0).
+ * @param string|null $metodo_pago El método de pago seleccionado.
+ * @return bool Verdadero si la actualización fue exitosa, falso en caso contrario.
+ */
+function actualizarPreferenciasMembresia($id_usuario, $renovacion_automatica, $metodo_pago)
+{
+    $conn = obtenerConexion();
+
+    // Obtener el ID del miembro correspondiente
+    $query_miembro = "SELECT id_miembro FROM miembro WHERE id_usuario = ?";
+    $stmt_miembro = $conn->prepare($query_miembro);
+    $stmt_miembro->bind_param("i", $id_usuario);
+    $stmt_miembro->execute();
+    $result_miembro = $stmt_miembro->get_result();
+    $miembro = $result_miembro->fetch_assoc();
+    $id_miembro = $miembro['id_miembro'] ?? null;
+    $stmt_miembro->close();
+
+    if (!$id_miembro) {
+        return false; // Miembro no encontrado
+    }
+
+    // Actualizar la tabla miembro_membresia (renovación automática)
+    if ($renovacion_automatica !== null) {
+        $query_renovacion = "UPDATE miembro_membresia SET renovacion_automatica = ? WHERE id_miembro = ? AND estado = 'activa'";
+        $stmt_renovacion = $conn->prepare($query_renovacion);
+        $stmt_renovacion->bind_param("ii", $renovacion_automatica, $id_miembro);
+        $stmt_renovacion->execute();
+        $stmt_renovacion->close();
+    }
+
+    // Actualizar la tabla pago (método de pago)
+    if ($metodo_pago !== null) {
+        $query_pago = "UPDATE pago SET metodo_pago = ? WHERE id_miembro = ? ORDER BY fecha_pago DESC LIMIT 1";
+        $stmt_pago = $conn->prepare($query_pago);
+        $stmt_pago->bind_param("si", $metodo_pago, $id_miembro);
+        $stmt_pago->execute();
+        $stmt_pago->close();
+    }
+
+    $conn->close();
+    return true;
+}

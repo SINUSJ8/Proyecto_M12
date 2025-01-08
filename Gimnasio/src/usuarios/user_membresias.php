@@ -41,7 +41,7 @@ while ($row = $result->fetch_assoc()) {
     $membresia_id = $row['id_membresia'];
     if (!isset($membresias[$membresia_id])) {
         $membresias[$membresia_id] = [
-            'id_membresia' => $membresia_id, // Asegurarse de incluir el ID aquí
+            'id_membresia' => $membresia_id,
             'tipo' => $row['tipo'],
             'precio' => $row['precio'],
             'duracion' => $row['duracion'],
