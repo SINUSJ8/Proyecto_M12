@@ -27,7 +27,7 @@ La aplicación dará servicio a distintos tipos distintos de usuarios:
 - `Usuarios`: Pueden crear cuentas, iniciar sesión y gestionar su perfil.
 - `Administrador`: Es el encargador del mantenimiento general, gestiona usuarios, clases, horarios, monitores, y membresías.
 - `Miembros`: Pueden visualizar clases disponibles, apuntarse a ellas, y gestionar su membresía.
-- `Monitores`: Pueden gestionar su disponibilidad, definir su especialidad y los años de experiencia.
+- `Monitores`: Pueden gestionar su disponibilidad y consultar sus clases.
 <a name="lenguajes_programacion"></a>
 ### 3.1. Lenguajes de programación
 - **PHP**: Se utiliza como el lenguaje de programación principal para el backend.
