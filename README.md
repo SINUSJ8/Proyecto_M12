@@ -9,7 +9,7 @@
   - [4.1. Casos de uso](#casos_uso) 								     	  
   - [4.2. Diagrama E-R](#diagrama)  						    	  						  
 - [5. Arquitectura de la aplicación](#arquitectura)   						         	   		 
-- [6. Manual de despliegue](#despliegue)
+- [6. Manual de instalación](#manual)
      - [6.1. Requisitos de Hardware y Software](#requisitos)
      - [6.2. Instalación de XAMPP](#instalacion)
      - [6.3. Configuración](#configuracion)
@@ -118,8 +118,8 @@ La estructura de la aplicación es la siguiente:
     - `user_membresias.php`: visualización de membresías de un usuario.
     - `user_notificaciones.php`: gestión de notificaciones de usuarios.
     - `usuario.php`, `usuarios.php`: páginas principales de usuarios.
-<a name="despliegue"><a/>
-## 6. Manual de despliegue
+<a name="manual"><a/>
+## 6. Manual de instalación
 <a name="requisitos"></a>
 ### 6.1. Requisitos de Hardware y Software
 - Memoria RAM: 4 GB mínimo (8 GB recomendados).
