@@ -127,6 +127,10 @@ if (isset($_GET['mensaje'])) {
 
         <button type="submit" class="btn-general">Guardar Cambios</button>
     </form>
+    <div class="button-container">
+        <a href="cambiar_membresia.php" class="btn-general">Cambiar Membresía</a>
+    </div>
+
 </main>
 
 <?php include '../includes/footer.php'; ?>

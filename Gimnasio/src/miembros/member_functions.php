@@ -385,12 +385,11 @@ function informacionMembresia($id_usuario)
 {
     $conexion = obtenerConexion();
 
+    // Consulta principal para obtener datos del miembro y membresía activa
     $sql = "
         SELECT 
             u.nombre AS nombre_usuario,
             u.email,
-            u.telefono,
-            u.fecha_creacion,
             m.fecha_registro,
             mem.tipo AS nombre_membresia,
             mm.fecha_inicio,
@@ -398,16 +397,25 @@ function informacionMembresia($id_usuario)
             mm.estado,
             mm.renovacion_automatica,
             mm.monto_pagado AS monto_pago,
-            p.metodo_pago,
-            p.fecha_pago
+            (
+                SELECT p.metodo_pago 
+                FROM pago p 
+                WHERE p.id_miembro = m.id_miembro 
+                ORDER BY p.fecha_pago DESC 
+                LIMIT 1
+            ) AS metodo_pago,
+            (
+                SELECT p.fecha_pago 
+                FROM pago p 
+                WHERE p.id_miembro = m.id_miembro 
+                ORDER BY p.fecha_pago DESC 
+                LIMIT 1
+            ) AS fecha_pago
         FROM usuario u
         LEFT JOIN miembro m ON u.id_usuario = m.id_usuario
         LEFT JOIN miembro_membresia mm ON m.id_miembro = mm.id_miembro AND mm.estado = 'activa'
         LEFT JOIN membresia mem ON mm.id_membresia = mem.id_membresia
-        LEFT JOIN pago p ON m.id_miembro = p.id_miembro
         WHERE u.id_usuario = ?
-        ORDER BY p.fecha_pago DESC
-        LIMIT 1
     ";
 
     $stmt = $conexion->prepare($sql);
@@ -417,7 +425,7 @@ function informacionMembresia($id_usuario)
 
     $datosMiembro = $resultado->fetch_assoc();
 
-    // Obtener los entrenamientos/especialidades asignados al miembro
+    // Obtener las especialidades asignadas al miembro
     $sqlEspecialidades = "
         SELECT e.nombre AS especialidad
         FROM miembro_entrenamiento me
@@ -439,8 +447,18 @@ function informacionMembresia($id_usuario)
 
     $datosMiembro['especialidades'] = $especialidades;
 
+    $stmtEspecialidades->close();
+    $stmt->close();
+    $conexion->close();
+
     return $datosMiembro;
 }
+
+
+
+
+
+
 function obtenerDetalleCompletoMiembro($conn, $id_usuario)
 {
     $miembro = obtenerMiembroPorID($conn, $id_usuario);
@@ -582,7 +600,7 @@ function actualizarPreferenciasMembresia($id_usuario, $renovacion_automatica, $m
 {
     $conn = obtenerConexion();
 
-    // Obtener el ID del miembro correspondiente
+    // Obtener el ID del miembro
     $query_miembro = "SELECT id_miembro FROM miembro WHERE id_usuario = ?";
     $stmt_miembro = $conn->prepare($query_miembro);
     $stmt_miembro->bind_param("i", $id_usuario);
@@ -596,33 +614,40 @@ function actualizarPreferenciasMembresia($id_usuario, $renovacion_automatica, $m
         return "No se encontró información del miembro.";
     }
 
-    // Verificar si la membresía está activa
+    // Obtener el ID de la membresía activa
     $query_membresia_activa = "SELECT id FROM miembro_membresia WHERE id_miembro = ? AND estado = 'activa'";
     $stmt_membresia_activa = $conn->prepare($query_membresia_activa);
     $stmt_membresia_activa->bind_param("i", $id_miembro);
     $stmt_membresia_activa->execute();
     $result_membresia_activa = $stmt_membresia_activa->get_result();
     $membresia_activa = $result_membresia_activa->fetch_assoc();
+    $id_membresia_activa = $membresia_activa['id'] ?? null;
     $stmt_membresia_activa->close();
 
-    if (!$membresia_activa) {
-        return "La membresía no está activa.";
+    if (!$id_membresia_activa) {
+        return "No hay una membresía activa.";
     }
 
     $success = true;
 
-    // Actualizar la tabla miembro_membresia (renovación automática)
+    // Actualizar la renovación automática
     if ($renovacion_automatica !== null) {
-        $query_renovacion = "UPDATE miembro_membresia SET renovacion_automatica = ? WHERE id_miembro = ? AND estado = 'activa'";
+        $query_renovacion = "UPDATE miembro_membresia SET renovacion_automatica = ? WHERE id = ?";
         $stmt_renovacion = $conn->prepare($query_renovacion);
-        $stmt_renovacion->bind_param("ii", $renovacion_automatica, $id_miembro);
+        $stmt_renovacion->bind_param("ii", $renovacion_automatica, $id_membresia_activa);
         $success = $stmt_renovacion->execute() && $success;
         $stmt_renovacion->close();
     }
 
-    // Actualizar la tabla pago (método de pago)
+    // Actualizar el método de pago más reciente
     if ($metodo_pago !== null) {
-        $query_pago_existente = "SELECT id_pago FROM pago WHERE id_miembro = ? ORDER BY fecha_pago DESC LIMIT 1";
+        $query_pago_existente = "
+            SELECT id_pago 
+            FROM pago 
+            WHERE id_miembro = ? 
+            ORDER BY fecha_pago DESC 
+            LIMIT 1
+        ";
         $stmt_pago_existente = $conn->prepare($query_pago_existente);
         $stmt_pago_existente->bind_param("i", $id_miembro);
         $stmt_pago_existente->execute();
@@ -631,17 +656,17 @@ function actualizarPreferenciasMembresia($id_usuario, $renovacion_automatica, $m
         $stmt_pago_existente->close();
 
         if ($pago_existente) {
-            $query_pago = "UPDATE pago SET metodo_pago = ? WHERE id_pago = ?";
-            $stmt_pago = $conn->prepare($query_pago);
-            $stmt_pago->bind_param("si", $metodo_pago, $pago_existente['id_pago']);
-            $success = $stmt_pago->execute() && $success;
-            $stmt_pago->close();
+            $query_actualizar_pago = "UPDATE pago SET metodo_pago = ? WHERE id_pago = ?";
+            $stmt_actualizar_pago = $conn->prepare($query_actualizar_pago);
+            $stmt_actualizar_pago->bind_param("si", $metodo_pago, $pago_existente['id_pago']);
+            $success = $stmt_actualizar_pago->execute() && $success;
+            $stmt_actualizar_pago->close();
         } else {
-            $query_insert_pago = "INSERT INTO pago (id_miembro, monto, fecha_pago, metodo_pago) VALUES (?, 0, NOW(), ?)";
-            $stmt_insert_pago = $conn->prepare($query_insert_pago);
-            $stmt_insert_pago->bind_param("is", $id_miembro, $metodo_pago);
-            $success = $stmt_insert_pago->execute() && $success;
-            $stmt_insert_pago->close();
+            $query_insertar_pago = "INSERT INTO pago (id_miembro, monto, fecha_pago, metodo_pago) VALUES (?, 0, NOW(), ?)";
+            $stmt_insertar_pago = $conn->prepare($query_insertar_pago);
+            $stmt_insertar_pago->bind_param("is", $id_miembro, $metodo_pago);
+            $success = $stmt_insertar_pago->execute() && $success;
+            $stmt_insertar_pago->close();
         }
     }
 
