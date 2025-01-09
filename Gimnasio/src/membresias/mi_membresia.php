@@ -20,14 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $renovacion = isset($_POST['renovacion_automatica']) ? (int)$_POST['renovacion_automatica'] : null;
     $metodo_pago = $_POST['metodo_pago'] ?? null;
 
-    if (actualizarPreferenciasMembresia($id_usuario, $renovacion, $metodo_pago)) {
-        // Redirigir a la misma página para reflejar los cambios
-        header("Location: mi_membresia.php?mensaje=Los cambios han sido guardados exitosamente.");
+    $resultado = actualizarPreferenciasMembresia($id_usuario, $renovacion, $metodo_pago);
+
+    if ($resultado === "Preferencias actualizadas exitosamente.") {
+        header("Location: mi_membresia.php?mensaje=" . urlencode($resultado));
         exit();
     } else {
-        $mensaje = "Hubo un error al guardar los cambios. Por favor, inténtalo de nuevo.";
+        $mensaje = $resultado; // Mostrar mensaje de error directamente
     }
 }
+
 
 // Mostrar mensaje si está presente en la URL
 if (isset($_GET['mensaje'])) {
