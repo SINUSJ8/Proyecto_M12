@@ -1,42 +1,44 @@
-<!DOCTYPE html>
-<html lang="es">
+<?php
+require_once __DIR__ . '/../includes/general.php';
+$title = "Contacto";
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gimnasio - Registro e Inicio de Sesión</title>
-    <link rel="stylesheet" href="../../assets/css/estilos.css">
-    <?php include '../Includes/header.php'; ?>
-</head>
+// Incluir el header basado en el rol del usuario
+if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
+    include_once __DIR__ . '/../miembros/miembro_header.php';
+} else {
+    include_once __DIR__ . '/../includes/header.php';
+}
+?>
 
-<body>
-    <!-- Contenedor del formulario de registro de usuario -->
-    <div class="form_container">
-        <h2>Formulario de contacto</h2>
-        <form action="formulario.php" method="POST" onsubmit="return validarFormulario()">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required>
+<main class="form_container">
+    <h1 class="section-title">Formulario de contacto</h1>
+    <p class="intro-text">Envíanos tu consulta y te responderemos lo antes posible.</p>
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+    <form action="formulario.php" method="POST" onsubmit="return validarFormulario()">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
 
-            <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" >
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
 
-            <label for="descripcion">Tu consulta:</label>
-            <input type="text" id="descripcion" name="descripcion" required>
-                        
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono">
+
+        <label for="descripcion">Tu consulta:</label>
+        <textarea id="descripcion" name="descripcion" required></textarea>
+
+        <div class="checkbox-container">
             <input type="checkbox" id="condiciones" name="condiciones" required>
             <label for="condiciones">Quiero recibir la Newsletter y acepto los términos y condiciones.</label>
-            <br>
-            <br>
-            <button type="submit" class="btn-general">Enviar</button>
-        </form>
-    </div>
+        </div>
+
+        <button type="submit" class="btn-general">Enviar</button>
+    </form>
+
+    <!-- Botón Volver -->
     <div class="button-container">
-        <a href="../../index.php" class="btn-general">Volver al inicio</a>
+        <a href="<?php echo BASE_URL; ?>index.php" class="button">Volver al inicio</a>
     </div>
-    <script src="../../assets/js/validacion.js"></script>
-</body>
-<?php include '../includes/footer.php'; ?>
-</html>
+</main>
+
+<?php include_once __DIR__ . '/../includes/footer.php'; ?>
