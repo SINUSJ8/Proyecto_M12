@@ -1,15 +1,13 @@
 <?php
+require_once __DIR__ . '/../includes/general.php';
 $title = "Clases Disponibles";
-// Obtener la URL de referencia de donde se accede aquí
-$referer = $_SERVER['HTTP_REFERER'];
 
-// Verificar la URL de referencia y decidir qué header incluir
-if (strpos($referer, 'index.php') !== false) {
-    include '../Includes/header.php';
+// Incluir el header basado en el rol del usuario
+if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
+    include_once __DIR__ . '/../miembros/miembro_header.php';
 } else {
-    include '../miembros/miembro_header.php';
+    include_once __DIR__ . '/../includes/header.php';
 }
-
 ?>
 
 <main class="form_container">
@@ -77,16 +75,11 @@ if (strpos($referer, 'index.php') !== false) {
             </ul>
         </div>
     </div>
-    
-    <?php
-    // Cuando se acede desde index, se habilita botón Volver a pagina principal
-    if (strpos($referer, 'index.php') !== false) {
-    
-        echo '<div class="button-container">
-            <a href="../../index.php" class="button">Volver a la Página Principal</a>
-        </div>';
-    }        
-    ?>
+
+    <!-- Botón Volver -->
+    <div class="button-container">
+        <a href="<?php echo BASE_URL; ?>index.php" class="button">Volver a la Página Principal</a>
+    </div>
 </main>
 
-<?php include '../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../includes/footer.php'; ?>

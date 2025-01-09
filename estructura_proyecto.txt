@@ -1,7 +1,8 @@
 Listado de rutas de carpetas
 El número de serie del volumen es 1063-4645
 C:.
-¦   estructura.txt
+¦   estructura_proyecto.txt
+¦   README.md
 ¦   
 +---Gimnasio
     ¦   index.php
@@ -11,17 +12,32 @@ C:.
     ¦   ¦       estilos.css
     ¦   ¦       
     ¦   +---imgs
+    ¦   ¦       Bienvenida.png
     ¦   ¦       cardio.webp
+    ¦   ¦       cardio2.png
+    ¦   ¦       casosuso.PNG
+    ¦   ¦       diagrama.PNG
     ¦   ¦       entrenamiento_funcional.jpg
+    ¦   ¦       entrenamiento_funcional2.jpg
+    ¦   ¦       FitBay.png
+    ¦   ¦       gym-portada.jpg
+    ¦   ¦       gym-portada2.jpg
     ¦   ¦       gym.webp
+    ¦   ¦       icono.png
     ¦   ¦       pesas.avif
     ¦   ¦       pilates.jpg
+    ¦   ¦       pilates2.jpg
+    ¦   ¦       portada.jpg
+    ¦   ¦       portada2.jpg
+    ¦   ¦       redes.jpg
     ¦   ¦       yoga.jpg
+    ¦   ¦       yoga2.jpg
     ¦   ¦       
     ¦   +---js
     ¦           calendario.js
     ¦           clases.js
     ¦           dinamica_especialidades.js
+    ¦           slider.js
     ¦           validacion.js
     ¦           
     +---sql
@@ -49,6 +65,7 @@ C:.
         ¦       clases_monitor.php
         ¦       class_functions.php
         ¦       crear_clase.php
+        ¦       detalle_clase.php
         ¦       editar_clase.php
         ¦       mis_clases.php
         ¦       mi_clase_functions.php
@@ -68,8 +85,10 @@ C:.
         ¦       contacto.php
         ¦       
         +---membresias
+        ¦       cambiar_membresia.php
         ¦       crear_membresia.php
         ¦       membresias.php
+        ¦       membresias_publicas.php
         ¦       mi_membresia.php
         ¦       
         +---miembros
@@ -89,6 +108,7 @@ C:.
         ¦       notificaciones_monitor.php
         ¦       
         +---pagos
+        ¦       cambio_proceso_pago.php
         ¦       pago.php
         ¦       proceso_pago.php
         ¦       
