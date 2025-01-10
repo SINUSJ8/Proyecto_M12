@@ -1,15 +1,5 @@
 <?php
 session_start();
-
-if (isset($_SESSION['error'])) {
-    echo "<p class='mensaje-error'>{$_SESSION['error']}</p>";
-    unset($_SESSION['error']);
-}
-
-if (isset($_SESSION['mensaje'])) {
-    echo "<p class='mensaje-confirmacion'>{$_SESSION['mensaje']}</p>";
-    unset($_SESSION['mensaje']);
-}
 ?>
 
 <!DOCTYPE html>
@@ -23,18 +13,20 @@ if (isset($_SESSION['mensaje'])) {
 </head>
 
 <body>
-    <!-- Mensaje de confirmación, mostrado si existe en la URL como parámetro 'mensaje' -->
-    <?php if (isset($_GET['mensaje'])): ?>
+    <!-- Mensaje de confirmación o error almacenado en la sesión -->
+    <?php if (isset($_SESSION['mensaje'])): ?>
         <div class="mensaje-confirmacion">
-            <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
+            <p><?php echo htmlspecialchars($_SESSION['mensaje']); ?></p>
+            <a href="log.php" class="btn-general">Iniciar Sesión</a> <!-- Botón para iniciar sesión -->
         </div>
+        <?php unset($_SESSION['mensaje']); ?>
     <?php endif; ?>
 
-    <!-- Mensaje de error, mostrado si existe en la URL como parámetro 'error' -->
-    <?php if (isset($_GET['error'])): ?>
+    <?php if (isset($_SESSION['error'])): ?>
         <div class="mensaje-error">
-            <p><?php echo htmlspecialchars($_GET['error']); ?></p>
+            <p><?php echo htmlspecialchars($_SESSION['error']); ?></p>
         </div>
+        <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
     <!-- Contenedor del formulario de registro de usuario -->
@@ -56,12 +48,11 @@ if (isset($_SESSION['mensaje'])) {
             <button type="submit" class="btn-general">Registrarse</button>
         </form>
     </div>
+
+    <!-- Botón para volver al inicio -->
     <div class="button-container">
         <a href="../../index.php" class="btn-general">Volver al inicio</a>
     </div>
-
-
-
 
     <script src="../../assets/js/validacion.js"></script>
 </body>
