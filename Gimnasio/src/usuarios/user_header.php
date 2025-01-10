@@ -30,7 +30,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'usuario') {
 
         <nav id="navegacion-rapida">
             <a href="usuario.php">Mi Perfil</a>
-            <a href="user_membresias.php">Mis Membresías</a>
+            <a href="user_membresias.php">Elige tu Membresía</a>
             <a href="user_notificaciones.php">Mis Notificaciones</a>
             <form action="../includes/general.php" method="post" style="display: inline;">
                 <input type="hidden" name="accion" value="logout">
