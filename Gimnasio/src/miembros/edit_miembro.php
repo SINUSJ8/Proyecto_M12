@@ -129,6 +129,8 @@ include '../admin/admin_header.php';
 
                     <!-- Botón para guardar los cambios -->
                     <button type="submit" class="btn-general">Guardar Cambios</button>
+                    <!-- Botón para cancelar -->
+                    <a href="miembros.php" class="btn-general cancel-button">Cancelar</a>
                 </form>
             <?php else: ?>
                 <p>Miembro no encontrado.</p>
