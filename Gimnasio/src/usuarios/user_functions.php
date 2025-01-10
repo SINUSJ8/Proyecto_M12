@@ -115,6 +115,12 @@ function manejarAccionUsuario($conn, $pagina = "usuarios.php")
 // Subfunciones para cada acción específica
 function eliminarUsuario($conn, $id_usuario)
 {
+    // Proteger al administrador principal
+    if ($id_usuario == 1) {
+        $_SESSION['mensaje'] = "No se puede eliminar al administrador principal.";
+        header('Location: usuarios.php');
+        exit();
+    }
     $stmt = $conn->prepare("DELETE FROM usuario WHERE id_usuario = ?");
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();
