@@ -379,6 +379,23 @@ table.styled-table th.sortable.sorted-desc:after {
     font-weight: normal;
 }
 
+.notificacion-mensaje{
+    display: flex;
+    flex-direction: column; /* Coloca los elementos uno debajo del otro */
+    gap: 15px; /* Espacio entre el textarea y el botón */
+    max-width: 400px; /* Limita el ancho para que sea más legible */
+    margin: 0 auto; /* Centra el formulario horizontalmente */
+}
+
+.notificacion-mensaje textarea {
+    height: 100px; /* Altura ajustable */
+    resize: vertical; /* Permite redimensionar solo en la dirección vertical */
+    padding: 10px; /* Espaciado interno para mejor legibilidad */
+    font-size: 16px; /* Tamaño de fuente */
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
 /* MENSAJES */
 .success-message {
     color: green;

@@ -163,7 +163,7 @@ include '../admin/admin_header.php';
                         <div class="membresia-botones">
                             <button type="submit" name="editar_membresia" class="btn-general">Editar</button>
                             <button type="submit" name="eliminar_membresia"
-                                class="btn-general delete-button <?php echo ($membresia['id_membresia'] == 1) ? 'btn-disabled' : ''; ?>"
+                                class="delete-button <?php echo ($membresia['id_membresia'] == 1) ? 'btn-disabled' : ''; ?>"
                                 onclick="return confirm('¿Estás seguro de que deseas eliminar esta membresía?')"
                                 <?php echo ($membresia['id_membresia'] == 1) ? 'disabled title=\"Esta membresía no se puede eliminar.\"' : ''; ?>>
                                 Eliminar

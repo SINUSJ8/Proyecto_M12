@@ -148,7 +148,7 @@ include '../admin/admin_header.php';
                                     <!-- Botón para eliminar usuario -->
                                     <form method="POST" action="usuarios.php" style="display:inline;" onsubmit="return confirmarEliminacion();">
                                         <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
-                                        <button type="submit" name="eliminar_usuario" class="btn-general delete-button">Eliminar</button>
+                                        <button type="submit" name="eliminar_usuario" class="delete-button">Eliminar</button>
                                     </form>
 
                                 </div>

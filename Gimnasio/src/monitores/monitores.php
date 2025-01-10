@@ -103,7 +103,7 @@ include '../admin/admin_header.php';
                             <td>
                                 <form method="POST" action="monitores.php" onsubmit="return confirmarEliminacion();" style="margin-bottom: 5px;">
                                     <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($monitor['id_usuario']); ?>">
-                                    <button type="submit" class="btn-general delete-button" name="eliminar_usuario">Eliminar</button>
+                                    <button type="submit" class="delete-button" name="eliminar_usuario">Eliminar</button>
                                 </form>
                                 <a href="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($monitor['id_usuario']); ?>" class="btn-general edit-button">Editar</a>
                             </td>

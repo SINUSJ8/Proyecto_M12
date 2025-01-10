@@ -76,15 +76,15 @@ include '../admin/admin_header.php';
                         </td>
                         <td class="acciones">
                             <div class="button-container">
-                                <!-- Acción de eliminar -->
-                                <form action="miembros.php" method="POST" style="display:inline;">
-                                    <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
-                                    <button type="submit" class="btn-general delete-button" name="eliminar_usuario" onclick="return confirm('¿Estás seguro de que deseas eliminar este miembro? Esta acción no se puede deshacer.')" title="Eliminar definitivamente este miembro">Eliminar</button>
-                                </form>
                                 <!-- Acción de editar -->
                                 <form action="edit_miembro.php" method="GET" style="display:inline;">
                                     <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
                                     <button type="submit" class="btn-general edit-button" name="editar_usuario" title="Modificar el perfil de este miembro">Modificar Perfil</button>
+                                </form>                                                             
+                                <!-- Acción de eliminar -->
+                                <form action="miembros.php" method="POST" style="display:inline;">
+                                    <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
+                                    <button type="submit" class="delete-button" name="eliminar_usuario" onclick="return confirm('¿Estás seguro de que deseas eliminar este miembro? Esta acción no se puede deshacer.')" title="Eliminar definitivamente este miembro">Eliminar</button>
                                 </form>
                             </div>
                         </td>

@@ -143,7 +143,7 @@ include '../admin/admin_header.php';
                 <input type="number" id="capacidad" name="capacidad"
                     value="<?= htmlspecialchars($clase['capacidad_maxima'] ?? '') ?>" required>
 
-                <button type="submit" class="button-container"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
+                <button type="submit" class="btn-general"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
             </form>
 
         </section>

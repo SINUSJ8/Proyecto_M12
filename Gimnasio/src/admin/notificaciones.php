@@ -140,11 +140,10 @@ include 'admin_header.php';
                     <option value="">-- Selecciona un usuario --</option>
                 </select>
             </div>
-
-            <label for="mensaje">Mensaje:</label>
-            <textarea name="mensaje" id="mensaje" rows="5" required class="input-general"></textarea>
-
-            <button type="submit" class="btn-general">Enviar Notificación</button>
+            <div class="notificacion-mensaje">
+                <textarea name="mensaje" id="mensaje" required class="input-general" placeholder="Tu mensaje" required></textarea>
+                <button type="submit" class="btn-general">Enviar Notificación</button>
+            </div>
         </form>
     </section>
 
