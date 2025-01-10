@@ -197,6 +197,12 @@ function crearMonitor($conn, $id_usuario, $pagina = "usuarios.php")
 
 function restaurarUsuario($conn, $id_usuario)
 {
+    // Proteger al administrador principal
+    if ($id_usuario == 1) {
+        $_SESSION['mensaje'] = "No se puede restaurar al administrador principal.";
+        header('Location: usuarios.php');
+        exit();
+    }
     $stmt = $conn->prepare("DELETE FROM miembro WHERE id_usuario = ?");
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();
