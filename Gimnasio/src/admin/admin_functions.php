@@ -177,6 +177,65 @@ function eliminarMembresia($conn, $id_membresia)
         return $error;
     }
 }
+function eliminarMiembroMembresia($conn, $id_miembro_membresia)
+{
+    $stmt = $conn->prepare("DELETE FROM miembro_membresia WHERE id = ?");
+    $stmt->bind_param("i", $id_miembro_membresia);
+    if ($stmt->execute()) {
+        $stmt->close();
+        return "Registro de membresía del miembro eliminado exitosamente.";
+    } else {
+        $error = "Error al eliminar el registro: " . $stmt->error;
+        $stmt->close();
+        return $error;
+    }
+}
+
+function activarMembresia($conn, $idMembresia)
+{
+    // Verificar si la fecha de expiración es posterior a la fecha actual
+    $sqlFecha = "SELECT fecha_fin, id_miembro FROM miembro_membresia WHERE id = ?";
+    $stmtFecha = $conn->prepare($sqlFecha);
+    $stmtFecha->bind_param("i", $idMembresia);
+    $stmtFecha->execute();
+    $stmtFecha->bind_result($fechaFin, $idMiembro);
+    $stmtFecha->fetch();
+    $stmtFecha->close();
+
+    if (!$fechaFin || strtotime($fechaFin) <= strtotime(date("Y-m-d"))) {
+        // Fecha de expiración inválida o pasada
+        return false;
+    }
+
+    // Desactivar otras membresías activas del mismo miembro
+    $sqlDesactivar = "UPDATE miembro_membresia SET estado = 'expirada' WHERE id_miembro = ? AND estado = 'activa'";
+    $stmtDesactivar = $conn->prepare($sqlDesactivar);
+    $stmtDesactivar->bind_param("i", $idMiembro);
+    $stmtDesactivar->execute();
+    $stmtDesactivar->close();
+
+    // Activar la membresía seleccionada
+    $sqlActivar = "UPDATE miembro_membresia SET estado = 'activa' WHERE id = ?";
+    $stmtActivar = $conn->prepare($sqlActivar);
+    $stmtActivar->bind_param("i", $idMembresia);
+    $resultado = $stmtActivar->execute();
+    $stmtActivar->close();
+
+    return $resultado;
+}
+
+
+function desactivarMembresia($conn, $idMembresia)
+{
+    $sql = "UPDATE miembro_membresia SET estado = 'expirada' WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $idMembresia);
+    $resultado = $stmt->execute();
+    $stmt->close();
+    return $resultado;
+}
+
+
 function asignarMembresiaAlMiembro($conn, $id_miembro, $id_membresia)
 {
     // Obtener información de la membresía para calcular la fecha de expiración y monto pagado
