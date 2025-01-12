@@ -15,7 +15,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($title) ? $title : "Gimnasio - Monitor"; ?></title>
+    <title><?php echo isset($title) ? $title : "Panel del Monitor"; ?></title>
     <link rel="stylesheet" href="../../assets/css/estilos.css">
     <script src="../../assets/js/validacion.js"></script>
 </head>
@@ -23,7 +23,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {
 <body>
     <header>
         <div class="header-content">
-            <h1>Gimnasio - Monitor</h1>
+            <h1>Panel del Monitor</h1>
             <span class="user-name"><?php echo htmlspecialchars($_SESSION['nombre']); ?></span>
         </div>
         <nav id="navegacion-rapida">
