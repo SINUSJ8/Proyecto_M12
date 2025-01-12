@@ -13,7 +13,9 @@
 <body>
     <header>
         <div class="header-content">
-            <img src="<?php echo BASE_URL; ?>assets/imgs/FitBay.png" alt="FitBay" class="logo" width="20%">
+            <a href= "<?php echo BASE_URL; ?>index.php">
+                <img src="<?php echo BASE_URL; ?>assets/imgs/FitBay.png" alt="FitBay" class="logo" width="20%">
+            </a>
         </div>
         <nav id="navegacion-rapida">
             <a href="<?php echo BASE_URL; ?>src/clases/clases_disponibles.php">Oferta de Clases</a>

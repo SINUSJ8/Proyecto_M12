@@ -38,8 +38,8 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
             </ul>
             <!-- Botón apuntarme -->
             <?php
-            // Es miembro?
-            if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'miembro') {
+            // Verificar si el usuario no está registrado o su rol no es 'miembro'
+            if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'miembro') {
                 ?>
                 <div class="button-container">
                     <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
@@ -48,12 +48,11 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
             } else {
                 ?>
                 <div class="button-container">
-                    <a href="<?php echo BASE_URL; ?>src/clases/mis_clases.php" class="button">¡Apúntame!</a>
+                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
                 </div>
                 <?php
             }
             ?>
-            
         </div>
         
         
@@ -69,9 +68,22 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Mejora el metabolismo.</li>
             </ul>
             <!-- Botón apuntarme -->
-            <div class="button-container">
-                <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
-            </div>
+            <?php
+            // Verificar si el usuario no está registrado o su rol no es 'miembro'
+            if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'miembro') {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+                </div>
+                <?php
+            } else {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                </div>
+                <?php
+            }
+            ?>
         </div>
 
         <!-- Clase Pilates -->
@@ -85,9 +97,22 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Aumenta la flexibilidad y la movilidad.</li>
             </ul>
             <!-- Botón apuntarme -->
-            <div class="button-container">
-                <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
-            </div>
+            <?php
+            // Verificar si el usuario no está registrado o su rol no es 'miembro'
+            if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'miembro') {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+                </div>
+                <?php
+            } else {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                </div>
+                <?php
+            }
+            ?>
         </div>
 
         <!-- Clase Yoga -->
@@ -101,9 +126,22 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Reduce el estrés y la ansiedad.</li>
             </ul>
             <!-- Botón apuntarme -->
-            <div class="button-container">
-                <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
-            </div>
+            <?php
+            // Verificar si el usuario no está registrado o su rol no es 'miembro'
+            if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'miembro') {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+                </div>
+                <?php
+            } else {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                </div>
+                <?php
+            }
+            ?>
         </div>
 
         <!-- Entrenamiento Funcional -->
@@ -117,9 +155,22 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Desarrolla agilidad y coordinación.</li>
             </ul>
             <!-- Botón apuntarme -->
-            <div class="button-container">
-                <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
-            </div>
+            <?php
+            // Verificar si el usuario no está registrado o su rol no es 'miembro'
+            if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'miembro') {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+                </div>
+                <?php
+            } else {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                </div>
+                <?php
+            }
+            ?>
         </div>
     </div>
 
