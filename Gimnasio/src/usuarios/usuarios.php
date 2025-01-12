@@ -5,69 +5,54 @@ require_once('../usuarios/user_functions.php');
 verificarAdmin();
 
 $conn = obtenerConexion();
+
+// Mostrar mensaje de sesión si existe
 if (isset($_SESSION['mensaje'])) {
-    // Determinar la clase según el contenido del mensaje
-    $clase = 'success-message'; // Por defecto, mensaje de éxito
-    if (strpos($_SESSION['mensaje'], 'no') !== false || strpos($_SESSION['mensaje'], 'existe') !== false) {
-        $clase = 'mensaje-error';
-    } elseif (strpos($_SESSION['mensaje'], 'restaurado') !== false) {
-        $clase = 'mensaje-confirmacion';
-    }
-    // Mostrar el mensaje
+    $clase = obtenerClaseMensaje($_SESSION['mensaje']);
     echo '<p class="' . $clase . '">' . htmlspecialchars($_SESSION['mensaje']) . '</p>';
-    unset($_SESSION['mensaje']); // Elimina el mensaje después de mostrarlo
+    unset($_SESSION['mensaje']);
 }
 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restaurar_usuario'])) {
-    $id_usuario = intval($_POST['id_usuario']);
-    restaurarUsuario($conn, $id_usuario);
-    $_SESSION['mensaje'] = "El usuario ha sido restaurado correctamente a un rol básico.";
-    header('Location: usuarios.php');
-    exit();
-}
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['eliminar_usuario'])) {
+// Procesar solicitudes POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_usuario = intval($_POST['id_usuario']);
 
-    // Verificar si el administrador intenta eliminar su propia cuenta
-    if ($_SESSION['id_usuario'] === $id_usuario) {
-        $_SESSION['mensaje'] = "No puedes eliminar tu propia cuenta.";
+    if ($_SESSION['id_usuario'] !== $id_usuario && $_SESSION['id_usuario'] !== 1) {
+        $_SESSION['mensaje'] = "No tienes permisos para realizar esta acción.";
         header('Location: usuarios.php');
         exit();
     }
 
-    // Verificar si el usuario existe
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM usuario WHERE id_usuario = ?");
-    $stmt->bind_param("i", $id_usuario);
-    $stmt->execute();
-    $stmt->bind_result($count);
-    $stmt->fetch();
-    $stmt->close(); // Asegúrate de cerrar el statement
-
-    if ($count === 0) {
-        $_SESSION['mensaje'] = "El usuario no existe.";
-        header('Location: usuarios.php');
-        exit();
+    if (isset($_POST['restaurar_usuario'])) {
+        if ($id_usuario === 1 && $_SESSION['id_usuario'] !== 1) {
+            $_SESSION['mensaje'] = "No puedes restaurar al administrador general.";
+            header('Location: usuarios.php');
+            exit();
+        }
+        restaurarUsuario($conn, $id_usuario);
+        $_SESSION['mensaje'] = "El usuario ha sido restaurado correctamente a un rol básico.";
+    } elseif (isset($_POST['eliminar_usuario'])) {
+        if ($id_usuario === 1 || ($_SESSION['id_usuario'] !== 1 && $usuario['rol'] === 'admin' && $_SESSION['id_usuario'] !== 1)) {
+            $_SESSION['mensaje'] = "No tienes permisos para eliminar este usuario.";
+            header('Location: usuarios.php');
+            exit();
+        }
+        eliminarUsuario($conn, $id_usuario);
+        $_SESSION['mensaje'] = "El usuario ha sido eliminado correctamente.";
     }
-
-    // Llamar a la función para eliminar el usuario
-    eliminarUsuario($conn, $id_usuario);
-    $_SESSION['mensaje'] = "El usuario ha sido eliminado correctamente.";
     header('Location: usuarios.php');
     exit();
 }
 
-// Capturar el término de búsqueda
+
+// Obtener usuarios
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
-
-// Obtener usuarios con la función personalizada
 $sql = "SELECT id_usuario, nombre, email, rol, telefono, fecha_creacion FROM usuario WHERE 1=1";
 if (!empty($busqueda)) {
     $sql .= " AND (nombre LIKE ? OR email LIKE ?)";
 }
-$sql .= " ORDER BY nombre ASC"; // Ordenamiento inicial por nombre
+$sql .= " ORDER BY nombre ASC";
 $stmt = $conn->prepare($sql);
-
 if (!empty($busqueda)) {
     $busqueda_param = '%' . $busqueda . '%';
     $stmt->bind_param("ss", $busqueda_param, $busqueda_param);
@@ -78,7 +63,6 @@ $usuarios = $result->fetch_all(MYSQLI_ASSOC);
 
 $title = "Gestión de Usuarios";
 include '../admin/admin_header.php';
-
 ?>
 
 <body>
@@ -98,7 +82,6 @@ include '../admin/admin_header.php';
             </form>
         </div>
 
-
         <!-- Tabla con lista de usuarios -->
         <table id="tabla-usuarios" class="styled-table">
             <thead>
@@ -114,42 +97,45 @@ include '../admin/admin_header.php';
             <tbody>
                 <?php if (!empty($usuarios)): ?>
                     <?php foreach ($usuarios as $usuario): ?>
+                        <?php
+                        $nombre = htmlspecialchars($usuario['nombre']);
+                        $email = htmlspecialchars($usuario['email']);
+                        $rol = htmlspecialchars($usuario['rol']);
+                        $telefono = htmlspecialchars($usuario['telefono'] ?? 'N/A');
+                        $fecha_creacion = htmlspecialchars($usuario['fecha_creacion']);
+                        ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($usuario['nombre']); ?></td>
-                            <td><?php echo htmlspecialchars($usuario['email']); ?></td>
-                            <td><?php echo htmlspecialchars($usuario['rol']); ?></td>
-                            <td><?php echo htmlspecialchars($usuario['telefono'] ?? 'N/A'); ?></td>
-                            <td><?php echo htmlspecialchars($usuario['fecha_creacion']); ?></td>
+                            <td><?php echo $nombre; ?></td>
+                            <td><?php echo $email; ?></td>
+                            <td><?php echo $rol; ?></td>
+                            <td><?php echo $telefono; ?></td>
+                            <td><?php echo $fecha_creacion; ?></td>
                             <td class="acciones">
                                 <div class="button-container">
                                     <!-- Botón de editar -->
-                                    <a href="<?php
-                                                switch ($usuario['rol']) {
-                                                    case 'miembro':
-                                                        echo '../miembros/edit_miembro.php?id_usuario=' . $usuario['id_usuario'];
-                                                        break;
-                                                    case 'monitor':
-                                                        echo '../monitores/edit_monitor.php?id_usuario=' . $usuario['id_usuario'];
-                                                        break;
-                                                    case 'admin':
-                                                        echo '../admin/edit_admin.php?id_usuario=' . $usuario['id_usuario'];
-                                                        break;
-                                                    default:
-                                                        echo '../usuarios/edit_usuario.php?id_usuario=' . $usuario['id_usuario'];
-                                                        break;
-                                                }
-                                                ?>" class="btn-general edit-button">Editar</a>
+                                    <?php if ($_SESSION['id_usuario'] === 1 || $_SESSION['id_usuario'] === $usuario['id_usuario'] || $usuario['rol'] !== 'admin'): ?>
+                                        <a href="../usuarios/edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general edit-button">
+                                            <?php echo ($_SESSION['id_usuario'] === $usuario['id_usuario']) ? 'Perfil' : 'Editar'; ?>
+                                        </a>
+                                    <?php endif; ?>
+
 
                                     <!-- Botón para restaurar a "usuario" -->
-                                    <form method="POST" action="usuarios.php" style="display:inline;" onsubmit="return confirmarRestauracion();">
-                                        <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
-                                        <button type="submit" name="restaurar_usuario" class="btn-general delete-button">Restaurar</button>
-                                    </form>
+                                    <?php if ($_SESSION['id_usuario'] === 1 && $usuario['id_usuario'] !== 1): ?>
+                                        <form method="POST" action="usuarios.php" style="display:inline;" onsubmit="return confirmarRestauracion();">
+                                            <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
+                                            <button type="submit" name="restaurar_usuario" class="btn-general delete-button">Restaurar</button>
+                                        </form>
+                                    <?php endif; ?>
+
+
                                     <!-- Botón para eliminar usuario -->
-                                    <form method="POST" action="usuarios.php" style="display:inline;" onsubmit="return confirmarEliminacion();">
-                                        <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
-                                        <button type="submit" name="eliminar_usuario" class="delete-button">Eliminar</button>
-                                    </form>
+                                    <?php if ($_SESSION['id_usuario'] === 1 && $usuario['id_usuario'] !== 1): ?>
+                                        <form method="POST" action="usuarios.php" style="display:inline;" onsubmit="return confirmarEliminacion();">
+                                            <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
+                                            <button type="submit" name="eliminar_usuario" class="delete-button">Eliminar</button>
+                                        </form>
+                                    <?php endif; ?>
 
                                 </div>
                             </td>
@@ -174,7 +160,9 @@ include '../admin/admin_header.php';
         function confirmarEliminacion() {
             return confirm("¿Estás seguro de que deseas eliminar este usuario?");
         }
+
+        function confirmarRestauracion() {
+            return confirm("¿Estás seguro de que deseas restaurar este usuario a un rol básico?");
+        }
     </script>
-
-
 </body>

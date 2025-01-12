@@ -112,15 +112,20 @@ function manejarAccionUsuario($conn, $pagina = "usuarios.php")
     }
 }
 
-// Subfunciones para cada acción específica
 function eliminarUsuario($conn, $id_usuario)
 {
-    // Proteger al administrador principal
-    if ($id_usuario == 1) {
-        $_SESSION['mensaje'] = "No se puede eliminar al administrador principal.";
+    if ($_SESSION['id_usuario'] !== 1 && $_SESSION['id_usuario'] !== $id_usuario) {
+        $_SESSION['mensaje'] = "No tienes permisos para eliminar este usuario.";
         header('Location: usuarios.php');
         exit();
     }
+
+    if ($id_usuario === 1) {
+        $_SESSION['mensaje'] = "No puedes eliminar al administrador general.";
+        header('Location: usuarios.php');
+        exit();
+    }
+
     $stmt = $conn->prepare("DELETE FROM usuario WHERE id_usuario = ?");
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();
@@ -203,12 +208,18 @@ function crearMonitor($conn, $id_usuario, $pagina = "usuarios.php")
 
 function restaurarUsuario($conn, $id_usuario)
 {
-    // Proteger al administrador principal
-    if ($id_usuario == 1) {
-        $_SESSION['mensaje'] = "No se puede restaurar al administrador principal.";
+    if ($_SESSION['id_usuario'] !== 1 && $_SESSION['id_usuario'] !== $id_usuario) {
+        $_SESSION['mensaje'] = "No tienes permisos para restaurar este usuario.";
         header('Location: usuarios.php');
         exit();
     }
+
+    if ($id_usuario === 1 && $_SESSION['id_usuario'] !== 1) {
+        $_SESSION['mensaje'] = "No puedes restaurar al administrador general.";
+        header('Location: usuarios.php');
+        exit();
+    }
+
     $stmt = $conn->prepare("DELETE FROM miembro WHERE id_usuario = ?");
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();
@@ -223,6 +234,7 @@ function restaurarUsuario($conn, $id_usuario)
     $stmt->execute();
     $stmt->close();
 }
+
 function obtenerDatosUsuario($conn, $id_usuario)
 {
     $nombre = $email = $telefono = $rol = ''; // Valores predeterminados como cadenas vacías
@@ -277,6 +289,11 @@ function modUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_email, $nuevo_tele
     // Validar el teléfono (debe tener exactamente 9 dígitos si no está vacío)
     if (!empty($nuevo_telefono) && !preg_match('/^\d{9}$/', $nuevo_telefono)) {
         redirigirConMensaje("El teléfono debe tener exactamente 9 dígitos", $paginaRedireccion . "&error");
+        exit();
+    }
+    // Verificar si el administrador intenta cambiar su propio rol
+    if ((int)$_SESSION['id_usuario'] === (int)$id_usuario && $nuevo_rol !== 'admin') {
+        redirigirConMensaje("No puedes cambiar tu propio rol.", $paginaRedireccion);
         exit();
     }
 
@@ -387,4 +404,14 @@ function obtenerUsuarios($conn, $id_admin, $busqueda = '', $orden_columna = 'nom
 
     $stmt->close();
     return $usuarios;
+}
+// Función para determinar la clase del mensaje
+function obtenerClaseMensaje($mensaje)
+{
+    if (strpos($mensaje, 'no') !== false || strpos($mensaje, 'existe') !== false) {
+        return 'mensaje-error';
+    } elseif (strpos($mensaje, 'restaurado') !== false) {
+        return 'mensaje-confirmacion';
+    }
+    return 'success-message';
 }

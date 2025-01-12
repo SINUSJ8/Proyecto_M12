@@ -60,12 +60,20 @@ $conn->close();
 
                 <!-- Selector para editar el rol -->
                 <label for="rol">Rol:</label>
-                <select id="rol" name="rol" class="select-general" required title="Selecciona el rol del usuario" aria-label="Rol del usuario">
-                    <option value="usuario" <?php echo $datos_usuario['rol'] === 'usuario' ? 'selected' : ''; ?>>Usuario</option>
-                    <option value="miembro" <?php echo $datos_usuario['rol'] === 'miembro' ? 'selected' : ''; ?>>Miembro</option>
-                    <option value="monitor" <?php echo $datos_usuario['rol'] === 'monitor' ? 'selected' : ''; ?>>Monitor</option>
-                    <option value="admin" <?php echo $datos_usuario['rol'] === 'admin' ? 'selected' : ''; ?>>Administrador</option>
-                </select>
+                <?php if ((int)$_SESSION['id_usuario'] === (int)$id_usuario): ?>
+                    <small style="color:gray; font-size:0.9em;">(No puedes cambiar tu propio rol)</small>
+                    <!-- Mostrar el rol como texto sin permitir edición -->
+                    <input type="hidden" name="rol" value="<?php echo htmlspecialchars($datos_usuario['rol']); ?>">
+                    <input type="text" id="rol" class="input-general" value="<?php echo htmlspecialchars($datos_usuario['rol']); ?>" readonly>
+                <?php else: ?>
+                    <!-- Selector de rol para administradores que no son el mismo -->
+                    <select id="rol" name="rol" class="select-general" required>
+                        <option value="usuario" <?php echo $datos_usuario['rol'] === 'usuario' ? 'selected' : ''; ?>>Usuario</option>
+                        <option value="miembro" <?php echo $datos_usuario['rol'] === 'miembro' ? 'selected' : ''; ?>>Miembro</option>
+                        <option value="monitor" <?php echo $datos_usuario['rol'] === 'monitor' ? 'selected' : ''; ?>>Monitor</option>
+                        <option value="admin" <?php echo $datos_usuario['rol'] === 'admin' ? 'selected' : ''; ?>>Administrador</option>
+                    </select>
+                <?php endif; ?>
 
                 <!-- Campo para editar el teléfono -->
                 <label for="telefono">Teléfono:</label>
@@ -81,9 +89,12 @@ $conn->close();
 
                 <!-- Botón para actualizar los datos -->
                 <button type="submit" class="btn-general">Actualizar Datos</button>
+                <!-- Botón para volver a la página de usuarios -->
+                <a href="usuarios.php" class="btn-general btn-secondary">Volver a Usuarios</a>
             </form>
         </div>
     </main>
 
     <?php include '../includes/footer.php'; ?>
+
 </body>
