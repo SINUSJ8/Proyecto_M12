@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+
 <?php
 require_once __DIR__ . '/../includes/general.php';
 $title = "Clases Disponibles";
@@ -9,6 +17,9 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
     include_once __DIR__ . '/../includes/header.php';
 }
 ?>
+</head>
+<body>
+    
 
 <main class="form_container">
     <h1 class="section-title">Clases Disponibles</h1>
@@ -25,7 +36,27 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Mejora la salud cardiovascular.</li>
                 <li>Aumenta tu capacidad pulmonar.</li>
             </ul>
+            <!-- Botón apuntarme -->
+            <?php
+            // Es miembro?
+            if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'miembro') {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+                </div>
+                <?php
+            } else {
+                ?>
+                <div class="button-container">
+                    <a href="<?php echo BASE_URL; ?>src/clases/mis_clases.php" class="button">¡Apúntame!</a>
+                </div>
+                <?php
+            }
+            ?>
+            
         </div>
+        
+        
 
         <!-- Clase Pesas -->
         <div class="clase-card">
@@ -37,6 +68,10 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Fortalece la densidad ósea.</li>
                 <li>Mejora el metabolismo.</li>
             </ul>
+            <!-- Botón apuntarme -->
+            <div class="button-container">
+                <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+            </div>
         </div>
 
         <!-- Clase Pilates -->
@@ -49,6 +84,10 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Reduce el estrés.</li>
                 <li>Aumenta la flexibilidad y la movilidad.</li>
             </ul>
+            <!-- Botón apuntarme -->
+            <div class="button-container">
+                <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+            </div>
         </div>
 
         <!-- Clase Yoga -->
@@ -61,6 +100,10 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Mejora la flexibilidad y el equilibrio.</li>
                 <li>Reduce el estrés y la ansiedad.</li>
             </ul>
+            <!-- Botón apuntarme -->
+            <div class="button-container">
+                <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+            </div>
         </div>
 
         <!-- Entrenamiento Funcional -->
@@ -73,6 +116,10 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
                 <li>Fortalece grupos musculares clave.</li>
                 <li>Desarrolla agilidad y coordinación.</li>
             </ul>
+            <!-- Botón apuntarme -->
+            <div class="button-container">
+                <a href="<?php echo BASE_URL; ?>src/auth/reg.php" class="button">¡Apúntame!</a>
+            </div>
         </div>
     </div>
 
@@ -81,5 +128,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
         <a href="<?php echo BASE_URL; ?>index.php" class="button">Volver a la Página Principal</a>
     </div>
 </main>
+</body>
 
 <?php include_once __DIR__ . '/../includes/footer.php'; ?>
+</html>

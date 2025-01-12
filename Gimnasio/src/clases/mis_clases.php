@@ -5,9 +5,19 @@ require_once '../clases/mi_clase_functions.php';
 
 $conn = obtenerConexion();
 $id_usuario = $_SESSION['id_usuario'];
+$id_especialidad = isset($_GET['especialidad']) ? intval($_GET['especialidad']) : null;
 
 try {
     $id_miembro = obtenerIdMiembro($conn, $id_usuario);
+    // Leer la especialidad guardada para el miembro desde la base de datos 
+    if (!$id_especialidad) { 
+        $stmt = $conn->prepare("SELECT id_especialidad FROM miembro_entrenamiento WHERE id_miembro = ?"); 
+        $stmt->bind_param("i", $id_miembro); 
+        $stmt->execute(); 
+        $stmt->bind_result($id_especialidad); 
+        $stmt->fetch(); 
+        $stmt->close(); 
+    }
 
     // Procesar formulario para apuntarse o borrarse
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -41,6 +51,16 @@ try {
     echo "<p class='mensaje-error'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
     exit;
 }
+// Obtener la información de la especialidad seleccionada 
+    if ($id_especialidad) { 
+        $stmt = $conn->prepare("SELECT * FROM especialidad WHERE id_especialidad = ?"); 
+        $stmt->bind_param("i", $id_especialidad); 
+        $stmt->execute(); $resultado = $stmt->get_result(); 
+        $especialidadSeleccionada = $resultado->fetch_assoc(); 
+        $stmt->close(); 
+    } 
+
+
 ?>
 
 <main class="form_container">
@@ -49,6 +69,10 @@ try {
     <?php if (!empty($mensaje)): ?>
         <p class="mensaje-confirmacion"><?= htmlspecialchars($mensaje); ?></p>
     <?php endif; ?>
+
+    <?php if (isset($especialidadSeleccionada)): ?> 
+        <h2 class="intro-text">Especialidad Seleccionada: <?= htmlspecialchars($especialidadSeleccionada['nombre']); ?>
+        </h2> <?php endif; ?>
 
     <!-- Clases Inscritas -->
     <?php if (!empty($clasesInscritas)): ?>
