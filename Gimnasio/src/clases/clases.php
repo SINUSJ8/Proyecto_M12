@@ -61,35 +61,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
 
 <body>
     <main>
-        <h2><?= $title; ?></h2>
+        <h2 class="section-title"><?= $title; ?></h2>
 
         <!-- Botones de navegación y creación -->
         <div class="button-container">
             <?php if ($tipo === 'anteriores'): ?>
-                <a href="clases.php" class="button">Ver Clases Actuales</a>
+                <a href="clases.php" class="btn-general">Ver Clases Actuales</a>
             <?php else: ?>
-                <a href="clases.php?tipo=anteriores" class="button">Ver Clases Anteriores</a>
+                <a href="clases.php?tipo=anteriores" class="btn-general">Ver Clases Anteriores</a>
             <?php endif; ?>
-            <a href="crear_clase.php" class="button">Crear Clase</a>
+            <a href="crear_clase.php" class="btn-general">Crear Clase</a>
         </div>
 
+        <!-- Mostrar mensaje de confirmación si existe -->
+        <?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'clase_eliminada'): ?>
+            <p class="mensaje-confirmacion">La clase se ha eliminado correctamente.</p>
+        <?php endif; ?>
+
         <!-- Formulario de búsqueda -->
-        <form method="GET" action="clases.php" class="search-form">
-            <!-- Campo oculto para preservar el tipo -->
+        <form method="GET" action="clases.php" class="form_container">
             <input type="hidden" name="tipo" value="<?= htmlspecialchars($tipo); ?>">
 
-            <input type="text" name="nombre_clase" placeholder="Nombre de la clase" value="<?= htmlspecialchars($filtros['nombre_clase'], ENT_QUOTES, 'UTF-8') ?>">
-            <input type="text" name="nombre_monitor" placeholder="Nombre del monitor" value="<?= htmlspecialchars($filtros['nombre_monitor'], ENT_QUOTES, 'UTF-8') ?>">
-            <input type="text" name="especialidad" placeholder="Especialidad" value="<?= htmlspecialchars($filtros['especialidad'], ENT_QUOTES, 'UTF-8') ?>">
-            <input type="date" name="fecha" value="<?= htmlspecialchars($filtros['fecha'], ENT_QUOTES, 'UTF-8') ?>">
-            <button type="submit">Buscar</button>
-            <button type="button" class="reset-button" onclick="window.location.href='clases.php?tipo=<?= htmlspecialchars($tipo); ?>'">Limpiar</button>
-
+            <div class="form-group">
+                <input type="text" name="nombre_clase" placeholder="Nombre de la clase" value="<?= htmlspecialchars($filtros['nombre_clase'], ENT_QUOTES, 'UTF-8') ?>" class="input-general">
+            </div>
+            <div class="form-group">
+                <input type="text" name="nombre_monitor" placeholder="Nombre del monitor" value="<?= htmlspecialchars($filtros['nombre_monitor'], ENT_QUOTES, 'UTF-8') ?>" class="input-general">
+            </div>
+            <div class="form-group">
+                <input type="text" name="especialidad" placeholder="Especialidad" value="<?= htmlspecialchars($filtros['especialidad'], ENT_QUOTES, 'UTF-8') ?>" class="input-general">
+            </div>
+            <div class="form-group">
+                <input type="date" name="fecha" value="<?= htmlspecialchars($filtros['fecha'], ENT_QUOTES, 'UTF-8') ?>" class="input-general">
+            </div>
+            <div class="button-container">
+                <button type="submit" class="btn-general">Buscar</button>
+                <button type="button" class="btn-general reset-button" onclick="window.location.href='clases.php?tipo=<?= htmlspecialchars($tipo); ?>'">Limpiar</button>
+            </div>
         </form>
 
-
         <!-- Tabla para mostrar clases -->
-        <section class="form_container">
+        <section class="form_container_large">
             <table id="tabla-clases" class="styled-table">
                 <thead>
                     <tr>
@@ -106,7 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                 <tbody>
                     <?php foreach ($clases as $clase): ?>
                         <?php
-                        // Verificar si el monitor está disponible o no está asignado
                         $sinMonitor = empty($clase['monitor']) || $clase['monitor_disponible'] === 'no disponible';
                         ?>
                         <tr class="<?= $sinMonitor ? 'clase-sin-monitor' : ''; ?>">
@@ -124,21 +135,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                             <td><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
                             <td class="acciones">
                                 <div class="button-container">
-                                    <!-- Ver Detalle -->
-                                    <a href="detalle_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="button">Ver Detalle</a>
-                                    <!-- Editar -->
+                                    <a href="detalle_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general">Ver Detalle</a>
                                     <?php if ($tipo === 'actuales'): ?>
-                                        <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="button">Editar</a>
-                                    <?php else: ?>
-                                        <span class="btn-disabled">Editar no disponible</span>
-                                    <?php endif; ?>
-                                    <!-- Eliminar -->
-                                    <?php if ($tipo === 'actuales'): ?>
+                                        <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general edit-button">Editar</a>
                                         <form method="POST" action="clases.php">
                                             <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
                                             <button type="submit" class="delete-button">Eliminar</button>
                                         </form>
                                     <?php else: ?>
+                                        <span class="btn-disabled">Editar no disponible</span>
                                         <span class="btn-disabled">Eliminar no disponible</span>
                                     <?php endif; ?>
                                 </div>
@@ -146,21 +151,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
-
-
-
             </table>
         </section>
 
         <?php include '../includes/footer.php'; ?>
 
-        <!-- Incluir el archivo de JavaScript externo -->
+        <!-- Scripts -->
         <script src="../../assets/js/clases.js"></script>
         <script src="../../assets/js/calendario.js"></script>
-
         <script type="text/javascript">
             let clases = <?= $clases_json; ?>;
         </script>
-
     </main>
 </body>

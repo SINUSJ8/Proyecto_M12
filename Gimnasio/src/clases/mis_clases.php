@@ -43,9 +43,10 @@ try {
 }
 ?>
 
-<main class="form_container">
+<main>
     <h1 class="section-title">Clases Disponibles</h1>
 
+    <!-- Mensaje de confirmación -->
     <?php if (!empty($mensaje)): ?>
         <p class="mensaje-confirmacion"><?= htmlspecialchars($mensaje); ?></p>
     <?php endif; ?>
@@ -68,7 +69,7 @@ try {
                             <form method="POST" style="display: inline;">
                                 <input type="hidden" name="id_clase" value="<?= htmlspecialchars($claseInscrita['id_clase']); ?>">
                                 <input type="hidden" name="accion" value="borrarse">
-                                <button type="submit" class="btn-general btn-danger">Borrarme</button>
+                                <button type="submit" class="btn-general delete-button">Borrarme</button>
                             </form>
                         </td>
                     </tr>

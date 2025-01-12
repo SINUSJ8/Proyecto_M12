@@ -285,3 +285,60 @@ function buscarUsuariosPorTermino($conn, $termino, $limite = 10)
     $stmt->close();
     return $usuarios;
 }
+function obtenerAltasRecientes($conn, $limite)
+{
+    $sql = "
+        SELECT usuario.nombre, miembro.fecha_registro 
+        FROM miembro 
+        INNER JOIN usuario ON miembro.id_usuario = usuario.id_usuario 
+        ORDER BY miembro.fecha_registro DESC 
+        LIMIT ?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $limite);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function obtenerAltasDelMes($conn)
+{
+    $stmt = $conn->prepare("SELECT COUNT(*) as total FROM miembro WHERE MONTH(fecha_registro) = MONTH(CURRENT_DATE) AND YEAR(fecha_registro) = YEAR(CURRENT_DATE)");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc()['total'];
+}
+
+function obtenerClasesMasPopulares($conn, $limite)
+{
+    $stmt = $conn->prepare("SELECT clase.nombre, COUNT(asistencia.id_clase) as inscripciones FROM clase LEFT JOIN asistencia ON clase.id_clase = asistencia.id_clase GROUP BY clase.id_clase ORDER BY inscripciones DESC LIMIT ?");
+    $stmt->bind_param("i", $limite);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
+
+function obtenerClaseMaxMiembros($conn)
+{
+    $stmt = $conn->prepare("SELECT clase.nombre, COUNT(asistencia.id_clase) as miembros FROM clase LEFT JOIN asistencia ON clase.id_clase = asistencia.id_clase GROUP BY clase.id_clase ORDER BY miembros DESC LIMIT 1");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
+
+function obtenerIngresosTotales($conn)
+{
+    $stmt = $conn->prepare("SELECT SUM(monto_pagado) as total FROM miembro_membresia");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc()['total'];
+}
+
+function obtenerIngresosDelMes($conn)
+{
+    $stmt = $conn->prepare("SELECT SUM(monto_pagado) as total FROM miembro_membresia WHERE MONTH(fecha_inicio) = MONTH(CURRENT_DATE) AND YEAR(fecha_inicio) = YEAR(CURRENT_DATE)");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc()['total'];
+}
+
+function obtenerMonitoresActivos($conn)
+{
+    $stmt = $conn->prepare("SELECT nombre, disponibilidad FROM monitor INNER JOIN usuario ON monitor.id_usuario = usuario.id_usuario WHERE disponibilidad = 'disponible'");
+    $stmt->execute();
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}

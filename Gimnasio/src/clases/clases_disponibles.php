@@ -10,7 +10,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
 }
 ?>
 
-<main class="form_container">
+<main>
     <h1 class="section-title">Clases Disponibles</h1>
     <p class="intro-text">¡Únete a nuestras clases y pasa un buen rato mientras te mantienes en forma y logras tus objetivos!</p>
 

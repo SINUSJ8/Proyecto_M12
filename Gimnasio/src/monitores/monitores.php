@@ -48,15 +48,15 @@ include '../admin/admin_header.php';
         <?php endif; ?>
 
         <!-- Formulario de búsqueda -->
-        <form method="GET" action="monitores.php" class="form-container">
+        <form method="GET" action="monitores.php" class="form_container">
             <div class="form-group">
                 <label for="busqueda">Buscar Monitor:</label>
-                <input type="text" id="busqueda" name="busqueda" placeholder="Buscar monitor..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-large">
+                <input type="text" id="busqueda" name="busqueda" placeholder="Buscar monitor..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-general">
             </div>
 
             <div class="form-group">
                 <label for="especialidad">Especialidad:</label>
-                <select id="especialidad" name="especialidad" class="select-large">
+                <select id="especialidad" name="especialidad" class="select-general">
                     <option value="">Todas las especialidades</option>
                     <?php foreach ($especialidades as $especialidad): ?>
                         <option value="<?php echo htmlspecialchars($especialidad['id_especialidad']); ?>" <?php echo ($especialidad_filtro == $especialidad['id_especialidad']) ? 'selected' : ''; ?>>
@@ -68,19 +68,21 @@ include '../admin/admin_header.php';
 
             <div class="form-group">
                 <label for="disponibilidad">Disponibilidad:</label>
-                <select id="disponibilidad" name="disponibilidad" class="select-large">
+                <select id="disponibilidad" name="disponibilidad" class="select-general">
                     <option value="">Cualquiera</option>
                     <option value="Disponible" <?php echo ($disponibilidad_filtro === 'Disponible') ? 'selected' : ''; ?>>Disponible</option>
                     <option value="No disponible" <?php echo ($disponibilidad_filtro === 'No disponible') ? 'selected' : ''; ?>>No disponible</option>
                 </select>
             </div>
 
-            <button type="submit" class="btn-general">Buscar</button>
-            <button type="button" class="btn-general reset-button" onclick="limpiarFormulario()">Limpiar</button>
+            <div class="button-container">
+                <button type="submit" class="btn-general">Buscar</button>
+                <button type="button" class="btn-general reset-button" onclick="limpiarFormulario()">Limpiar</button>
+            </div>
         </form>
 
         <!-- Tabla con lista de monitores y acciones -->
-        <section class="form_container">
+        <section class="form_container_large">
             <table id="tabla-monitores" class="styled-table">
                 <thead>
                     <tr>
@@ -100,7 +102,7 @@ include '../admin/admin_header.php';
                             <td><?php echo htmlspecialchars($monitor['especialidades']); ?></td>
                             <td><?php echo htmlspecialchars($monitor['experiencia']); ?> años</td>
                             <td><?php echo htmlspecialchars($monitor['disponibilidad']); ?></td>
-                            <td>
+                            <td class="acciones">
                                 <form method="POST" action="monitores.php" onsubmit="return confirmarEliminacion();" style="margin-bottom: 5px;">
                                     <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($monitor['id_usuario']); ?>">
                                     <button type="submit" class="delete-button" name="eliminar_usuario">Eliminar</button>
@@ -112,15 +114,13 @@ include '../admin/admin_header.php';
                 </tbody>
             </table>
         </section>
-
     </main>
 
     <?php
     include '../includes/footer.php';
     $conn->close();
     ?>
-
-    <script src="../../assets/js/clases.js"></script>
 </body>
+
 
 </html>

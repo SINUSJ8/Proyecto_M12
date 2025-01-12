@@ -76,9 +76,9 @@ include '../admin/admin_header.php';
             <form method="GET" action="membresias.php" style="display: inline;">
                 <input type="text" name="busqueda" placeholder="Buscar membresía o usuario..." value="<?php echo htmlspecialchars($busqueda); ?>">
                 <button type="submit" class="btn-general">Buscar</button>
+                <!-- Botón limpiar -->
+                <a href="membresias.php" class="btn-general limpiar-busqueda">Limpiar</a>
             </form>
-            <!-- Botón limpiar -->
-            <a href="membresias.php" class="btn-general limpiar-busqueda">Limpiar</a>
         </div>
 
 

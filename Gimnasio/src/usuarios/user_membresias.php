@@ -68,7 +68,7 @@ $conn->close();
 </head>
 
 <body>
-    <main class="form_container">
+    <main>
         <h1 class="section-title">Elige tu Membresía</h1>
         <p class="intro-text">Selecciona la membresía que mejor se adapte a tus objetivos y empieza a disfrutar de los beneficios.</p>
 

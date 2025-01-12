@@ -66,7 +66,7 @@ $conn->close();
 </head>
 
 <body>
-    <main class="form_container">
+    <main>
         <h1 class="section-title">Cambiar Membresía</h1>
         <p class="intro-text">Selecciona una nueva membresía. La membresía activa no está disponible para ser seleccionada.</p>
 

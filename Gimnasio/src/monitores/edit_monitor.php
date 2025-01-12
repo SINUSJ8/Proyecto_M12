@@ -72,15 +72,15 @@ include '../admin/admin_header.php';
                 <form method="POST" action="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>" class="form_general" onsubmit="return validarFormularioEdicion('monitor');">
 
                     <!-- Campo para editar el nombre -->
-                    <label for="nombre">Nombre:</label>
+                    <label for="nombre" class="form-label">Nombre:</label>
                     <input type="text" id="nombre" name="nombre" class="input-general" value="<?php echo htmlspecialchars($monitor['nombre']); ?>" required>
 
                     <!-- Campo para editar el email -->
-                    <label for="email">Email:</label>
+                    <label for="email" class="form-label">Email:</label>
                     <input type="email" id="email" name="email" class="input-general" value="<?php echo htmlspecialchars($monitor['email']); ?>" required>
 
                     <!-- Especialidades del monitor -->
-                    <label>Especialidades:</label>
+                    <label class="form-label">Especialidades Actuales:</label>
                     <div class="especialidades-lista">
                         <?php if (!empty($monitor['especialidades'])): ?>
                             <ul>
@@ -94,18 +94,18 @@ include '../admin/admin_header.php';
                     </div>
 
                     <!-- Campo para editar la experiencia -->
-                    <label for="experiencia">Experiencia (años):</label>
+                    <label for="experiencia" class="form-label">Experiencia (años):</label>
                     <input type="number" id="experiencia" name="experiencia" class="input-general" value="<?php echo htmlspecialchars($monitor['experiencia']); ?>" required min="0">
 
                     <!-- Campo para editar la disponibilidad -->
-                    <label for="disponibilidad">Disponibilidad:</label>
+                    <label for="disponibilidad" class="form-label">Disponibilidad:</label>
                     <select id="disponibilidad" name="disponibilidad" class="select-general" required>
                         <option value="disponible" <?php echo ($monitor['disponibilidad'] === 'disponible') ? 'selected' : ''; ?>>Disponible</option>
                         <option value="no disponible" <?php echo ($monitor['disponibilidad'] === 'no disponible') ? 'selected' : ''; ?>>No Disponible</option>
                     </select>
 
                     <!-- Campo para seleccionar múltiples entrenamientos con checkboxes -->
-                    <label>Asignar Especialidad:</label>
+                    <label class="form-label">Asignar Especialidad:</label>
                     <div class="entrenamientos-checkboxes">
                         <?php foreach ($entrenamientos as $entrenamiento): ?>
                             <div class="entrenamiento-item">
@@ -134,5 +134,6 @@ include '../admin/admin_header.php';
     <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/validacion.js"></script>
 </body>
+
 
 </html>

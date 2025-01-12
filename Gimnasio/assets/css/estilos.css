@@ -159,12 +159,16 @@ header nav .logout-link:hover {
 /* FORMULARIOS */
 .form_container {
     background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 1600px;
     margin: 20px auto;
-    text-align: left;
+    max-width: 700px;
 }
 
 .form_container_large {
@@ -182,7 +186,7 @@ header nav .logout-link:hover {
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
-    flex-direction: column; 
+    flex-direction: column;
     flex-wrap: nowrap;
     justify-content: center;
 }
@@ -379,21 +383,31 @@ table.styled-table th.sortable.sorted-desc:after {
     font-weight: normal;
 }
 
-.notificacion-mensaje{
+.notificacion-mensaje {
     display: flex;
-    flex-direction: column; /* Coloca los elementos uno debajo del otro */
-    gap: 15px; /* Espacio entre el textarea y el botón */
-    max-width: 400px; /* Limita el ancho para que sea más legible */
-    margin: 0 auto; /* Centra el formulario horizontalmente */
+    flex-direction: column;
+    /* Coloca los elementos uno debajo del otro */
+    gap: 15px;
+    /* Espacio entre el textarea y el botón */
+    max-width: 400px;
+    /* Limita el ancho para que sea más legible */
+    margin: 0 auto;
+    /* Centra el formulario horizontalmente */
 }
 
 .notificacion-mensaje textarea {
-    height: 100px; /* Altura ajustable */
-    resize: vertical; /* Permite redimensionar solo en la dirección vertical */
-    padding: 10px; /* Espaciado interno para mejor legibilidad */
-    font-size: 16px; /* Tamaño de fuente */
-    border: 1px solid #ccc; /* Borde sutil */
-    border-radius: 5px; /* Bordes redondeados */
+    height: 100px;
+    /* Altura ajustable */
+    resize: vertical;
+    /* Permite redimensionar solo en la dirección vertical */
+    padding: 10px;
+    /* Espaciado interno para mejor legibilidad */
+    font-size: 16px;
+    /* Tamaño de fuente */
+    border: 1px solid #ccc;
+    /* Borde sutil */
+    border-radius: 5px;
+    /* Bordes redondeados */
 }
 
 /* MENSAJES */
@@ -424,14 +438,16 @@ table.styled-table th.sortable.sorted-desc:after {
 /* Clases Disponibles */
 .clases-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Tres columnas */
-    gap: 20px; /* Espacio entre las tarjetas */
+    grid-template-columns: repeat(3, 1fr);
+    /* Tres columnas */
+    gap: 20px;
+    /* Espacio entre las tarjetas */
     margin-top: 20px;
 }
 
 @media (max-width: 768px) {
     .clases-grid {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         /* Ajustar automáticamente para pantallas más pequeñas */
     }
 }
@@ -458,7 +474,7 @@ table.styled-table th.sortable.sorted-desc:after {
 }
 
 .clase-benefits {
-    list-style-type: disc; 
+    list-style-type: disc;
     padding: 0;
     margin: 10px 0;
     text-align: left;
@@ -615,6 +631,13 @@ button.btn-general {
     /* Línea divisoria */
 }
 
+.especialidades-lista ul {
+    list-style: none;
+    /* Elimina los puntos de la lista */
+    padding-left: 0;
+    /* Elimina el padding */
+}
+
 .btn-disabled {
     background-color: #ccc;
     color: #666;
@@ -647,6 +670,12 @@ button.btn-general {
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #333;
 }
 
 .membresia-section {
@@ -720,6 +749,28 @@ button.btn-general {
     background-color: #999;
 }
 
+/* Formulario */
+.form-label {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* Checkboxes: alineación centrada */
+.entrenamientos-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.entrenamiento-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
 
 
 
