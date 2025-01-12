@@ -2,6 +2,7 @@
 $title = "Cambiar Membresía";
 include '../miembros/miembro_header.php';
 require_once '../includes/general.php';
+require_once('../monitores/monitor_functions.php');
 
 $conn = obtenerConexion();
 
@@ -52,7 +53,7 @@ while ($row = $result->fetch_assoc()) {
         $membresias[$id_membresia]['entrenamientos'][] = $row['entrenamiento'];
     }
 }
-$conn->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -103,8 +104,34 @@ $conn->close();
                             <button type="submit" class="btn-general">Elegir Membresía</button>
                         </form>
                     <?php else: ?>
-                        <button class="btn-general" disabled>Ya tienes esta membresía</button>
-                    <?php endif; ?>
+                        
+                        <button class="btn-general" disabled>Membresía activa</button>
+                        <?php
+                            // Obtener la lista de especialidades y poder filtrar por disponibles y no disponibles
+                            //$especialidades = obtenerEspecialidades($conn);
+                            $especialidad_filtro = isset($_GET['especialidad']) ? $_GET['especialidad'] : '';
+                            $disponibilidad_filtro = isset($_GET['disponibilidad']) ? $_GET['disponibilidad'] : '';
+                            // Obtener la lista de especialidades
+                            $especialidades = obtenerEspecialidades($conn);
+                        ?>
+                        <!-- Formulario de selección de especialidad -->
+                        <form method="GET" action="../clases/mis_clases.php" class="form-container">
+                            <div class="form-group">
+                                <label for="especialidad">Especialidad:</label>
+                                <select id="especialidad" name="especialidad" class="select-large">
+                                    <option value="">Todas las especialidades</option>
+                                    <?php foreach ($especialidades as $especialidad): ?>
+                                        <option value="<?php echo htmlspecialchars($especialidad['id_especialidad']); ?>" <?php echo ($especialidad_filtro == $especialidad['id_especialidad']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($especialidad['nombre']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                                <button type="submit" class="btn-general">Seleccionar</button>
+                            
+                            
+                        </form>
+                    <?php $conn->close(); endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>
