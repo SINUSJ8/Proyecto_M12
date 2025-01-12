@@ -18,9 +18,11 @@ function obtenerConexion()
     $username = "root";
     $password = "";
     $dbname = "actividad_02";
+    $port = 3310;
 
     // Crear la conexión
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = new mysqli($servername, $username, $password, $dbname, $port);
+
 
     // Verificar si hay errores de conexión
     if ($conn->connect_error) {
