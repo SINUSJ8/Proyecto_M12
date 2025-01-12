@@ -78,6 +78,7 @@ include '../admin/admin_header.php';
                 <button type="submit" class="btn-general">Buscar</button>
                 <!-- Botón limpiar -->
                 <a href="membresias.php" class="btn-general limpiar-busqueda">Limpiar</a>
+                <a href="crear_membresia.php" class="btn-general limpiar-busqueda">Crear Membresía</a>
             </form>
         </div>
 
