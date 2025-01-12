@@ -33,6 +33,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'miembro') {
             <a href="../clases/mis_clases.php">Mis Clases</a>
             <a href="../membresias/mi_membresia.php">Mi Membresía</a>
             <a href="../miembros/miembro.php">Mi Perfil</a>
+            <a href="../miembros/miembro_pagos.php">Historial de Pagos</a>
             <a href="../miembros/mis_notificaciones.php">Mis Notificaciones</a>
             <form action="../includes/general.php" method="post" style="display: inline;">
                 <input type="hidden" name="accion" value="logout">
