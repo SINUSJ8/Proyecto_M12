@@ -23,10 +23,9 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
 
         <label for="telefono">Teléfono:</label>
         <input type="text" id="telefono" name="telefono">
-
-        <label for="descripcion">Tu consulta:</label>
-        <textarea id="descripcion" name="descripcion" required></textarea>
-
+        <div class="notificacion-mensaje">
+            <textarea id="descripcion" name="descripcion"  placeholder="Tu consulta" required></textarea>
+        </div>
         <div class="checkbox-container">
             <input type="checkbox" id="condiciones" name="condiciones" required>
             <label for="condiciones">Quiero recibir la Newsletter y acepto los términos y condiciones.</label>

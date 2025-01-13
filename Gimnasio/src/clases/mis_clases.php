@@ -82,22 +82,26 @@ try {
             <thead>
                 <tr>
                     <th>Nombre de la Clase</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($clasesInscritas as $claseInscrita): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($claseInscrita['nombre']); ?></td>
-                        <td>
-                            <form method="POST" style="display: inline;">
-                                <input type="hidden" name="id_clase" value="<?= htmlspecialchars($claseInscrita['id_clase']); ?>">
-                                <input type="hidden" name="accion" value="borrarse">
-                                <button type="submit" class="btn-general delete-button">Borrarme</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
+                    <th>Fecha</th>
+            <th>Horario</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($clasesInscritas as $claseInscrita): ?>
+            <tr>
+                <td><?= htmlspecialchars($claseInscrita['nombre']); ?></td>
+                <td><?= htmlspecialchars($claseInscrita['fecha']); ?></td>
+                <td><?= htmlspecialchars($claseInscrita['horario']); ?></td>
+                <td>
+                    <form method="POST" style="display: inline;">
+                        <input type="hidden" name="id_clase" value="<?= htmlspecialchars($claseInscrita['id_clase']); ?>">
+                        <input type="hidden" name="accion" value="borrarse">
+                        <button type="submit" class="btn-general delete-button">Borrarme</button>
+                    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
             </tbody>
         </table>
     <?php else: ?>

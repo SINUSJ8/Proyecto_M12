@@ -21,7 +21,7 @@
                         objetivos personales.
                     </p>
         </div>
-        <div class="clases-grid">
+        <div class="clases-about">
             <div class="clase-card">
                     <h3>Entrenadores de Fuerza</h3>
                         <p>Nuestros entrenadores de fuerza son expertos en diseñar programas personalizados que ayudan a nuestros miembros a mejorar su resistencia, aumentar su masa muscular y optimizar su rendimiento físico. Con una formación sólida en ciencias del deporte y una gran experiencia práctica, garantizan sesiones seguras y efectivas para todos los niveles, desde principiantes hasta atletas avanzados.
@@ -47,8 +47,7 @@
                 <h3>Compromiso con la Excelencia</h3>
                     <p>Nuestro equipo de profesores comparte un compromiso con la excelencia y el bienestar integral. Participan regularmente en cursos de actualización y certificaciones adicionales para mantenerse al día con las últimas investigaciones y técnicas en sus respectivas áreas. Su enfoque holístico asegura que cada miembro reciba un apoyo integral, promoviendo no solo la salud física, sino también el bienestar emocional y mental.
                     En nuestro gimnasio, nos dedicamos a proporcionar un entorno inclusivo y de apoyo, donde cada miembro se sienta valorado y motivado para alcanzar sus metas. ¡Te invitamos a conocer a nuestro equipo y descubrir la diferencia que pueden hacer en tu viaje hacia una vida más saludable!</p>
-                    </p>
-                    
+                    </p>         
         </div>
         <br>
         <div class="clase-card">

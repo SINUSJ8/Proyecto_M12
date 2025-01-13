@@ -41,9 +41,8 @@ include '../admin/admin_header.php';
 </head>
 
 <body>
+<h2 class="section-title">Administración de Especialidades</h2>
     <main class="form_container">
-        <h2 class="section-title">Administración de Especialidades</h2>
-
         <!-- Mensaje de confirmación o error -->
         <?php if (!empty($mensaje)): ?>
             <div class="<?php echo strpos($mensaje, 'Error') === false ? 'mensaje-confirmacion' : 'mensaje-error'; ?>">

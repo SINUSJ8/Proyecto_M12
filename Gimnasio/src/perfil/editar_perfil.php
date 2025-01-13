@@ -98,7 +98,7 @@ include '../miembros/miembro_header.php';
                 <input type="password" id="confirmar_contrasenya" name="confirmar_contrasenya" class="input-general">
 
                 <button type="submit" class="btn-general">Guardar Cambios</button>
-                <a href="../miembros/miembro.php" class="btn-general cancel-button">Cancelar</a>
+                <a href="../miembros/miembro.php" class="btn-general">Cancelar</a>
             </form>
         </div>
     </main>

@@ -452,6 +452,13 @@ table.styled-table th.sortable.sorted-desc:after {
     }
 }
 
+.clases-about{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    gap: 20px; /* Espacio entre las tarjetas */
+    margin: 20px auto; /* Centrar y ajustar el margen superior */
+    max-width: 1000px; /* Limitar el ancho máximo para una mejor estética */
+}
 
 .clase-card {
     background-color: #fff;
@@ -459,6 +466,7 @@ table.styled-table th.sortable.sorted-desc:after {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 15px;
     text-align: center;
+    max-width: 1000px;
 }
 
 .clase-image {
@@ -478,6 +486,7 @@ table.styled-table th.sortable.sorted-desc:after {
     padding: 0;
     margin: 10px 0;
     text-align: left;
+    margin-left: 20px;
 }
 
 .clase-benefits li {
