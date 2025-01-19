@@ -249,6 +249,39 @@ function mostrarConfirmacion(event, membresia) {
     document.getElementById('modal-confirmacion').style.display = 'flex';
 }
 
+function mostrarConfirmacionC(event, membresia, tipoAccion) {
+    event.preventDefault();
+
+    const formulario = event.target;
+    const metodoPago = formulario.querySelector('select[name="metodo_pago"]').value;
+
+    if (!membresia.id_membresia || !metodoPago) {
+        alert('Error: Datos incompletos para procesar la membresía.');
+        return false;
+    }
+
+    // Rellenar campos ocultos del modal
+    document.getElementById('id_membresia_modal').value = membresia.id_membresia;
+    document.getElementById('metodo_pago_modal').value = metodoPago;
+
+    // Configurar el mensaje del modal según la acción
+    const titulo = tipoAccion === 'cambio' ? 'Confirmar Cambio de Membresía' : 'Confirmar Membresía';
+    const botonTexto = tipoAccion === 'cambio' ? 'Confirmar Cambio' : 'Pagar';
+
+    document.querySelector('#modal-confirmacion h2').textContent = titulo;
+    document.getElementById('modal-detalles').innerHTML = `
+        <strong>Membresía:</strong> ${membresia.tipo}<br>
+        <strong>Precio:</strong> ${membresia.precio} €<br>
+        <strong>Duración:</strong> ${membresia.duracion} mes(es)<br>
+        <strong>Método de Pago:</strong> ${metodoPago}<br><br>
+        <em>Nota:</em> Al realizar este cambio, perderás los beneficios y ventajas de tu membresía anterior. 
+        Sin embargo, seguirás teniendo acceso a las clases a las que ya estuvieras apuntado.
+    `;
+    document.querySelector('#form-cambio-pago button[type="submit"]').textContent = botonTexto;
+
+    document.getElementById('modal-confirmacion').style.display = 'flex';
+}
+
 function cerrarModal() {
     document.getElementById('modal-confirmacion').style.display = 'none';
 }

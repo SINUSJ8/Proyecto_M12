@@ -91,7 +91,7 @@ while ($row = $result->fetch_assoc()) {
                     </ul>
 
                     <?php if ($membresia['id_membresia'] != $membresia_actual): ?>
-                        <form action="../pagos/cambio_proceso_pago.php" method="POST">
+                        <form onsubmit="return mostrarConfirmacionC(event, <?php echo htmlspecialchars(json_encode($membresia)); ?>, 'cambio')">
                             <input type="hidden" name="id_membresia" value="<?php echo htmlspecialchars($id); ?>">
                             <label for="metodo_pago_<?php echo $id; ?>">Método de Pago:</label>
                             <select name="metodo_pago" id="metodo_pago_<?php echo $id; ?>" required>
@@ -103,16 +103,17 @@ while ($row = $result->fetch_assoc()) {
                             </select>
                             <button type="submit" class="btn-general">Elegir Membresía</button>
                         </form>
+
                     <?php else: ?>
-                        
+
                         <button class="btn-general" disabled>Membresía activa</button>
                         <?php
-                            // Obtener la lista de especialidades y poder filtrar por disponibles y no disponibles
-                            //$especialidades = obtenerEspecialidades($conn);
-                            $especialidad_filtro = isset($_GET['especialidad']) ? $_GET['especialidad'] : '';
-                            $disponibilidad_filtro = isset($_GET['disponibilidad']) ? $_GET['disponibilidad'] : '';
-                            // Obtener la lista de especialidades
-                            $especialidades = obtenerEspecialidades($conn);
+                        // Obtener la lista de especialidades y poder filtrar por disponibles y no disponibles
+                        //$especialidades = obtenerEspecialidades($conn);
+                        $especialidad_filtro = isset($_GET['especialidad']) ? $_GET['especialidad'] : '';
+                        $disponibilidad_filtro = isset($_GET['disponibilidad']) ? $_GET['disponibilidad'] : '';
+                        // Obtener la lista de especialidades
+                        $especialidades = obtenerEspecialidades($conn);
                         ?>
                         <!-- Formulario de selección de especialidad -->
                         <form method="GET" action="../clases/mis_clases.php" class="form-container">
@@ -127,15 +128,30 @@ while ($row = $result->fetch_assoc()) {
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                                <button type="submit" class="btn-general">Seleccionar</button>
-                            
-                            
+                            <button type="submit" class="btn-general">Seleccionar</button>
+
+
                         </form>
-                    <?php $conn->close(); endif; ?>
+                    <?php $conn->close();
+                    endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>
     </main>
+    <!-- Modal de confirmación -->
+    <div id="modal-confirmacion" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Confirmar Membresía</h2>
+            <p id="modal-detalles"></p>
+            <form id="form-cambio-pago" action="../pagos/cambio_proceso_pago.php" method="POST">
+                <input type="hidden" name="id_membresia" id="id_membresia_modal">
+                <input type="hidden" name="metodo_pago" id="metodo_pago_modal">
+                <button type="submit" class="btn-general">Confirmar</button>
+                <button type="button" class="btn-general cancel-button" onclick="cerrarModal()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
 </body>
 
 </html>
