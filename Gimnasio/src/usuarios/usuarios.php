@@ -202,11 +202,11 @@ include '../admin/admin_header.php';
         <table id="tabla-usuarios" class="styled-table">
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Rol</th>
-                    <th>Teléfono</th>
-                    <th>Fecha de Registro</th>
+                    <th onclick="ordenarTablaU(0)" class="sortable">Nombre</th>
+                    <th onclick="ordenarTablaU(1)" class="sortable">Email</th>
+                    <th onclick="ordenarTablaU(2)" class="sortable">Rol</th>
+                    <th onclick="ordenarTablaU(3)" class="sortable">Teléfono</th>
+                    <th onclick="ordenarTablaU(4)" class="sortable">Fecha de Registro</th>
                     <th>Acciones</th>
                 </tr>
             </thead>

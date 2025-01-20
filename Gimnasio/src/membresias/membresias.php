@@ -184,7 +184,7 @@ include '../admin/admin_header.php';
             <?php endif; ?>
         </div>
     </main>
-
+    <script src="../../assets/js/clases.js"></script>
     <?php include '../includes/footer.php'; ?>
 </body>
 </html>

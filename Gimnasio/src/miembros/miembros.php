@@ -56,11 +56,11 @@ include '../admin/admin_header.php';
         <table id="tabla-miembros" class="styled-table">
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Miembro desde</th>
-                    <th>Tipo de Membresía</th>
-                    <th>Entrenamientos</th>
+                    <th onclick="ordenarTablaMi(0, 'tabla-miembros')" class="sortable">Nombre</th>
+                    <th onclick="ordenarTablaMi(1, 'tabla-miembros')" class="sortable">Email</th>
+                    <th onclick="ordenarTablaMi(2, 'tabla-miembros')" class="sortable">Miembro desde</th>
+                    <th onclick="ordenarTablaMi(3, 'tabla-miembros')" class="sortable">Tipo de Membresía</th>
+                    <th onclick="ordenarTablaMi(4, 'tabla-miembros')" class="sortable">Entrenamientos</th>
                     <th>Acciones</th>
                 </tr>
             </thead>

@@ -121,6 +121,7 @@ include '../admin/admin_header.php';
     include '../includes/footer.php';
     $conn->close();
     ?>
+    <script src="../../assets/js/clases.js"></script>
 </body>
 
 
