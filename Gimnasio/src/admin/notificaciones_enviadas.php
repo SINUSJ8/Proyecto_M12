@@ -72,7 +72,7 @@ include 'admin_header.php';
 
     </div>
     <div class="pagination">
-        <a href="notificaciones.php" class="btn-general">Volver a Notificaciones</a>
+        <a href="notificaciones.php" class="btn-general" style="margin-top: 10px">Volver a Notificaciones</a>
     </div>
 </main>
 

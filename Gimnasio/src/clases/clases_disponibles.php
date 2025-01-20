@@ -48,7 +48,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
             } else {
                 ?>
                 <div class="button-container">
-                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                    <a href="<?php echo BASE_URL; ?>src/clases/mis_clases.php" class="button">Apúntate ya desde "Mis clases"</a>
                 </div>
                 <?php
             }
@@ -79,7 +79,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
             } else {
                 ?>
                 <div class="button-container">
-                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                    <a href="<?php echo BASE_URL; ?>src/clases/mis_clases.php"class="button">Apúntate ya desde "Mis Clases"</a>
                 </div>
                 <?php
             }
@@ -108,7 +108,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
             } else {
                 ?>
                 <div class="button-container">
-                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                    <a href="<?php echo BASE_URL; ?>src/clases/mis_clases.php" class="button">Apúntate ya desde "Mis Clases"</a>
                 </div>
                 <?php
             }
@@ -137,7 +137,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
             } else {
                 ?>
                 <div class="button-container">
-                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                    <a href="<?php echo BASE_URL; ?>src/clases/mis_clases.php" class="button">Apúntate ya desde "Mis Clases"</a>
                 </div>
                 <?php
             }
@@ -166,7 +166,7 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
             } else {
                 ?>
                 <div class="button-container">
-                    <a href="<?php echo BASE_URL; ?>src/membresias/mi_membresia.php" class="button">Apúntate ya desde "Mi membresía"</a>
+                    <a href="<?php echo BASE_URL; ?>src/clases/mis_clases.php" class="button">Apúntate ya desde "Mis Clases"</a>
                 </div>
                 <?php
             }

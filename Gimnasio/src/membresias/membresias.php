@@ -3,13 +3,18 @@ require_once('../admin/admin_functions.php');
 verificarAdmin();
 $conn = obtenerConexion();
 
+// Configuración de paginación
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 8; // Número de resultados por página
+$offset = ($page - 1) * $limit;
+
 // Capturar el término de búsqueda
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
 
-// Consulta para obtener membresías con información del miembro y fechas
+// Consulta principal con paginación
 $sql = "
     SELECT 
-       mm.id AS id,
+        mm.id AS id,
         u.nombre AS nombre_usuario,
         u.email,
         u.telefono,
@@ -36,20 +41,39 @@ $sql = "
             ELSE 4
         END,
         m.precio ASC
+    LIMIT ? OFFSET ?
 ";
 
 $stmt = $conn->prepare($sql);
 $busquedaParam = '%' . $busqueda . '%';
-$stmt->bind_param("ss", $busquedaParam, $busquedaParam);
+$stmt->bind_param("ssii", $busquedaParam, $busquedaParam, $limit, $offset);
 $stmt->execute();
 $result = $stmt->get_result();
-$membresias_miembros = [];
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $membresias_miembros[] = $row;
-    }
-}
+$membresias_miembros = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
+
+// Consulta para obtener el número total de resultados
+$sql_count = "
+    SELECT 
+        COUNT(*) as total
+    FROM 
+        miembro_membresia mm
+    INNER JOIN miembro mb ON mm.id_miembro = mb.id_miembro
+    INNER JOIN usuario u ON mb.id_usuario = u.id_usuario
+    INNER JOIN membresia m ON mm.id_membresia = m.id_membresia
+    WHERE 
+        u.nombre LIKE ? OR
+        m.tipo LIKE ?
+";
+$stmt_count = $conn->prepare($sql_count);
+$stmt_count->bind_param("ss", $busquedaParam, $busquedaParam);
+$stmt_count->execute();
+$result_count = $stmt_count->get_result();
+$total_rows = $result_count->fetch_assoc()['total'];
+$stmt_count->close();
+
+$total_pages = ceil($total_rows / $limit);
+
 $title = "Membresías y Miembros";
 include '../admin/admin_header.php';
 ?>
@@ -65,23 +89,15 @@ include '../admin/admin_header.php';
             </div>
         <?php endif; ?>
 
-        <?php if (isset($_GET['error'])): ?>
-            <div class="mensaje-error">
-                <p><?php echo htmlspecialchars($_GET['error']); ?></p>
-            </div>
-        <?php endif; ?>
-
         <!-- Formulario de búsqueda -->
         <div class="form_container">
             <form method="GET" action="membresias.php" style="display: inline;">
                 <input type="text" name="busqueda" placeholder="Buscar membresía o usuario..." value="<?php echo htmlspecialchars($busqueda); ?>">
                 <button type="submit" class="btn-general">Buscar</button>
-                <!-- Botón limpiar -->
                 <a href="membresias.php" class="btn-general limpiar-busqueda">Limpiar</a>
                 <a href="crear_membresia.php" class="btn-general limpiar-busqueda">Crear Membresía</a>
             </form>
         </div>
-
 
 
         <!-- Tabla de datos -->
@@ -142,8 +158,6 @@ include '../admin/admin_header.php';
                                     <button type="submit" class="delete-button" onclick="return confirm('¿Seguro que deseas eliminar esta membresía?');">Eliminar</button>
                                 </form>
                             </td>
-
-
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -151,13 +165,26 @@ include '../admin/admin_header.php';
         <?php else: ?>
             <p>No hay membresías registradas para mostrar.</p>
         <?php endif; ?>
+                </tbody>
+            </table>
+        <!-- Paginación -->
+        <div class="pagination">
+            <?php if ($page > 1): ?>
+                <a href="membresias.php?page=<?php echo $page - 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>" class="btn-general">Anterior</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <a href="membresias.php?page=<?php echo $i; ?>&busqueda=<?php echo urlencode($busqueda); ?>" class="btn-general <?php echo $i === $page ? 'active' : ''; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+
+            <?php if ($page < $total_pages): ?>
+                <a href="membresias.php?page=<?php echo $page + 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>" class="btn-general">Siguiente</a>
+            <?php endif; ?>
+        </div>
     </main>
 
-    <?php
-    include '../includes/footer.php';
-    $conn->close();
-    ?>
-    <script src="../../assets/js/clases.js"></script>
+    <?php include '../includes/footer.php'; ?>
 </body>
-
 </html>

@@ -241,22 +241,22 @@ include '../admin/admin_header.php';
         <!-- Paginación -->
         <div class="pagination">
             <?php if ($page > 1): ?>
-                <a href="usuarios.php?page=<?php echo $page - 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>">Anterior</a>
+                <a href="usuarios.php?page=<?php echo $page - 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>" class="btn-general">Anterior</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="usuarios.php?page=<?php echo $i; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>" class="<?php echo $i === $page ? 'active' : ''; ?>">
+                <a href="usuarios.php?page=<?php echo $i; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>" class="btn-general <?php echo $i === $page ? 'active' : ''; ?>">
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($page < $total_pages): ?>
-                <a href="usuarios.php?page=<?php echo $page + 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>">Siguiente</a>
+                <a href="usuarios.php?page=<?php echo $page + 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>" class="btn-general">Siguiente</a>
             <?php endif; ?>
         </div>
-
     </main>
 
     <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/clases.js"></script>
 </body>
+</html>
