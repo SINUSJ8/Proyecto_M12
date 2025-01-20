@@ -48,7 +48,7 @@ include '../admin/admin_header.php';
         <?php endif; ?>
 
         <!-- Formulario de búsqueda -->
-        <form method="GET" action="monitores.php" class="form_container">
+        <form method="GET" action="monitores.php" class="form-inline">
             <div class="form-group">
                 <label for="busqueda">Buscar Monitor:</label>
                 <input type="text" id="busqueda" name="busqueda" placeholder="Buscar monitor..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-general">
@@ -75,11 +75,12 @@ include '../admin/admin_header.php';
                 </select>
             </div>
 
-            <div class="button-container">
+            <div class="form-group button-container">
                 <button type="submit" class="btn-general">Buscar</button>
                 <button type="button" class="btn-general reset-button" onclick="limpiarFormulario()">Limpiar</button>
             </div>
         </form>
+
 
         <!-- Tabla con lista de monitores y acciones -->
         <section class="form_container_large">
