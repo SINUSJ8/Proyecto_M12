@@ -453,10 +453,33 @@ function informacionMembresia($id_usuario)
 
     return $datosMiembro;
 }
-
-
-
-
+function obtenerTotalMiembros($conn)
+{
+    $sql = "SELECT COUNT(*) AS total FROM miembro";
+    $result = $conn->query($sql);
+    return $result->fetch_assoc()['total'];
+}
+function obtenerMiembrosPaginados($conn, $limit, $offset)
+{
+    $sql = "SELECT 
+                u.nombre, u.email, m.fecha_registro, 
+                mb.tipo AS tipo_membresia, 
+                GROUP_CONCAT(e.nombre SEPARATOR ', ') AS entrenamientos,
+                m.id_usuario
+            FROM miembro m
+            JOIN usuario u ON m.id_usuario = u.id_usuario
+            LEFT JOIN membresia mb ON m.id_membresia = mb.id_membresia
+            LEFT JOIN miembro_entrenamiento me ON me.id_miembro = m.id_miembro
+            LEFT JOIN especialidad e ON me.id_especialidad = e.id_especialidad
+            GROUP BY m.id_miembro
+            ORDER BY u.nombre ASC
+            LIMIT ? OFFSET ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
 
 
 function obtenerDetalleCompletoMiembro($conn, $id_usuario)
