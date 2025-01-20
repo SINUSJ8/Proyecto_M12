@@ -25,6 +25,7 @@
                 <a href="../membresias/membresias.php">Membresías</a>
                 <a href="../config/configuracion.php">Especialidades</a>
                 <a href="../admin/notificaciones.php">Notificaciones</a>
+                <a href="../admin/historial_pagos.php">Historial de pagos</a>
             <?php endif; ?>
 
             <form action="../includes/general.php" method="post" style="display: inline;">
