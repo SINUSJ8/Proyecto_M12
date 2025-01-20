@@ -18,12 +18,40 @@ $datos_usuario = obtenerDatosUsuario($conn, $id_usuario);
 
 // Procesar la actualización de datos cuando el formulario se envía (método POST)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nuevo_nombre = $_POST['nombre'];
-    $nuevo_telefono = $_POST['telefono'];
-    $nueva_contrasenya = $_POST['contrasenya'] ?: null;
+    $nuevo_nombre = trim($_POST['nombre']);
+    $nuevo_telefono = trim($_POST['telefono']);
+    $nueva_contrasenya = trim($_POST['contrasenya']);
+    $confirmar_contrasenya = trim($_POST['confirmar_contrasenya']);
+
+    // Validaciones del lado del servidor
+    if (!preg_match('/[a-zA-Z]/', $nuevo_nombre)) {
+        $_SESSION['error'] = "El nombre debe contener al menos una letra.";
+        header("Location: usuario.php");
+        exit();
+    }
+
+    if (!empty($nuevo_telefono) && !preg_match('/^\d{9}$/', $nuevo_telefono)) {
+        $_SESSION['error'] = "El teléfono debe contener exactamente 9 dígitos numéricos.";
+        header("Location: usuario.php");
+        exit();
+    }
+
+    if (!empty($nueva_contrasenya)) {
+        if (strlen($nueva_contrasenya) < 6) {
+            $_SESSION['error'] = "La contraseña debe tener al menos 6 caracteres.";
+            header("Location: usuario.php");
+            exit();
+        }
+
+        if ($nueva_contrasenya !== $confirmar_contrasenya) {
+            $_SESSION['error'] = "Las contraseñas no coinciden.";
+            header("Location: usuario.php");
+            exit();
+        }
+    }
 
     // Llamada a actualizarDatosUsuario con la página actual como parámetro de redirección
-    actualizarDatosUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_telefono, $nueva_contrasenya, "usuario.php");
+    actualizarDatosUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_telefono, $nueva_contrasenya ?: null, "usuario.php?mensaje=Datos+actualizados+correctamente");
 }
 
 $conn->close();
@@ -32,12 +60,21 @@ $conn->close();
 <main class="form_container">
     <h2 class="section-title">Perfil del Usuario</h2>
 
+    <!-- Mensajes del servidor -->
     <?php if (isset($_GET['mensaje'])): ?>
-        <div class="mensaje-confirmacion">
+        <div id="mensaje-flotante" class="mensaje-confirmacion">
             <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
         </div>
     <?php endif; ?>
 
+    <?php if (isset($_SESSION['error'])): ?>
+        <div id="mensaje-flotante" class="mensaje-error">
+            <p><?php echo htmlspecialchars($_SESSION['error']); ?></p>
+        </div>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+
+    <!-- Formulario de perfil del usuario -->
     <form action="usuario.php" method="POST" onsubmit="return valFormUsuario();">
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($datos_usuario['nombre']); ?>" required>

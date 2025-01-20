@@ -41,13 +41,14 @@ $conn->close();
 
         <!-- Mostrar mensaje de confirmación si existe -->
         <?php if (isset($_GET['mensaje'])): ?>
-            <div class="mensaje-confirmacion">
+            <div id="mensaje-flotante" class="mensaje-confirmacion">
                 <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
             </div>
         <?php endif; ?>
 
+
         <div class="form_container">
-            <form action="edit_usuario.php" method="POST" class="form_general" onsubmit="return validarFormulario();">
+            <form action="edit_usuario.php" method="POST" class="form_general" onsubmit="return validarFormulario();" data-context="edicion">
                 <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($id_usuario); ?>">
 
                 <!-- Campo para editar el nombre -->

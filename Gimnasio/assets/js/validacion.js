@@ -1,88 +1,141 @@
 // Función para validar el formulario de registro de usuario
 function validarFormulario() {
-    const nombre = document.getElementById('nombre').value;
-    const email = document.getElementById('email').value;
-    const contrasenya = document.getElementById('contrasenya').value;
-    const confirmarContrasenya = document.getElementById('confirmar_contrasenya').value;
+    const formulario = document.querySelector('form[data-context]'); // Obtiene el formulario con data-context
+    const contexto = formulario.getAttribute('data-context'); // "registro" o "edicion"
+
+    const nombre = document.getElementById('nombre').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const contrasenya = document.getElementById('contrasenya').value.trim();
+    const confirmarContrasenya = document.getElementById('confirmar_contrasenya').value.trim();
 
     // Validación del campo de nombre: se asegura de que contenga al menos una letra
     const nombreRegex = /[a-zA-Z]/;
     if (!nombreRegex.test(nombre)) {
-        alert("Por favor, ingresa un nombre válido con al menos una letra.");
+        mostrarMensajeError("Por favor, ingresa un nombre válido con al menos una letra.");
         return false;
     }
 
     // Validación del campo de email: verifica que no esté vacío
-    if (email.trim() === "") {
-        alert("Por favor, ingresa tu correo electrónico.");
+    if (email === "") {
+        mostrarMensajeError("Por favor, ingresa tu correo electrónico.");
         return false;
     }
 
     // Validación del formato del email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        alert("Por favor, ingresa un correo electrónico válido.");
+        mostrarMensajeError("Por favor, ingresa un correo electrónico válido.");
         return false;
     }
 
-    // Validación de la longitud de la contraseña: al menos 6 caracteres si no está vacía
-    if (contrasenya && contrasenya.length < 6) {
-        alert("La contraseña debe tener al menos 6 caracteres.");
-        return false;
+    // Validación de la contraseña dependiendo del contexto
+    if (contexto === "registro" || (contexto === "edicion" && contrasenya !== "")) {
+        if (contrasenya.length < 6) {
+            mostrarMensajeError("La contraseña debe tener al menos 6 caracteres.");
+            return false;
+        }
+
+        // Validación de coincidencia de contraseñas: confirma que ambas contraseñas son iguales
+        if (contrasenya !== confirmarContrasenya) {
+            mostrarMensajeError("Las contraseñas no coinciden. Por favor, verifica.");
+            return false;
+        }
     }
 
-    // Validación de coincidencia de contraseñas: confirma que ambas contraseñas son iguales
-    if (contrasenya !== confirmarContrasenya) {
-        alert("Las contraseñas no coinciden. Por favor, verifica.");
-        return false;
-    }
-
-    const mensajeConfirmacion = "Estás a punto de crear o actualizar los datos del usuario.\n\n" +
-        "Esta acción no se puede deshacer. Asegúrate de que toda la información sea correcta " +
-        "antes de continuar.\n\n" +
-        "¿Deseas continuar con la actualización de los datos?";
-    const confirmar = confirm(mensajeConfirmacion);
-    return confirmar;
+    return true; // Si pasa todas las validaciones, el formulario se enviará
 }
+
+// Función para mostrar mensajes de error en el formulario
+function mostrarMensajeError(mensaje) {
+    const mensajeError = document.createElement('div');
+    mensajeError.className = 'mensaje-error';
+    mensajeError.textContent = mensaje;
+
+    const formulario = document.querySelector('.form_container');
+    formulario.insertBefore(mensajeError, formulario.firstChild);
+
+    // Elimina el mensaje de error después de 5 segundos
+    setTimeout(() => {
+        mensajeError.remove();
+    }, 5000);
+}
+// Función para mostrar y eliminar mensajes del servidor
+function manejarMensajeServidor() {
+    const mensaje = document.getElementById('mensaje-flotante');
+    if (mensaje) {
+        // Elimina el mensaje después de 5 segundos
+        setTimeout(() => {
+            mensaje.style.transition = 'opacity 0.5s ease';
+            mensaje.style.opacity = '0';
+            setTimeout(() => mensaje.remove(), 500); // Remueve el elemento tras la transición
+        }, 5000);
+    }
+}
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    const mensaje = document.getElementById('mensaje-flotante');
+    if (mensaje) {
+        console.log("Mensaje encontrado:", mensaje.textContent); // Para verificar en la consola
+        setTimeout(() => {
+            mensaje.style.transition = 'opacity 0.5s ease';
+            mensaje.style.opacity = '0';
+            console.log("Ocultando mensaje..."); // Confirmación en consola
+            setTimeout(() => {
+                mensaje.remove();
+                console.log("Mensaje eliminado."); // Confirmación en consola
+            }, 500);
+        }, 5000);
+    } else {
+        console.log("No se encontró el mensaje flotante.");
+    }
+});
+
+
 
 
 
 // Función para validar el formulario de actualización de usuario en la página de perfil
 function valFormUsuario() {
-    const nombre = document.getElementById('nombre').value;
-    const telefono = document.getElementById('telefono').value;
-    const password = document.getElementById('contrasenya').value;
-    const confirmarPassword = document.getElementById('confirmar_contrasenya').value;
+    const nombre = document.getElementById('nombre').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const password = document.getElementById('contrasenya').value.trim();
+    const confirmarPassword = document.getElementById('confirmar_contrasenya').value.trim();
 
-    // Validación del nombre: debe contener al menos una letra
+    // Limpia mensajes de error previos
+    const mensajesExistentes = document.querySelectorAll('.mensaje-error');
+    mensajesExistentes.forEach(mensaje => mensaje.remove());
+
+    // Validación del nombre
     const nombreRegex = /[a-zA-Z]/;
     if (!nombreRegex.test(nombre)) {
-        alert("Por favor, ingresa un nombre válido con al menos una letra.");
+        mostrarMensajeError("Por favor, ingresa un nombre válido con al menos una letra.");
         return false;
     }
 
-    // Validación del teléfono: solo se verifica si tiene valor y consta de exactamente 9 dígitos
+    // Validación del teléfono
     const telefonoRegex = /^\d{9}$/;
     if (telefono && !telefonoRegex.test(telefono)) {
-        alert("El teléfono debe tener exactamente 9 dígitos.");
+        mostrarMensajeError("El teléfono debe tener exactamente 9 dígitos.");
         return false;
     }
 
-    // Validación de la contraseña: solo se verifica si tiene al menos 6 caracteres si no está vacía
+    // Validación de la contraseña
     if (password && password.length < 6) {
-        alert("La contraseña debe tener al menos 6 caracteres.");
+        mostrarMensajeError("La contraseña debe tener al menos 6 caracteres.");
         return false;
     }
 
-    // Validación de coincidencia de contraseñas: confirma que ambas contraseñas son iguales si se ingresó una nueva contraseña
+    // Validación de coincidencia de contraseñas
     if (password && password !== confirmarPassword) {
-        alert("Las contraseñas no coinciden. Por favor, verifica.");
+        mostrarMensajeError("Las contraseñas no coinciden. Por favor, verifica.");
         return false;
     }
 
-    // Si todas las validaciones pasan, se permite el envío del formulario
+    // Si todo está correcto, permite el envío del formulario
     return true;
 }
+
 
 
 function validarFormularioEdicion(tipoFormulario) {

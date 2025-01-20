@@ -13,17 +13,17 @@ session_start();
 </head>
 
 <body>
-    <!-- Mensaje de confirmación o error almacenado en la sesión -->
+    <!-- Mostrar mensaje de confirmación o error almacenado en la sesión -->
     <?php if (isset($_SESSION['mensaje'])): ?>
-        <div class="mensaje-confirmacion">
+        <div id="mensaje-flotante" class="mensaje-confirmacion">
             <p><?php echo htmlspecialchars($_SESSION['mensaje']); ?></p>
-            <a href="log.php" class="btn-general">Iniciar Sesión</a> <!-- Botón para iniciar sesión -->
+            <a href="log.php" class="btn-general">Iniciar Sesión</a>
         </div>
         <?php unset($_SESSION['mensaje']); ?>
     <?php endif; ?>
 
     <?php if (isset($_SESSION['error'])): ?>
-        <div class="mensaje-error">
+        <div id="mensaje-flotante" class="mensaje-error">
             <p><?php echo htmlspecialchars($_SESSION['error']); ?></p>
         </div>
         <?php unset($_SESSION['error']); ?>
@@ -54,6 +54,7 @@ session_start();
         <a href="../../index.php" class="btn-general">Volver al inicio</a>
     </div>
 
+    <!-- Enlace a validacion.js -->
     <script src="../../assets/js/validacion.js"></script>
 </body>
 
