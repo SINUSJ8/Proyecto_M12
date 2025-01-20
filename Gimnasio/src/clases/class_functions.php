@@ -72,6 +72,136 @@ function obtenerClases($conn, $filtros = [], $tipo = 'actuales')
     $stmt->close();
     return $clases;
 }
+function obtenerTotalClases($conn, $filtros = [], $tipo = 'actuales')
+{
+    $sql = "SELECT COUNT(*) AS total FROM clase c
+            LEFT JOIN monitor mo ON c.id_monitor = mo.id_monitor
+            LEFT JOIN usuario u ON mo.id_usuario = u.id_usuario
+            LEFT JOIN especialidad m ON c.id_especialidad = m.id_especialidad
+            WHERE 1=1";
+
+    $params = [];
+    $types = "";
+
+    // Filtrar por tipo de clase
+    if ($tipo === 'actuales') {
+        $sql .= " AND (c.fecha > CURDATE() OR (c.fecha = CURDATE() AND c.horario >= CURTIME()))";
+    } elseif ($tipo === 'anteriores') {
+        $sql .= " AND (c.fecha < CURDATE() OR (c.fecha = CURDATE() AND c.horario < CURTIME()))";
+    }
+
+    // Aplicar filtros adicionales
+    if (!empty($filtros['nombre_clase'])) {
+        $sql .= " AND c.nombre LIKE ?";
+        $params[] = '%' . $filtros['nombre_clase'] . '%';
+        $types .= "s";
+    }
+
+    if (!empty($filtros['nombre_monitor'])) {
+        $sql .= " AND u.nombre LIKE ?";
+        $params[] = '%' . $filtros['nombre_monitor'] . '%';
+        $types .= "s";
+    }
+
+    if (!empty($filtros['especialidad'])) {
+        $sql .= " AND m.nombre LIKE ?";
+        $params[] = '%' . $filtros['especialidad'] . '%';
+        $types .= "s";
+    }
+
+    if (!empty($filtros['fecha'])) {
+        $sql .= " AND c.fecha = ?";
+        $params[] = $filtros['fecha'];
+        $types .= "s";
+    }
+
+    $stmt = $conn->prepare($sql);
+
+    if (!empty($params)) {
+        $stmt->bind_param($types, ...$params);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+
+    return $data['total'];
+}
+
+function obtenerClasesPaginadas($conn, $filtros = [], $tipo = 'actuales', $limit = 8, $offset = 0)
+{
+    $sql = "SELECT 
+                c.id_clase, 
+                c.nombre, 
+                m.nombre AS especialidad, 
+                u.nombre AS monitor, 
+                mo.disponibilidad AS monitor_disponible, 
+                c.fecha, 
+                c.horario, 
+                c.duracion, 
+                c.capacidad_maxima
+            FROM clase c
+            LEFT JOIN monitor mo ON c.id_monitor = mo.id_monitor
+            LEFT JOIN usuario u ON mo.id_usuario = u.id_usuario
+            LEFT JOIN especialidad m ON c.id_especialidad = m.id_especialidad
+            WHERE 1=1";
+
+    $params = [];
+    $types = "";
+
+    // Filtrar por tipo de clase
+    if ($tipo === 'actuales') {
+        $sql .= " AND (c.fecha > CURDATE() OR (c.fecha = CURDATE() AND c.horario >= CURTIME()))";
+    } elseif ($tipo === 'anteriores') {
+        $sql .= " AND (c.fecha < CURDATE() OR (c.fecha = CURDATE() AND c.horario < CURTIME()))";
+    }
+
+    // Aplicar filtros adicionales
+    if (!empty($filtros['nombre_clase'])) {
+        $sql .= " AND c.nombre LIKE ?";
+        $params[] = '%' . $filtros['nombre_clase'] . '%';
+        $types .= "s";
+    }
+
+    if (!empty($filtros['nombre_monitor'])) {
+        $sql .= " AND u.nombre LIKE ?";
+        $params[] = '%' . $filtros['nombre_monitor'] . '%';
+        $types .= "s";
+    }
+
+    if (!empty($filtros['especialidad'])) {
+        $sql .= " AND m.nombre LIKE ?";
+        $params[] = '%' . $filtros['especialidad'] . '%';
+        $types .= "s";
+    }
+
+    if (!empty($filtros['fecha'])) {
+        $sql .= " AND c.fecha = ?";
+        $params[] = $filtros['fecha'];
+        $types .= "s";
+    }
+
+    // Añadir paginación
+    $sql .= " ORDER BY c.fecha ASC, c.horario ASC LIMIT ? OFFSET ?";
+    $params[] = $limit;
+    $params[] = $offset;
+    $types .= "ii";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $clases = [];
+    while ($row = $result->fetch_assoc()) {
+        $row['monitor_disponible'] = $row['monitor_disponible'] ?? 'sin monitor'; // Ajustar si no hay monitor
+        $clases[] = $row;
+    }
+
+    $stmt->close();
+    return $clases;
+}
+
 
 function obtenerDetallesClase($conn, $id_clase)
 {

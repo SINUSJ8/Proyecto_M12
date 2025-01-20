@@ -82,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
                     <option value="admin" <?php echo isset($rol) && $rol === 'admin' ? 'selected' : ''; ?>>Administrador</option>
                 </select>
                 <button type="submit" name="crear_usuario" class="btn-general">Crear Usuario</button>
+                <a href="usuarios.php" class="btn-general btn-secondary">Volver a Usuarios</a>
             </form>
         </section>
     </main>

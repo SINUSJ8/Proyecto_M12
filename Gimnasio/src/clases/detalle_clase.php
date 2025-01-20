@@ -54,6 +54,7 @@ include '../admin/admin_header.php';
             <p>No hay miembros inscritos en esta clase.</p>
         <?php endif; ?>
 
-        <a href="clases.php" class="button">Volver al Listado</a>
+        <a href="clases.php" class="button">Listado de clases</a>
+        <a href="buscar_clase.php" class="button">Buscar Clase</a>
     </main>
 </body>

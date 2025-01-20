@@ -145,7 +145,9 @@ include '../admin/admin_header.php';
 
                 <button type="submit" class="btn-general"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
             </form>
-
+            <div class="button-container">
+                <a href="clases.php" class="btn-general btn-secondary">Volver a Clases</a>
+            </div>
         </section>
     </main>
     <script src="../../assets/js/dinamica_especialidades.js"></script>

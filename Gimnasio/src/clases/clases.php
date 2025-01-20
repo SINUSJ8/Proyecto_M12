@@ -16,8 +16,17 @@ $filtros = [
     'fecha' => isset($_GET['fecha']) ? $_GET['fecha'] : '',
 ];
 
-// Obtener las clases según los filtros y el tipo de clase
-$clases = obtenerClases($conn, $filtros, $tipo);
+// Configuración de paginación
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 8; // Resultados por página
+$offset = ($page - 1) * $limit;
+
+// Obtener el número total de clases
+$total_clases = obtenerTotalClases($conn, $filtros, $tipo);
+$total_pages = ceil($total_clases / $limit);
+
+// Obtener las clases según los filtros, tipo y paginación
+$clases = obtenerClasesPaginadas($conn, $filtros, $tipo, $limit, $offset);
 $clases_json = json_encode($clases);
 
 $title = $tipo === 'anteriores' ? "Clases Anteriores" : "Listado de Clases";
@@ -55,10 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
 }
 ?>
 
-<?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'clase_eliminada'): ?>
-    <p class="success-message">La clase se ha eliminado correctamente.</p>
-<?php endif; ?>
-
 <body>
     <main>
         <h2 class="section-title"><?= $title; ?></h2>
@@ -71,34 +76,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                 <a href="clases.php?tipo=anteriores" class="btn-general">Ver Clases Anteriores</a>
             <?php endif; ?>
             <a href="crear_clase.php" class="btn-general">Crear Clase</a>
+            <a href="buscar_clase.php" class="btn-general">Buscar Clases</a>
         </div>
 
         <!-- Mostrar mensaje de confirmación si existe -->
         <?php if (isset($_GET['mensaje']) && $_GET['mensaje'] === 'clase_eliminada'): ?>
             <p class="mensaje-confirmacion">La clase se ha eliminado correctamente.</p>
         <?php endif; ?>
-
-        <!-- Formulario de búsqueda -->
-        <form method="GET" action="clases.php" class="form_container">
-            <input type="hidden" name="tipo" value="<?= htmlspecialchars($tipo); ?>">
-
-            <div class="form-group">
-                <input type="text" name="nombre_clase" placeholder="Nombre de la clase" value="<?= htmlspecialchars($filtros['nombre_clase'], ENT_QUOTES, 'UTF-8') ?>" class="input-general">
-            </div>
-            <div class="form-group">
-                <input type="text" name="nombre_monitor" placeholder="Nombre del monitor" value="<?= htmlspecialchars($filtros['nombre_monitor'], ENT_QUOTES, 'UTF-8') ?>" class="input-general">
-            </div>
-            <div class="form-group">
-                <input type="text" name="especialidad" placeholder="Especialidad" value="<?= htmlspecialchars($filtros['especialidad'], ENT_QUOTES, 'UTF-8') ?>" class="input-general">
-            </div>
-            <div class="form-group">
-                <input type="date" name="fecha" value="<?= htmlspecialchars($filtros['fecha'], ENT_QUOTES, 'UTF-8') ?>" class="input-general">
-            </div>
-            <div class="button-container">
-                <button type="submit" class="btn-general">Buscar</button>
-                <button type="button" class="btn-general reset-button" onclick="window.location.href='clases.php?tipo=<?= htmlspecialchars($tipo); ?>'">Limpiar</button>
-            </div>
-        </form>
 
         <!-- Tabla para mostrar clases -->
         <section class="form_container_large">
@@ -153,6 +137,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                 </tbody>
             </table>
         </section>
+
+        <!-- Paginación -->
+        <div class="pagination">
+            <?php if ($page > 1): ?>
+                <a href="clases.php?page=<?= $page - 1; ?>&tipo=<?= $tipo; ?>" class="btn-general">Anterior</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <a href="clases.php?page=<?= $i; ?>&tipo=<?= $tipo; ?>" class="btn-general <?= $i === $page ? 'active' : ''; ?>">
+                    <?= $i; ?>
+                </a>
+            <?php endfor; ?>
+
+            <?php if ($page < $total_pages): ?>
+                <a href="clases.php?page=<?= $page + 1; ?>&tipo=<?= $tipo; ?>" class="btn-general">Siguiente</a>
+            <?php endif; ?>
+        </div>
 
         <?php include '../includes/footer.php'; ?>
 
