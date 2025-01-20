@@ -47,19 +47,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Obtener usuarios
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
+$filtro_rol = isset($_GET['filtro_rol']) ? $_GET['filtro_rol'] : '';
+
 $sql = "SELECT id_usuario, nombre, email, rol, telefono, fecha_creacion FROM usuario WHERE 1=1";
+
 if (!empty($busqueda)) {
     $sql .= " AND (nombre LIKE ? OR email LIKE ?)";
 }
+
+if (!empty($filtro_rol)) {
+    $sql .= " AND rol = ?";
+}
+
 $sql .= " ORDER BY nombre ASC";
+
 $stmt = $conn->prepare($sql);
-if (!empty($busqueda)) {
+
+if (!empty($busqueda) && !empty($filtro_rol)) {
+    $busqueda_param = '%' . $busqueda . '%';
+    $stmt->bind_param("sss", $busqueda_param, $busqueda_param, $filtro_rol);
+} elseif (!empty($busqueda)) {
     $busqueda_param = '%' . $busqueda . '%';
     $stmt->bind_param("ss", $busqueda_param, $busqueda_param);
+} elseif (!empty($filtro_rol)) {
+    $stmt->bind_param("s", $filtro_rol);
 }
+
 $stmt->execute();
 $result = $stmt->get_result();
 $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+
 
 $title = "Gestión de Usuarios";
 include '../admin/admin_header.php';
@@ -74,6 +91,15 @@ include '../admin/admin_header.php';
             <form method="GET" action="usuarios.php" class="search-form">
                 <div class="input-container">
                     <input type="text" name="busqueda" placeholder="Buscar usuario..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-general">
+                </div>
+                <div class="input-container">
+                    <select name="filtro_rol" class="input-general">
+                        <option value="">Todos los roles</option>
+                        <option value="admin" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'admin') ? 'selected' : ''; ?>>Administrador</option>
+                        <option value="monitor" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'monitor') ? 'selected' : ''; ?>>Monitor</option>
+                        <option value="miembro" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'miembro') ? 'selected' : ''; ?>>Miembro</option>
+                        <option value="usuario" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'usuario') ? 'selected' : ''; ?>>Usuario</option>
+                    </select>
                 </div>
                 <div class="buttons-container">
                     <button type="submit" class="btn-general">Buscar</button>
