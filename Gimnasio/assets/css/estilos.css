@@ -25,6 +25,7 @@ main {
     text-align: center;
     flex: 1;
     margin: 0 auto;
+    padding-bottom: 60px;
 }
 
 /* HEADER */
@@ -452,12 +453,16 @@ table.styled-table th.sortable.sorted-desc:after {
     }
 }
 
-.clases-about{
+.clases-about {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
-    gap: 20px; /* Espacio entre las tarjetas */
-    margin: 20px auto; /* Centrar y ajustar el margen superior */
-    max-width: 1000px; /* Limitar el ancho máximo para una mejor estética */
+    grid-template-columns: repeat(2, 1fr);
+    /* Dos columnas */
+    gap: 20px;
+    /* Espacio entre las tarjetas */
+    margin: 20px auto;
+    /* Centrar y ajustar el margen superior */
+    max-width: 1000px;
+    /* Limitar el ancho máximo para una mejor estética */
 }
 
 .clase-card {
@@ -779,6 +784,119 @@ button.btn-general {
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #3aafa9;
+    /* Mismo color que .btn-general */
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination a:hover {
+    background-color: #2b7a78;
+    /* Mismo color hover que .btn-general */
+}
+
+.pagination a.active {
+    font-weight: bold;
+    background-color: #2b7a78;
+    /* Mismo color hover para destacar el botón activo */
+    pointer-events: none;
+    /* Desactiva clics en el botón activo */
+}
+
+.form-inline {
+    display: flex;
+    align-items: center;
+    /* Alinea verticalmente */
+    justify-content: flex-start;
+    /* Alinea horizontalmente */
+    gap: 15px;
+    /* Espaciado entre elementos */
+    flex-wrap: wrap;
+    /* Permite que los elementos pasen a la siguiente línea si no caben */
+}
+
+.input-container {
+    flex-grow: 1;
+    /* Permite que los campos de entrada se expandan */
+}
+
+footer {
+    background-color: #3aafa9;
+    /* Verde principal */
+    color: #fff;
+    /* Texto blanco */
+    text-align: center;
+    /* Centrar el texto */
+    padding: 10px 0;
+    /* Espaciado interno */
+    font-size: 14px;
+    /* Tamaño de fuente */
+    border-top: 2px solid #2b7a78;
+    /* Línea superior más oscura */
+}
+
+footer {
+    background-color: #3aafa9;
+    /* Verde principal */
+    color: #fff;
+    /* Texto blanco */
+    text-align: center;
+    /* Centrar el texto */
+    padding: 10px 0;
+    /* Espaciado interno */
+    font-size: 14px;
+    /* Tamaño de fuente */
+    border-top: 2px solid #2b7a78;
+    /* Línea superior más oscura */
+    position: static;
+    /* Fija el footer al final de la ventana */
+    bottom: 0;
+    /* Asegura que se mantenga al final */
+    left: 0;
+    /* Inicia desde el borde izquierdo */
+    width: 100%;
+    /* Ocupa todo el ancho */
+    box-sizing: border-box;
+    /* Incluye padding y border en el tamaño */
+}
+
+footer p {
+    margin: 0;
+    /* Quitar margen del texto */
+    font-family: Arial, sans-serif;
+    /* Fuente consistente */
+}
+
+footer a {
+    color: #fff;
+    /* Enlaces en blanco */
+    text-decoration: underline;
+    /* Subrayado para enlaces */
+    transition: color 0.3s ease;
+    /* Transición para hover */
+}
+
+footer a:hover {
+    color: #2b7a78;
+    /* Cambiar color en hover */
 }
 
 

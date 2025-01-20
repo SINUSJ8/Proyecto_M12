@@ -44,6 +44,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
+// Configuración de paginación
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 8; // Número de resultados por página
+$offset = ($page - 1) * $limit;
 
 // Obtener usuarios
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
@@ -59,24 +63,107 @@ if (!empty($filtro_rol)) {
     $sql .= " AND rol = ?";
 }
 
-$sql .= " ORDER BY nombre ASC";
+$sql .= " ORDER BY nombre ASC LIMIT ? OFFSET ?";
 
 $stmt = $conn->prepare($sql);
 
 if (!empty($busqueda) && !empty($filtro_rol)) {
     $busqueda_param = '%' . $busqueda . '%';
-    $stmt->bind_param("sss", $busqueda_param, $busqueda_param, $filtro_rol);
+    $stmt->bind_param("sssii", $busqueda_param, $busqueda_param, $filtro_rol, $limit, $offset);
 } elseif (!empty($busqueda)) {
     $busqueda_param = '%' . $busqueda . '%';
-    $stmt->bind_param("ss", $busqueda_param, $busqueda_param);
+    $stmt->bind_param("ssii", $busqueda_param, $busqueda_param, $limit, $offset);
 } elseif (!empty($filtro_rol)) {
-    $stmt->bind_param("s", $filtro_rol);
+    $stmt->bind_param("sii", $filtro_rol, $limit, $offset);
+} else {
+    $stmt->bind_param("ii", $limit, $offset);
 }
 
 $stmt->execute();
 $result = $stmt->get_result();
 $usuarios = $result->fetch_all(MYSQLI_ASSOC);
 
+// Obtener el número total de resultados
+// Construir la consulta SQL base
+$sql = "SELECT id_usuario, nombre, email, rol, telefono, fecha_creacion FROM usuario WHERE 1=1";
+$params = [];
+$types = "";
+
+// Manejar búsqueda por nombre o email
+if (!empty($busqueda)) {
+    $sql .= " AND (nombre LIKE ? OR email LIKE ?)";
+    $busqueda_param = '%' . $busqueda . '%';
+    $params[] = $busqueda_param; // Primer parámetro
+    $params[] = $busqueda_param; // Segundo parámetro
+    $types .= "ss"; // Dos strings
+}
+
+// Manejar filtro por rol
+if (!empty($filtro_rol)) {
+    $sql .= " AND rol = ?";
+    $params[] = $filtro_rol; // Agregar el filtro de rol
+    $types .= "s"; // Un string
+}
+
+// Agregar límites y ordenación para la paginación
+$sql .= " ORDER BY nombre ASC LIMIT ? OFFSET ?";
+$params[] = $limit;
+$params[] = $offset;
+$types .= "ii"; // Dos enteros
+
+// Preparar la consulta
+$stmt = $conn->prepare($sql);
+
+if (!$stmt) {
+    die("Error en la preparación de la consulta: " . $conn->error);
+}
+
+// Enlazar los parámetros
+if (!empty($params)) {
+    $stmt->bind_param($types, ...$params);
+}
+
+// Ejecutar la consulta
+$stmt->execute();
+$result = $stmt->get_result();
+$usuarios = $result->fetch_all(MYSQLI_ASSOC);
+
+// Obtener el número total de resultados
+$sql_count = "SELECT COUNT(*) as total FROM usuario WHERE 1=1";
+$params_count = [];
+$types_count = "";
+
+// Reutilizar condiciones para la consulta de conteo
+if (!empty($busqueda)) {
+    $sql_count .= " AND (nombre LIKE ? OR email LIKE ?)";
+    $params_count[] = $busqueda_param;
+    $params_count[] = $busqueda_param;
+    $types_count .= "ss";
+}
+
+if (!empty($filtro_rol)) {
+    $sql_count .= " AND rol = ?";
+    $params_count[] = $filtro_rol;
+    $types_count .= "s";
+}
+
+$stmt_count = $conn->prepare($sql_count);
+
+if (!$stmt_count) {
+    die("Error en la preparación de la consulta de conteo: " . $conn->error);
+}
+
+if (!empty($params_count)) {
+    $stmt_count->bind_param($types_count, ...$params_count);
+}
+
+$stmt_count->execute();
+$result_count = $stmt_count->get_result();
+$total_rows = $result_count->fetch_assoc()['total'];
+$total_pages = ceil($total_rows / $limit);
+
+
+$total_pages = ceil($total_rows / $limit); // Calcula el total de páginas
 
 $title = "Gestión de Usuarios";
 include '../admin/admin_header.php';
@@ -89,83 +176,58 @@ include '../admin/admin_header.php';
         <!-- Formulario de búsqueda -->
         <div class="form_container">
             <form method="GET" action="usuarios.php" class="search-form">
-                <div class="input-container">
-                    <input type="text" name="busqueda" placeholder="Buscar usuario..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-general">
-                </div>
-                <div class="input-container">
-                    <select name="filtro_rol" class="input-general">
-                        <option value="">Todos los roles</option>
-                        <option value="admin" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'admin') ? 'selected' : ''; ?>>Administrador</option>
-                        <option value="monitor" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'monitor') ? 'selected' : ''; ?>>Monitor</option>
-                        <option value="miembro" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'miembro') ? 'selected' : ''; ?>>Miembro</option>
-                        <option value="usuario" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'usuario') ? 'selected' : ''; ?>>Usuario</option>
-                    </select>
-                </div>
-                <div class="buttons-container">
-                    <button type="submit" class="btn-general">Buscar</button>
-                    <a href="crear_usuario.php" class="btn-general" title="Crea una nueva cuenta de usuario">Crear Usuario</a>
+                <div class="form-inline">
+                    <div class="input-container">
+                        <input type="text" name="busqueda" placeholder="Buscar usuario..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-general">
+                    </div>
+                    <div class="input-container">
+                        <select name="filtro_rol" class="input-general">
+                            <option value="">Todos los roles</option>
+                            <option value="admin" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'admin') ? 'selected' : ''; ?>>Administrador</option>
+                            <option value="monitor" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'monitor') ? 'selected' : ''; ?>>Monitor</option>
+                            <option value="miembro" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'miembro') ? 'selected' : ''; ?>>Miembro</option>
+                            <option value="usuario" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'usuario') ? 'selected' : ''; ?>>Usuario</option>
+                        </select>
+                    </div>
+                    <div class="buttons-container">
+                        <button type="submit" class="btn-general">Buscar</button>
+                        <a href="crear_usuario.php" class="btn-general" title="Crea una nueva cuenta de usuario">Crear Usuario</a>
+                    </div>
                 </div>
             </form>
         </div>
+
 
         <!-- Tabla con lista de usuarios -->
         <table id="tabla-usuarios" class="styled-table">
             <thead>
                 <tr>
-                    <th onclick="ordenarTablaU(0)" class="sortable">Nombre</th>
-                    <th onclick="ordenarTablaU(1)" class="sortable">Email</th>
-                    <th onclick="ordenarTablaU(2)" class="sortable">Rol</th>
-                    <th onclick="ordenarTablaU(3)" class="sortable">Teléfono</th>
-                    <th onclick="ordenarTablaU(4)" class="sortable">Fecha de Registro</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Teléfono</th>
+                    <th>Fecha de Registro</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (!empty($usuarios)): ?>
                     <?php foreach ($usuarios as $usuario): ?>
-                        <?php
-                        $nombre = htmlspecialchars($usuario['nombre']);
-                        $email = htmlspecialchars($usuario['email']);
-                        $rol = htmlspecialchars($usuario['rol']);
-                        $telefono = htmlspecialchars($usuario['telefono'] ?? 'N/A');
-                        $fecha_creacion = htmlspecialchars($usuario['fecha_creacion']);
-                        ?>
                         <tr>
-                            <td><?php echo $nombre; ?></td>
-                            <td><?php echo $email; ?></td>
-                            <td><?php echo $rol; ?></td>
-                            <td><?php echo $telefono; ?></td>
-                            <td><?php echo $fecha_creacion; ?></td>
-                            <td class="acciones">
+                            <td><?php echo htmlspecialchars($usuario['nombre']); ?></td>
+                            <td><?php echo htmlspecialchars($usuario['email']); ?></td>
+                            <td><?php echo htmlspecialchars($usuario['rol']); ?></td>
+                            <td><?php echo htmlspecialchars($usuario['telefono'] ?? 'N/A'); ?></td>
+                            <td><?php echo htmlspecialchars($usuario['fecha_creacion']); ?></td>
+                            <td>
                                 <div class="button-container">
-                                    <!-- Botón de editar -->
-                                    <?php if ($_SESSION['id_usuario'] === 1 || $_SESSION['id_usuario'] === $usuario['id_usuario'] || $usuario['rol'] !== 'admin'): ?>
-                                        <a href="../usuarios/edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general edit-button">
-                                            <?php echo ($_SESSION['id_usuario'] === $usuario['id_usuario']) ? 'Perfil' : 'Editar'; ?>
-                                        </a>
-                                    <?php endif; ?>
-
-
-                                    <!-- Botón para restaurar a "usuario" -->
-                                    <?php if ($_SESSION['id_usuario'] === 1 && $usuario['id_usuario'] !== 1): ?>
-                                        <form method="POST" action="usuarios.php" style="display:inline;" onsubmit="return confirmarRestauracion();">
-                                            <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
-                                            <button type="submit" name="restaurar_usuario" class="btn-general delete-button">Restaurar</button>
-                                        </form>
-                                    <?php endif; ?>
-
-
-                                    <!-- Botón para eliminar usuario -->
-                                    <?php if ($_SESSION['id_usuario'] === 1 && $usuario['id_usuario'] !== 1): ?>
-                                        <form method="POST" action="usuarios.php" style="display:inline;" onsubmit="return confirmarEliminacion();">
-                                            <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
-                                            <button type="submit" name="eliminar_usuario" class="delete-button">Eliminar</button>
-                                        </form>
-                                    <?php endif; ?>
-
+                                    <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Editar</a>
+                                    <form method="POST" action="usuarios.php" style="display:inline;">
+                                        <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
+                                        <button type="submit" name="eliminar_usuario" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</button>
+                                    </form>
                                 </div>
                             </td>
-
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -175,20 +237,26 @@ include '../admin/admin_header.php';
                 <?php endif; ?>
             </tbody>
         </table>
+
+        <!-- Paginación -->
+        <div class="pagination">
+            <?php if ($page > 1): ?>
+                <a href="usuarios.php?page=<?php echo $page - 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>">Anterior</a>
+            <?php endif; ?>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <a href="usuarios.php?page=<?php echo $i; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>" class="<?php echo $i === $page ? 'active' : ''; ?>">
+                    <?php echo $i; ?>
+                </a>
+            <?php endfor; ?>
+
+            <?php if ($page < $total_pages): ?>
+                <a href="usuarios.php?page=<?php echo $page + 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>&filtro_rol=<?php echo urlencode($filtro_rol); ?>">Siguiente</a>
+            <?php endif; ?>
+        </div>
+
     </main>
 
-    <?php
-    include '../includes/footer.php';
-    $conn->close();
-    ?>
+    <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/clases.js"></script>
-    <script>
-        function confirmarEliminacion() {
-            return confirm("¿Estás seguro de que deseas eliminar este usuario?");
-        }
-
-        function confirmarRestauracion() {
-            return confirm("¿Estás seguro de que deseas restaurar este usuario a un rol básico?");
-        }
-    </script>
 </body>
