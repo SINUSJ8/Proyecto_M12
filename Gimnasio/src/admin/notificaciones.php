@@ -147,36 +147,7 @@ include 'admin_header.php';
         </form>
     </section>
 
-    <!-- Lista de notificaciones enviadas -->
-    <section>
-        <h3>Notificaciones Enviadas</h3>
-        <?php if (empty($notificaciones)): ?>
-            <p>No se han enviado notificaciones.</p>
-        <?php else: ?>
-            <table class="styled-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Usuario</th>
-                        <th>Mensaje</th>
-                        <th>Fecha</th>
-                        <th>Leída</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($notificaciones as $notificacion): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($notificacion['id_notificacion']); ?></td>
-                            <td><?php echo htmlspecialchars($notificacion['nombre']); ?></td>
-                            <td><?php echo htmlspecialchars($notificacion['mensaje']); ?></td>
-                            <td><?php echo htmlspecialchars($notificacion['fecha']); ?></td>
-                            <td><?php echo $notificacion['leida'] ? 'Sí' : 'No'; ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php endif; ?>
-    </section>
+    <a href="notificaciones_enviadas.php" class="btn-general">Ver Notificaciones Enviadas</a>
 </main>
 
 <?php include '../includes/footer.php'; ?>

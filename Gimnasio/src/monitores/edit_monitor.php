@@ -124,6 +124,7 @@ include '../admin/admin_header.php';
 
                     <!-- Botón para guardar los cambios -->
                     <button type="submit" class="btn-general">Guardar Cambios</button>
+                    <a href="monitores.php" class="btn-general btn-secondary">Volver a Monitores</a>
                 </form>
             <?php else: ?>
                 <p>Monitor no encontrado.</p>
