@@ -39,14 +39,14 @@ $conn->close();
 
 <body>
     <main id="admin-panel">
-        <section id="resumen" class="form_container">
+        <section id="resumen" class="admin_container">
             <h2 class="section-title">Resumen del Gimnasio</h2>
             <p>Miembros registrados: <strong><?php echo $num_miembros; ?></strong></p>
             <p>Clases disponibles: <strong><?php echo $num_clases; ?></strong></p>
             <p>Monitores activos: <strong><?php echo count($monitores_activos); ?></strong></p>
         </section>
 
-        <section id="altas" class="form_container">
+        <section id="altas" class="admin_container">
             <h2 class="section-title">Altas de Miembros</h2>
             <p>Altas este mes: <strong><?php echo $altas_mes; ?></strong></p>
             <h3>Últimos Miembros Registrados</h3>
@@ -57,7 +57,7 @@ $conn->close();
             </ul>
         </section>
 
-        <section id="clases" class="form_container">
+        <section id="clases" class="admin_container">
             <h2 class="section-title">Clases</h2>
             <h3>Clases Más Populares</h3>
             <ul style="list-style-type: none; padding: 0; text-align: center;">
@@ -71,13 +71,13 @@ $conn->close();
             </p>
         </section>
 
-        <section id="ingresos" class="form_container">
+        <section id="ingresos" class="admin_container">
             <h2 class="section-title">Ingresos</h2>
             <p>Ingresos Totales: €<?php echo number_format($ingresos_totales, 2); ?></p>
             <p>Ingresos Este Mes: €<?php echo number_format($ingresos_mes, 2); ?></p>
         </section>
 
-        <section id="monitores" class="form_container">
+        <section id="monitores" class="admin_container">
             <h2 class="section-title">Monitores Activos</h2>
             <ul style="list-style-type: none; padding: 0; text-align: center;">
                 <?php foreach ($monitores_activos as $monitor): ?>
@@ -86,7 +86,7 @@ $conn->close();
             </ul>
         </section>
 
-        <section id="notificaciones" class="form_container">
+        <section id="notificaciones" class="admin_container">
             <h2 class="section-title">Mis Notificaciones</h2>
             <?php if ($mostrar_todas): ?>
                 <a href="admin.php" class="btn-general">Ver solo nuevas</a>

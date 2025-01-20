@@ -899,6 +899,73 @@ footer a:hover {
     /* Cambiar color en hover */
 }
 
+#admin-panel {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+        "resumen notificaciones"
+        "altas notificaciones"
+        "clases notificaciones"
+        "ingresos notificaciones"
+        "monitores notificaciones";
+    gap: 10px;
+    padding: 10px;
+    width: 100vw;
+    height: calc(100vh - 20px);
+    box-sizing: border-box;
+}
+
+.admin_container {
+    background-color: #f3f8fa;
+    /* Azul pastel claro */
+    border: 1px solid #cce5f6;
+    /* Azul pastel más oscuro */
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    overflow: auto;
+}
+
+#resumen {
+    grid-area: resumen;
+    background-color: #d7f5ef;
+    border: 1px solid #addad7;
+}
+
+#altas {
+    grid-area: altas;
+    background-color: #fff9e6;
+    border: 1px solid #ffe3b3;
+}
+
+#clases {
+    grid-area: clases;
+    background-color: #fce8f3;
+    border: 1px solid #f7cce4;
+}
+
+#ingresos {
+    grid-area: ingresos;
+    background-color: #d4aeb0;
+    border: 1px solid #dfbcc6;
+}
+
+#monitores {
+    grid-area: monitores;
+    background-color: #e8f6fc;
+    border: 1px solid #cce9f5;
+}
+
+#notificaciones {
+    grid-area: notificaciones;
+    background-color: #bfd3e2;
+    border: 1px solid #9ab6c7;
+    padding: 10px;
+    height: 100%;
+    overflow-y: auto;
+}
 
 
 /* RESPONSIVE */
