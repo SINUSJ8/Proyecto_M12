@@ -6,8 +6,6 @@ $conn = obtenerConexion();
 
 $id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
 
-$id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
-
 if ($id_clase) {
     $stmt = $conn->prepare("SELECT * FROM clase WHERE id_clase = ?");
     $stmt->bind_param('i', $id_clase);
@@ -19,50 +17,86 @@ if ($id_clase) {
     $stmt->close();
 }
 
+
 // Manejar el formulario de creación o edición
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nombre = $_POST['nombre'];
+    $nombre = trim($_POST['nombre']);
     $id_monitor = intval($_POST['id_monitor']);
     $id_especialidad = intval($_POST['id_especialidad']);
     $fecha = $_POST['fecha'];
     $horario = $_POST['horario'];
-    $duracion = $_POST['duracion'];
-    $capacidad = $_POST['capacidad'];
+    $duracion = intval($_POST['duracion']);
+    $capacidad = intval($_POST['capacidad']);
 
-    if (empty($nombre) || empty($id_monitor) || empty($id_especialidad) || empty($fecha) || empty($horario) || empty($duracion) || empty($capacidad)) {
-        $error = "Todos los campos son obligatorios.";
+    // Validación de campos obligatorios
+    if (empty($nombre) || $id_monitor <= 0 || $id_especialidad <= 0 || empty($fecha) || empty($horario) || $duracion <= 0 || $capacidad <= 0) {
+        $error = "Todos los campos son obligatorios y deben tener valores válidos.";
     } else {
-        $validacion = $conn->query("
-            SELECT 1 
-            FROM monitor_especialidad 
-            WHERE id_monitor = $id_monitor AND id_especialidad = $id_especialidad
-        ");
-
-        if ($validacion->num_rows === 0) {
-            $error = "El monitor seleccionado no pertenece a la especialidad elegida.";
+        // Validación de duración máxima
+        if ($duracion > 240) { // Duración máxima de 4 horas (240 minutos)
+            $error = "La duración no puede exceder las 4 horas (240 minutos).";
         } else {
-            if ($id_clase) {
-                // Editar la clase existente
-                $conn->query("
-                    UPDATE clase SET 
-                        nombre = '$nombre',
-                        id_monitor = $id_monitor,
-                        id_especialidad = $id_especialidad,
-                        fecha = '$fecha',
-                        horario = '$horario',
-                        duracion = $duracion,
-                        capacidad_maxima = $capacidad
-                    WHERE id_clase = $id_clase
-                ");
-                $success = "Clase actualizada exitosamente.";
+            // Validación de fecha y horario (no en el pasado)
+            $fecha_hora_clase = strtotime("$fecha $horario");
+            $fecha_hora_actual = time();
+            if ($fecha_hora_clase < $fecha_hora_actual) {
+                $error = "La fecha y el horario de la clase no pueden estar en el pasado.";
             } else {
-                // Crear una nueva clase
-                crearClase($conn, $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad);
-                $success = "Clase creada exitosamente.";
+                // Validar conflicto de horarios del monitor
+                $stmt = $conn->prepare("
+                    SELECT COUNT(*) AS total 
+                    FROM clase 
+                    WHERE id_monitor = ? 
+                    AND fecha = ? 
+                    AND (
+                        horario < ADDTIME(?, SEC_TO_TIME(? * 60 + 900))
+                        AND ADDTIME(horario, SEC_TO_TIME(duracion * 60 + 900)) > ?
+                    )
+                    AND id_clase != ?
+                ");
+
+                $id_clase_param = $id_clase ?? 0;
+                $stmt->bind_param(
+                    'isssii',
+                    $id_monitor,
+                    $fecha,
+                    $horario,
+                    $duracion,
+                    $horario,
+                    $id_clase_param
+                );
+
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $conflicto = $result->fetch_assoc()['total'];
+                $stmt->close();
+
+                // Comprobar si hay conflictos
+                if ($conflicto > 0) {
+                    $error = "El monitor ya tiene una clase programada en este horario o dentro del margen de tiempo permitido.";
+                } else {
+                    // Crear o actualizar clase
+                    if ($id_clase) {
+                        $stmt = $conn->prepare("
+                            UPDATE clase SET 
+                                nombre = ?, id_monitor = ?, id_especialidad = ?, fecha = ?, 
+                                horario = ?, duracion = ?, capacidad_maxima = ?
+                            WHERE id_clase = ?
+                        ");
+                        $stmt->bind_param('siissiii', $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad, $id_clase);
+                        $stmt->execute();
+                        $stmt->close();
+                        $success = "Clase actualizada exitosamente.";
+                    } else {
+                        crearClase($conn, $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad);
+                        $success = "Clase creada exitosamente.";
+                    }
+                }
             }
         }
     }
 }
+
 
 // Consulta para Monitores
 $monitores = $conn->query("
@@ -145,9 +179,7 @@ include '../admin/admin_header.php';
 
                 <button type="submit" class="btn-general"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
             </form>
-            <div class="button-container">
-                <a href="clases.php" class="btn-general btn-secondary">Volver a Clases</a>
-            </div>
+
         </section>
     </main>
     <script src="../../assets/js/dinamica_especialidades.js"></script>
