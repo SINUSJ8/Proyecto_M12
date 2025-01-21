@@ -462,24 +462,36 @@ function obtenerTotalMiembros($conn)
 function obtenerMiembrosPaginados($conn, $limit, $offset)
 {
     $sql = "SELECT 
-                u.nombre, u.email, m.fecha_registro, 
+                u.nombre, 
+                u.email, 
+                m.fecha_registro, 
                 mb.tipo AS tipo_membresia, 
-                GROUP_CONCAT(e.nombre SEPARATOR ', ') AS entrenamientos,
-                m.id_usuario
+                GROUP_CONCAT(DISTINCT e.nombre SEPARATOR ', ') AS entrenamientos,
+                m.id_usuario,
+                mm.fecha_inicio AS membresia_inicio,
+                mm.fecha_fin AS membresia_fin
             FROM miembro m
             JOIN usuario u ON m.id_usuario = u.id_usuario
-            LEFT JOIN membresia mb ON m.id_membresia = mb.id_membresia
+            LEFT JOIN miembro_membresia mm ON mm.id_miembro = m.id_miembro AND mm.estado = 'activa'
+            LEFT JOIN membresia mb ON mm.id_membresia = mb.id_membresia
             LEFT JOIN miembro_entrenamiento me ON me.id_miembro = m.id_miembro
             LEFT JOIN especialidad e ON me.id_especialidad = e.id_especialidad
             GROUP BY m.id_miembro
             ORDER BY u.nombre ASC
             LIMIT ? OFFSET ?";
+
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error en la preparación de la consulta: " . $conn->error);
+    }
+
     $stmt->bind_param("ii", $limit, $offset);
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
+
+
 
 
 function obtenerDetalleCompletoMiembro($conn, $id_usuario)
