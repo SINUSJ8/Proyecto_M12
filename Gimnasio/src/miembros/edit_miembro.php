@@ -5,36 +5,35 @@ verificarAdmin();
 
 $conn = obtenerConexion();
 $title = "Editar Miembro";
-if (!isset($_SESSION['referer'])) {
-    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'] ?? '../clases/clases.php';
-}
+
 // Verificar si se proporcionó el ID del usuario
 if (!isset($_GET['id_usuario'])) {
     die("ID de usuario no proporcionado.");
 }
 
-$id_usuario = $_GET['id_usuario'];
+$id_usuario = intval($_GET['id_usuario']);
 $miembro = obtenerDetalleCompletoMiembro($conn, $id_usuario);
 
 if (!$miembro) {
     die("Miembro no encontrado.");
 }
-
-// Obtener entrenamientos y membresías para los desplegables
+$ids_entrenamientos = $miembro['entrenamientos'];
+$nombres_entrenamientos = obtenerNombresEntrenamientos($conn, $ids_entrenamientos);
+// Obtener entrenamientos y membresías
 $entrenamientos = obtenerEntrenamientos($conn);
 $membresias = obtenerMembresias($conn);
 
+// Fechas de membresía activa
+$fechas_membresia = $miembro['fechas_membresia'] ?? ['inicio' => '', 'fin' => ''];
+
 // Manejo del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'] ?? null;
-    $email = $_POST['email'] ?? null;
-    $fecha_registro = $_POST['fecha_registro'] ?? null;
     $id_membresia_nueva = $_POST['id_membresia'] ?? null;
     $entrenamientos_seleccionados = $_POST['entrenamiento'] ?? [];
     $fecha_inicio_nueva = $_POST['fecha_inicio'] ?? null;
     $fecha_fin_nueva = $_POST['fecha_fin'] ?? null;
 
-    if (!$nombre || !$email || !$fecha_registro || !$id_membresia_nueva) {
+    if (!$id_membresia_nueva || !$fecha_inicio_nueva || !$fecha_fin_nueva) {
         $mensaje = "Error: Todos los campos son obligatorios.";
     } else {
         // Actualizar membresía
@@ -44,15 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             actualizarEntrenamientosMiembro($conn, $miembro['id_miembro'], $entrenamientos_seleccionados);
             $mensaje = $resultadoMembresia['success']
-                ? "Miembro actualizado correctamente."
+                ? "Membresía y entrenamientos actualizados correctamente."
                 : $resultadoMembresia['message'];
-            unset($_SESSION['referer']);
         } catch (Exception $e) {
             $mensaje = "Error al actualizar los entrenamientos: " . $e->getMessage();
         }
 
-        // Recargar los datos del miembro
+        // Recargar datos del miembro
         $miembro = obtenerDetalleCompletoMiembro($conn, $id_usuario);
+        $fechas_membresia = $miembro['fechas_membresia'] ?? ['inicio' => '', 'fin' => ''];
     }
 }
 
@@ -71,48 +70,45 @@ include '../admin/admin_header.php';
 
         <div class="form_container">
             <?php if ($miembro): ?>
-                <form method="POST" action="edit_miembro.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>" class="form_general" onsubmit="habilitarFechaRegistro(); return validarFormularioEdicion('miembro');">
+                <section class="datos-usuario">
+                    <h3>Datos del Usuario</h3>
+                    <p><strong>Nombre:</strong> <?php echo htmlspecialchars($miembro['nombre']); ?></p>
+                    <p><strong>Email:</strong> <?php echo htmlspecialchars($miembro['email']); ?></p>
+                    <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($miembro['telefono'] ?? 'No disponible'); ?></p>
+                    <p><strong>Entrenamientos Actuales:</strong>
+                        <?php echo htmlspecialchars(implode(', ', $nombres_entrenamientos)); ?>
+                    </p>
+                    <a href="../usuarios/edit_usuario.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>" class="btn-general btn-primary">Editar Usuario</a>
+                </section>
 
-                    <!-- Campo para editar el nombre -->
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre" class="input-general" value="<?php echo htmlspecialchars($miembro['nombre']); ?>" required aria-label="Nombre completo del miembro">
 
-                    <!-- Campo para editar el email -->
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" class="input-general" value="<?php echo htmlspecialchars($miembro['email']); ?>" required title="Introduce el email del miembro" aria-label="Correo electrónico del miembro">
-
-                    <!-- Campo para editar la fecha de registro -->
-                    <label for="fecha_registro">Fecha de Registro:</label>
-                    <input type="date" id="fecha_registro" name="fecha_registro" class="input-general" value="<?php echo htmlspecialchars($miembro['fecha_registro']); ?>" required aria-label="Fecha de registro del miembro" title="Introduce la fecha de registro del miembro" disabled>
-
-                    <!-- Checkbox para habilitar la edición de la fecha de registro -->
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="editar_fecha" onclick="toggleFechaRegistro();">
-                        <label for="editar_fecha">Editar Fecha de Registro</label>
-                    </div>
+                <form method="POST" action="edit_miembro.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>" class="form_general">
 
                     <!-- Campo para editar el tipo de membresía -->
                     <label for="tipo_membresia">Tipo de Membresía:</label>
-                    <select id="tipo_membresia" name="id_membresia" class="select-general" required onchange="actualizarFechasMembresia()">
+                    <select id="tipo_membresia" name="id_membresia" class="select-general" required onchange="actualizarEntrenamientos()">
                         <?php foreach ($membresias as $membresia): ?>
                             <option value="<?php echo htmlspecialchars($membresia['id_membresia']); ?>"
                                 data-duracion="<?php echo htmlspecialchars($membresia['duracion']); ?>"
                                 data-entrenamientos="<?php echo htmlspecialchars(implode(',', $membresia['entrenamientos_ids'] ?? [])); ?>"
-                                <?php echo (isset($miembro['id_membresia']) && $membresia['id_membresia'] == $miembro['id_membresia']) ? 'selected' : ''; ?>>
+                                <?php echo ($membresia['id_membresia'] == $miembro['id_membresia']) ? 'selected' : ''; ?>>
                                 <?php echo htmlspecialchars($membresia['tipo']); ?> -
                                 <?php echo "$" . htmlspecialchars($membresia['precio']); ?>
                                 (<?php echo htmlspecialchars($membresia['duracion']) . " meses"; ?>)
                             </option>
+
                         <?php endforeach; ?>
                     </select>
 
+                    <!-- Fechas de la membresía -->
                     <label for="fecha_inicio">Fecha de Inicio de la Membresía:</label>
-                    <input type="date" id="fecha_inicio" name="fecha_inicio" class="input-general" value="<?php echo htmlspecialchars($fecha_inicio); ?>" required>
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" class="input-general"
+                        value="<?php echo htmlspecialchars($fechas_membresia['inicio'] ?: date('Y-m-d')); ?>" required>
 
                     <label for="fecha_fin">Fecha de Fin de la Membresía:</label>
-                    <input type="date" id="fecha_fin" name="fecha_fin" class="input-general" value="<?php echo htmlspecialchars($fecha_fin); ?>" required>
+                    <input type="date" id="fecha_fin" name="fecha_fin" class="input-general" value="<?php echo htmlspecialchars($fechas_membresia['fin']); ?>" required>
 
-                    <!-- Campo para seleccionar múltiples entrenamientos con checkboxes -->
+                    <!-- Entrenamientos -->
                     <label>Entrenamientos:</label>
                     <div class="entrenamientos-checkboxes">
                         <?php foreach ($entrenamientos as $entrenamiento): ?>
@@ -132,10 +128,8 @@ include '../admin/admin_header.php';
 
                     <div class="button-container">
                         <button type="submit" class="btn-general">Guardar Cambios</button>
-                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary">Cancelar</a>
-
+                        <a href="<?= htmlspecialchars($_SESSION['referer'] ?? 'miembros.php') ?>" class="btn-general btn-secondary">Cancelar</a>
                     </div>
-
                 </form>
             <?php else: ?>
                 <p>Miembro no encontrado.</p>
@@ -146,29 +140,38 @@ include '../admin/admin_header.php';
     <?php include '../includes/footer.php'; ?>
 
     <script>
-        function toggleFechaRegistro() {
-            const fechaRegistroInput = document.getElementById('fecha_registro');
-            fechaRegistroInput.disabled = !fechaRegistroInput.disabled;
+        function actualizarEntrenamientos() {
+            const selectMembresia = document.getElementById('tipo_membresia');
+            const entrenamientosCheckboxes = document.querySelectorAll('.entrenamientos-checkboxes input[type="checkbox"]');
+            const fechaInicioInput = document.getElementById('fecha_inicio');
+            const fechaFinInput = document.getElementById('fecha_fin');
+
+            // Obtener entrenamientos asociados con la membresía seleccionada
+            const entrenamientosSeleccionados = selectMembresia.options[selectMembresia.selectedIndex].dataset.entrenamientos.split(',');
+            entrenamientosCheckboxes.forEach(checkbox => {
+                checkbox.checked = entrenamientosSeleccionados.includes(checkbox.value);
+            });
+
+            // Actualizar la fecha de fin según la duración de la membresía
+            const duracion = parseInt(selectMembresia.options[selectMembresia.selectedIndex].dataset.duracion, 10);
+            const fechaInicio = new Date(); // Siempre usar la fecha actual como inicio
+
+            if (!isNaN(duracion) && duracion > 0) {
+                fechaInicio.setMonth(fechaInicio.getMonth() + duracion);
+                const fechaFinFormateada = fechaInicio.toISOString().split('T')[0]; // Formatear como YYYY-MM-DD
+                fechaFinInput.value = fechaFinFormateada;
+            } else {
+                fechaFinInput.value = ''; // Limpiar si la duración no es válida
+                console.warn('Duración de la membresía no válida.');
+            }
         }
 
-        function habilitarFechaRegistro() {
-            document.getElementById('fecha_registro').disabled = false;
-        }
-    </script>
-    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const selectMembresia = document.getElementById('tipo_membresia');
-            if (selectMembresia) {
-                selectMembresia.addEventListener('change', () => {
-                    actualizarFechasMembresia();
-                    actualizarEntrenamientos();
-                });
 
-                actualizarFechasMembresia();
-                actualizarEntrenamientos();
-            }
+            // Actualizar entrenamientos y fechas al cargar la página y al cambiar la membresía
+            actualizarEntrenamientos();
+            selectMembresia.addEventListener('change', actualizarEntrenamientos);
         });
     </script>
-
-    <script src="../assets/js/validacion.js"></script>
 </body>

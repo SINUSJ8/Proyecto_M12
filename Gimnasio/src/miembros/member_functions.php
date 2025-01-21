@@ -508,6 +508,29 @@ function obtenerDetalleCompletoMiembro($conn, $id_usuario)
     }
     return $miembro;
 }
+function obtenerNombresEntrenamientos($conn, $ids_entrenamientos)
+{
+    if (empty($ids_entrenamientos)) {
+        return [];
+    }
+
+    // Convertir los IDs a una lista separada por comas para la consulta
+    $placeholders = implode(',', array_fill(0, count($ids_entrenamientos), '?'));
+    $sql = "SELECT nombre FROM especialidad WHERE id_especialidad IN ($placeholders)";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param(str_repeat('i', count($ids_entrenamientos)), ...$ids_entrenamientos);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $nombres = [];
+    while ($row = $result->fetch_assoc()) {
+        $nombres[] = $row['nombre'];
+    }
+
+    $stmt->close();
+    return $nombres;
+}
 
 function actualizarMembresia($conn, $id_miembro, $id_membresia_nueva, $fecha_inicio_nueva = null, $fecha_fin_nueva = null)
 {

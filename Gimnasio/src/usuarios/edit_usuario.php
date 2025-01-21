@@ -6,9 +6,10 @@ $conn = obtenerConexion();
 
 $title = "Editar Usuario";
 include '../admin/admin_header.php';
-if (!isset($_SESSION['referer'])) {
-    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'] ?? '../clases/clases.php';
+if (!isset($_SESSION['referer']) && isset($_SERVER['HTTP_REFERER'])) {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
+
 // Obtener datos del usuario si se accede mediante GET o después de la actualización
 if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_usuario'])) {
     $id_usuario = $_GET['id_usuario'];
@@ -30,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nueva_contrasenya = $_POST['contrasenya'] ?: null;
 
     modUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_email, $nuevo_telefono, $nuevo_rol, $nueva_contrasenya, "edit_usuario.php?id_usuario=" . urlencode($id_usuario));
-    unset($_SESSION['referer']);
+
     exit();
 }
 
@@ -93,7 +94,7 @@ $conn->close();
 
                 <div class="button-container">
                     <button type="submit" class="btn-general">Actualizar Datos</button>
-                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary">Cancelar</a>
+                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Cancelar</a>
 
                 </div>
             </form>
@@ -101,5 +102,5 @@ $conn->close();
     </main>
 
     <?php include '../includes/footer.php'; ?>
-
+    <script src="../assets/js/validacion.js"></script>
 </body>

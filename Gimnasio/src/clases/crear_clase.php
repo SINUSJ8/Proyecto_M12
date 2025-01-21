@@ -4,8 +4,8 @@ require_once('../admin/admin_functions.php');
 verificarAdmin();
 $conn = obtenerConexion();
 
-if (!isset($_SESSION['referer'])) {
-    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'] ?? '../clases/clases.php';
+if (!isset($_SESSION['referer']) && isset($_SERVER['HTTP_REFERER'])) {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
 
 $id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
@@ -20,7 +20,6 @@ if ($id_clase) {
     }
     $stmt->close();
 }
-
 
 // Manejar el formulario de creación o edición
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -52,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     FROM clase 
                     WHERE id_monitor = ? 
                     AND fecha = ? 
-                    AND (
-                        horario < ADDTIME(?, SEC_TO_TIME(? * 60 + 900))
-                        AND ADDTIME(horario, SEC_TO_TIME(duracion * 60 + 900)) > ?
+                    AND NOT (
+                        ADDTIME(horario, SEC_TO_TIME(duracion * 60 + 900)) <= ? 
+                        OR ADDTIME(?, SEC_TO_TIME(? * 60 + 900)) <= horario
                     )
                     AND id_clase != ?
                 ");
@@ -65,8 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $id_monitor,
                     $fecha,
                     $horario,
-                    $duracion,
                     $horario,
+                    $duracion,
                     $id_clase_param
                 );
 
@@ -90,18 +89,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $stmt->bind_param('siissiii', $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad, $id_clase);
                         $stmt->execute();
                         $stmt->close();
-                        $success = "Clase actualizada exitosamente.";
+
+                        // Redirigir con mensaje de éxito
+                        header("Location: {$_SERVER['PHP_SELF']}?id_clase=$id_clase&mensaje=Clase actualizada exitosamente");
+                        exit();
                     } else {
                         crearClase($conn, $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad);
-                        $success = "Clase creada exitosamente.";
-                        unset($_SESSION['referer']);
+
+                        // Redirigir con mensaje de éxito
+                        header("Location: {$_SERVER['PHP_SELF']}?mensaje=Clase creada exitosamente");
+                        exit();
                     }
                 }
             }
         }
     }
 }
-
 
 // Consulta para Monitores
 $monitores = $conn->query("
@@ -134,8 +137,8 @@ include '../admin/admin_header.php';
         <h1>Crear Nueva Clase</h1>
 
         <!-- Mensajes de error o éxito -->
-        <?php if (isset($success)): ?>
-            <p class="mensaje-confirmacion"><?php echo htmlspecialchars($success); ?></p>
+        <?php if (isset($_GET['mensaje'])): ?>
+            <p class="mensaje-confirmacion"><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
         <?php elseif (isset($error)): ?>
             <p class="mensaje-error"><?php echo htmlspecialchars($error); ?></p>
         <?php endif; ?>
@@ -183,7 +186,7 @@ include '../admin/admin_header.php';
                     value="<?= htmlspecialchars($clase['capacidad_maxima'] ?? '') ?>" required>
 
                 <button type="submit" class="btn-general"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
-                <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary">Cancelar</a>
+                <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Cancelar</a>
 
             </form>
 

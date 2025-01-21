@@ -333,7 +333,9 @@ function cerrarModal() {
     document.getElementById('modal-confirmacion').style.display = 'none';
 }
 
-
+function unsetReferer() {
+    fetch('../admin/unset_referer.php', { method: 'POST' });
+}
 
 
 

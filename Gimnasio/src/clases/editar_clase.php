@@ -4,9 +4,10 @@ require_once('../admin/admin_functions.php');
 verificarAdmin();
 $conn = obtenerConexion();
 
-if (!isset($_SESSION['referer'])) {
-    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'] ?? '../clases/clases.php';
+if (!isset($_SESSION['referer']) && isset($_SERVER['HTTP_REFERER'])) {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
+
 
 $id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
 
@@ -50,29 +51,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             } else {
                 // Validar conflicto de horarios del monitor
                 $stmt = $conn->prepare("
-                    SELECT COUNT(*) AS total 
-                    FROM clase 
-                    WHERE id_monitor = ? 
-                    AND fecha = ? 
-                    AND (
-                        horario < ADDTIME(?, SEC_TO_TIME(? * 60 + 900))
-                        AND ADDTIME(horario, SEC_TO_TIME(duracion * 60 + 900)) > ?
-                    )
-                    AND id_clase != ?
-                ");
+    SELECT COUNT(*) AS total 
+    FROM clase 
+    WHERE id_monitor = ? 
+    AND fecha = ? 
+    AND NOT (
+        ADDTIME(horario, SEC_TO_TIME(duracion * 60 + 900)) <= ? 
+        OR ADDTIME(?, SEC_TO_TIME(? * 60 + 900)) <= horario
+    )
+    AND id_clase != ?
+");
+
+                $id_clase_param = $id_clase ?? 0;
                 $stmt->bind_param(
                     'isssii',
                     $id_monitor,
                     $fecha,
                     $horario,
-                    $duracion,
                     $horario,
-                    $id_clase
+                    $duracion,
+                    $id_clase_param
                 );
+
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $conflicto = $result->fetch_assoc()['total'];
                 $stmt->close();
+
 
                 if ($conflicto > 0) {
                     $error = "El monitor ya tiene una clase programada en este horario o dentro del margen de tiempo permitido.";
@@ -89,7 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt->close();
 
                     $success = "Clase actualizada exitosamente.";
-                    unset($_SESSION['referer']);
                 }
             }
         }
@@ -175,7 +179,7 @@ include '../admin/admin_header.php';
 
                 <div class="button-container">
                     <button type="submit" class="btn-general">Actualizar Clase</button>
-                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary">Cancelar</a>
+                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Cancelar</a>
 
                 </div>
 
@@ -185,6 +189,7 @@ include '../admin/admin_header.php';
 
     <script src="../../assets/js/dinamica_especialidades.js"></script>
     <script src="../../assets/js/validacion_clase.js"></script>
+    <script src="../assets/js/validacion.js"></script>
     <script>
         configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
         configurarRestriccionesFechaHora('fecha', 'horario');

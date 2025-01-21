@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
     } else {
         // Llamar a la función para crear el usuario
         try {
-            crearFormUsuario($conn, $nombre, $email, $contrasenya, $confirmar_contrasenya, $rol);
+            crearFormUsuario($conn, $nombre, $email, $contrasenya, $confirmar_contrasenya, 'usuario');
             $mensaje = "Usuario creado exitosamente.";
             $tipo_mensaje = "success";
         } catch (Exception $e) {
@@ -74,13 +74,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
                 <label for="confirmar_contrasenya">Confirmar Contraseña:</label>
                 <input type="password" id="confirmar_contrasenya" name="confirmar_contrasenya" class="input-general" required>
 
-                <label for="rol">Rol:</label>
-                <select name="rol" id="rol" class="select-general" required>
-                    <option value="usuario" <?php echo isset($rol) && $rol === 'usuario' ? 'selected' : ''; ?>>Usuario</option>
-                    <option value="miembro" <?php echo isset($rol) && $rol === 'miembro' ? 'selected' : ''; ?>>Miembro</option>
-                    <option value="monitor" <?php echo isset($rol) && $rol === 'monitor' ? 'selected' : ''; ?>>Monitor</option>
-                    <option value="admin" <?php echo isset($rol) && $rol === 'admin' ? 'selected' : ''; ?>>Administrador</option>
-                </select>
+                <input type="hidden" name="rol" value="usuario">
+
                 <button type="submit" name="crear_usuario" class="btn-general">Crear Usuario</button>
                 <a href="usuarios.php" class="btn-general btn-secondary">Volver a Usuarios</a>
             </form>

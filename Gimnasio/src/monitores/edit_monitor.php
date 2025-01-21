@@ -6,9 +6,10 @@ verificarAdmin();
 
 $conn = obtenerConexion();
 $title = "Editar Monitor";
-if (!isset($_SESSION['referer'])) {
-    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'] ?? '../clases/clases.php';
+if (!isset($_SESSION['referer']) && isset($_SERVER['HTTP_REFERER'])) {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
+
 if (!isset($_GET['id_usuario'])) {
     die("ID de usuario no proporcionado.");
 }
@@ -45,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id_monitor) {
             actualizarEntrenamientosMonitor($conn, $id_monitor, $entrenamientos_seleccionados);
             $mensaje = "Monitor actualizado correctamente.";
-            unset($_SESSION['referer']);
         } else {
             $mensaje = "Error: Monitor no encontrado.";
         }
@@ -126,8 +126,7 @@ include '../admin/admin_header.php';
                     </div>
                     <div class="button-container">
                         <button type="submit" class="btn-general">Actualizar Cambios</button>
-                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary">Cancelar</a>
-
+                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Cancelar</a>
                     </div>
 
                 </form>
