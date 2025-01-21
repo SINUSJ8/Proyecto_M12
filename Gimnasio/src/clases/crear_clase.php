@@ -4,6 +4,10 @@ require_once('../admin/admin_functions.php');
 verificarAdmin();
 $conn = obtenerConexion();
 
+if (!isset($_SESSION['referer'])) {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'] ?? '../clases/clases.php';
+}
+
 $id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
 
 if ($id_clase) {
@@ -90,6 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     } else {
                         crearClase($conn, $nombre, $id_monitor, $id_especialidad, $fecha, $horario, $duracion, $capacidad);
                         $success = "Clase creada exitosamente.";
+                        unset($_SESSION['referer']);
                     }
                 }
             }
@@ -178,12 +183,14 @@ include '../admin/admin_header.php';
                     value="<?= htmlspecialchars($clase['capacidad_maxima'] ?? '') ?>" required>
 
                 <button type="submit" class="btn-general"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
-                <a href="clases.php" class="button">Cancelar</a>
+                <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary">Cancelar</a>
+
             </form>
 
         </section>
     </main>
     <script src="../../assets/js/dinamica_especialidades.js"></script>
+    <script src="../../assets/js/validacion_clase.js"></script>
     <script>
         configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
         configurarRestriccionesFechaHora('fecha', 'horario');

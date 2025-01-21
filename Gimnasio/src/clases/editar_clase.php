@@ -4,6 +4,10 @@ require_once('../admin/admin_functions.php');
 verificarAdmin();
 $conn = obtenerConexion();
 
+if (!isset($_SESSION['referer'])) {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'] ?? '../clases/clases.php';
+}
+
 $id_clase = isset($_GET['id_clase']) ? intval($_GET['id_clase']) : null;
 
 if (!$id_clase) {
@@ -85,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt->close();
 
                     $success = "Clase actualizada exitosamente.";
+                    unset($_SESSION['referer']);
                 }
             }
         }
@@ -170,7 +175,8 @@ include '../admin/admin_header.php';
 
                 <div class="button-container">
                     <button type="submit" class="btn-general">Actualizar Clase</button>
-                    <a href="<?= htmlspecialchars($_SERVER['HTTP_REFERER'] ?? '../clases/clases.php') ?>" class="btn-general btn-secondary">Cancelar</a>
+                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary">Cancelar</a>
+
                 </div>
 
             </form>
@@ -178,6 +184,7 @@ include '../admin/admin_header.php';
     </main>
 
     <script src="../../assets/js/dinamica_especialidades.js"></script>
+    <script src="../../assets/js/validacion_clase.js"></script>
     <script>
         configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
         configurarRestriccionesFechaHora('fecha', 'horario');

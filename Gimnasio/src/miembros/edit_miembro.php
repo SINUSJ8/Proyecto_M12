@@ -5,7 +5,9 @@ verificarAdmin();
 
 $conn = obtenerConexion();
 $title = "Editar Miembro";
-
+if (!isset($_SESSION['referer'])) {
+    $_SESSION['referer'] = $_SERVER['HTTP_REFERER'] ?? '../clases/clases.php';
+}
 // Verificar si se proporcionó el ID del usuario
 if (!isset($_GET['id_usuario'])) {
     die("ID de usuario no proporcionado.");
@@ -44,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensaje = $resultadoMembresia['success']
                 ? "Miembro actualizado correctamente."
                 : $resultadoMembresia['message'];
+            unset($_SESSION['referer']);
         } catch (Exception $e) {
             $mensaje = "Error al actualizar los entrenamientos: " . $e->getMessage();
         }
@@ -129,7 +132,8 @@ include '../admin/admin_header.php';
 
                     <div class="button-container">
                         <button type="submit" class="btn-general">Guardar Cambios</button>
-                        <a href="<?= htmlspecialchars($_SERVER['HTTP_REFERER'] ?? 'miembros.php') ?>" class="btn-general btn-secondary">Cancelar</a>
+                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary">Cancelar</a>
+
                     </div>
 
                 </form>
