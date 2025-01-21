@@ -550,6 +550,16 @@ table.styled-table th.sortable.sorted-desc:after {
     font-size: 1em;
 }
 
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ol {
+    list-style-type: none;
+    padding-left: 0;
+}
+
 .membresia-card ul {
     list-style-type: none;
     padding: 0;

@@ -295,3 +295,50 @@ function enviarNotificacion($conn, $id_usuario, $mensaje)
     $stmt->execute();
     $stmt->close();
 }
+function eliminarParticipanteDeClase($conn, $id_clase, $id_miembro, $id_monitor)
+{
+    // Verificar si el monitor tiene asignada la clase
+    $sqlVerificarClase = "
+        SELECT 1 
+        FROM clase c
+        INNER JOIN monitor m ON c.id_monitor = m.id_monitor
+        WHERE c.id_clase = ? AND m.id_usuario = ?
+    ";
+    $stmt = $conn->prepare($sqlVerificarClase);
+    $stmt->bind_param("ii", $id_clase, $id_monitor);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows === 0) {
+        return ['success' => false, 'mensaje' => 'No tienes permiso para modificar esta clase.'];
+    }
+
+    // Eliminar al participante de la clase
+    $sqlEliminarParticipante = "
+        DELETE FROM asistencia 
+        WHERE id_clase = ? AND id_miembro = ?
+    ";
+    $stmt = $conn->prepare($sqlEliminarParticipante);
+    $stmt->bind_param("ii", $id_clase, $id_miembro);
+    if ($stmt->execute()) {
+        return ['success' => true, 'mensaje' => 'El participante ha sido eliminado de la clase.'];
+    } else {
+        return ['success' => false, 'mensaje' => 'Error al eliminar al participante.'];
+    }
+}
+function obtenerParticipantesClase($conn, $id_clase)
+{
+    $sql = "
+        SELECT u.nombre, u.email, m.id_miembro
+        FROM asistencia a
+        INNER JOIN miembro m ON a.id_miembro = m.id_miembro
+        INNER JOIN usuario u ON m.id_usuario = u.id_usuario
+        WHERE a.id_clase = ?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_clase);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $participantes = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $participantes;
+}

@@ -1,6 +1,7 @@
 <?php
 require_once('../includes/general.php');
 require_once('../miembros/member_functions.php');
+require_once('class_functions.php');
 
 // Verificar que el usuario es un monitor
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {
@@ -11,6 +12,35 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {
 $conn = obtenerConexion();
 $title = "Clases Asignadas";
 $id_monitor = $_SESSION['id_usuario'];
+
+// Manejar la eliminación de participantes
+// Manejar la eliminación de participantes
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'eliminar_participante') {
+    $id_clase = intval($_POST['id_clase']);
+    $id_miembro = intval($_POST['id_miembro']);
+
+    // Obtener el nombre de la clase para la notificación
+    $sqlClase = "SELECT nombre FROM clase WHERE id_clase = ?";
+    $stmtClase = $conn->prepare($sqlClase);
+    $stmtClase->bind_param("i", $id_clase);
+    $stmtClase->execute();
+    $nombreClase = $stmtClase->get_result()->fetch_assoc()['nombre'] ?? 'Clase desconocida';
+    $stmtClase->close();
+
+    // Llamar a la función para eliminar al participante
+    $resultado = eliminarParticipanteDeClase($conn, $id_clase, $id_miembro, $id_monitor);
+
+    if ($resultado['success']) {
+        // Enviar notificación al miembro afectado
+        $mensaje = "Has sido eliminado de la clase '{$nombreClase}'. Si crees que esto es un error, por favor, contacta al gimnasio.";
+        enviarNotificacion($conn, $id_miembro, $mensaje);
+    }
+
+    // Redirigir con el mensaje del resultado
+    header("Location: clases_monitor.php?mensaje=" . urlencode($resultado['mensaje']));
+    exit();
+}
+
 
 // Obtener clases asignadas al monitor
 $sqlClases = "
@@ -27,30 +57,15 @@ $stmt->execute();
 $resultClases = $stmt->get_result();
 $clases = $resultClases->fetch_all(MYSQLI_ASSOC);
 
-// Obtener participantes por clase
-function obtenerParticipantesClase($conn, $id_clase)
-{
-    $sql = "
-        SELECT u.nombre, u.email
-        FROM asistencia a
-        INNER JOIN miembro m ON a.id_miembro = m.id_miembro
-        INNER JOIN usuario u ON m.id_usuario = u.id_usuario
-        WHERE a.id_clase = ?
-    ";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id_clase);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $participantes = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-    return $participantes;
-}
-
 include '../monitores/monitores_header.php';
 ?>
 
 <main>
     <h2 class="section-title">Clases Asignadas</h2>
+
+    <?php if (isset($_GET['mensaje'])): ?>
+        <div class="mensaje-confirmacion"><?php echo htmlspecialchars($_GET['mensaje']); ?></div>
+    <?php endif; ?>
 
     <?php if (empty($clases)): ?>
         <p class="mensaje-info">No tienes clases asignadas.</p>
@@ -77,6 +92,14 @@ include '../monitores/monitores_header.php';
                                 <li class="participante-item">
                                     <?php echo htmlspecialchars($participante['nombre']); ?> -
                                     <em><?php echo htmlspecialchars($participante['email']); ?></em>
+
+                                    <!-- Botón para eliminar participante -->
+                                    <form method="POST" action="clases_monitor.php" style="display:inline;">
+                                        <input type="hidden" name="accion" value="eliminar_participante">
+                                        <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
+                                        <input type="hidden" name="id_miembro" value="<?php echo $participante['id_miembro']; ?>">
+                                        <button type="submit" class="delete-button" onclick="return confirm('¿Estás seguro de que deseas eliminar a este participante de la clase?')">Eliminar</button>
+                                    </form>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
