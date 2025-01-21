@@ -35,33 +35,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $duracion = intval($_POST['duracion']);
     $capacidad = intval($_POST['capacidad']);
 
-    // Validar campos obligatorios
     if (empty($nombre) || $id_monitor <= 0 || $id_especialidad <= 0 || empty($fecha) || empty($horario) || $duracion <= 0 || $capacidad <= 0) {
         $error = "Todos los campos son obligatorios y deben tener valores válidos.";
     } else {
-        // Validar duración máxima
-        if ($duracion > 240) { // Duración máxima de 4 horas
+        if ($duracion > 240) { // Validar duración máxima
             $error = "La duración no puede exceder las 4 horas (240 minutos).";
         } else {
-            // Validar fecha y horario (no en el pasado)
             $fecha_hora_clase = strtotime("$fecha $horario");
-            $fecha_hora_actual = time();
-            if ($fecha_hora_clase < $fecha_hora_actual) {
+            if ($fecha_hora_clase < time()) { // Validar que la fecha no esté en el pasado
                 $error = "La fecha y el horario de la clase no pueden estar en el pasado.";
             } else {
                 // Validar conflicto de horarios del monitor
                 $stmt = $conn->prepare("
-    SELECT COUNT(*) AS total 
-    FROM clase 
-    WHERE id_monitor = ? 
-    AND fecha = ? 
-    AND NOT (
-        ADDTIME(horario, SEC_TO_TIME(duracion * 60 + 900)) <= ? 
-        OR ADDTIME(?, SEC_TO_TIME(? * 60 + 900)) <= horario
-    )
-    AND id_clase != ?
-");
-
+                    SELECT COUNT(*) AS total 
+                    FROM clase 
+                    WHERE id_monitor = ? 
+                    AND fecha = ? 
+                    AND NOT (
+                        ADDTIME(horario, SEC_TO_TIME(duracion * 60 + 900)) <= ? 
+                        OR ADDTIME(?, SEC_TO_TIME(? * 60 + 900)) <= horario
+                    )
+                    AND id_clase != ?
+                ");
                 $id_clase_param = $id_clase ?? 0;
                 $stmt->bind_param(
                     'isssii',
@@ -78,10 +73,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $conflicto = $result->fetch_assoc()['total'];
                 $stmt->close();
 
-
                 if ($conflicto > 0) {
                     $error = "El monitor ya tiene una clase programada en este horario o dentro del margen de tiempo permitido.";
                 } else {
+                    // Obtener el monitor anterior antes de la actualización
+                    $stmt = $conn->prepare("SELECT id_monitor FROM clase WHERE id_clase = ?");
+                    $stmt->bind_param('i', $id_clase);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $monitorAnterior = $result->fetch_assoc()['id_monitor'] ?? null;
+                    $stmt->close();
+
                     // Actualizar la clase
                     $stmt = $conn->prepare("
                         UPDATE clase SET 
@@ -93,12 +95,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt->execute();
                     $stmt->close();
 
+                    // Notificar al monitor anterior si ha cambiado
+                    if ($monitorAnterior && $monitorAnterior != $id_monitor) {
+                        $stmt = $conn->prepare("SELECT u.id_usuario FROM monitor m INNER JOIN usuario u ON m.id_usuario = u.id_usuario WHERE m.id_monitor = ?");
+                        $stmt->bind_param('i', $monitorAnterior);
+                        $stmt->execute();
+                        $monitorAnteriorUsuario = $stmt->get_result()->fetch_assoc()['id_usuario'] ?? null;
+                        $stmt->close();
+
+                        if ($monitorAnteriorUsuario) {
+                            $mensajeAnterior = "Ya no estás asignado a la clase '{$nombre}'.";
+                            enviarNotificacion($conn, $monitorAnteriorUsuario, $mensajeAnterior);
+                        }
+                    }
+
+                    // Notificar al nuevo monitor
+                    $stmt = $conn->prepare("SELECT u.id_usuario FROM monitor m INNER JOIN usuario u ON m.id_usuario = u.id_usuario WHERE m.id_monitor = ?");
+                    $stmt->bind_param('i', $id_monitor);
+                    $stmt->execute();
+                    $nuevoMonitorUsuario = $stmt->get_result()->fetch_assoc()['id_usuario'] ?? null;
+                    $stmt->close();
+
+                    if ($nuevoMonitorUsuario) {
+                        $mensajeNuevo = "Se te ha asignado la clase '{$nombre}'. Verifica los detalles.";
+                        enviarNotificacion($conn, $nuevoMonitorUsuario, $mensajeNuevo);
+                    }
+
+                    // Notificar a los miembros inscritos en la clase
+                    $stmt = $conn->prepare("
+                        SELECT id_usuario 
+                        FROM asistencia a 
+                        INNER JOIN miembro m ON a.id_miembro = m.id_miembro 
+                        WHERE id_clase = ?
+                    ");
+                    $stmt->bind_param('i', $id_clase);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+
+                    while ($miembro = $result->fetch_assoc()) {
+                        $mensajeMiembro = "La clase '{$nombre}' a la que estás inscrito ha sido modificada. Verifica los nuevos detalles.";
+                        enviarNotificacion($conn, $miembro['id_usuario'], $mensajeMiembro);
+                    }
+                    $stmt->close();
+
                     $success = "Clase actualizada exitosamente.";
                 }
             }
         }
     }
 }
+
 
 // Consulta para Monitores
 $monitores = $conn->query("
