@@ -121,10 +121,11 @@ include '../admin/admin_header.php';
                             </div>
                         <?php endforeach; ?>
                     </div>
+                    <div class="button-container">
+                        <button type="submit" class="btn-general">Actualizar Cambios</button>
+                        <a href="<?= htmlspecialchars($_SERVER['HTTP_REFERER'] ?? 'monitores.php') ?>" class="btn-general btn-secondary">Cancelar</a>
+                    </div>
 
-                    <!-- Botón para guardar los cambios -->
-                    <button type="submit" class="btn-general">Guardar Cambios</button>
-                    <a href="monitores.php" class="btn-general btn-secondary">Volver a Monitores</a>
                 </form>
             <?php else: ?>
                 <p>Monitor no encontrado.</p>

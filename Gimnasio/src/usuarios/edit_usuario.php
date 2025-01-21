@@ -88,10 +88,11 @@ $conn->close();
                 <label for="confirmar_contrasenya">Confirmar Contraseña:</label>
                 <input type="password" id="confirmar_contrasenya" name="confirmar_contrasenya" class="input-general" autocomplete="new-password" aria-label="Confirmación de la nueva contraseña" title="Repite la nueva contraseña para confirmar">
 
-                <!-- Botón para actualizar los datos -->
-                <button type="submit" class="btn-general">Actualizar Datos</button>
-                <!-- Botón para volver a la página de usuarios -->
-                <a href="usuarios.php" class="btn-general btn-secondary">Volver a Usuarios</a>
+
+                <div class="button-container">
+                    <button type="submit" class="btn-general">Actualizar Datos</button>
+                    <a href="<?= htmlspecialchars($_SERVER['HTTP_REFERER'] ?? 'usuarios.php') ?>" class="btn-general btn-secondary">Cancelar</a>
+                </div>
             </form>
         </div>
     </main>

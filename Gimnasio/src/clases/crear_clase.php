@@ -178,6 +178,7 @@ include '../admin/admin_header.php';
                     value="<?= htmlspecialchars($clase['capacidad_maxima'] ?? '') ?>" required>
 
                 <button type="submit" class="btn-general"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
+                <a href="clases.php" class="button">Cancelar</a>
             </form>
 
         </section>

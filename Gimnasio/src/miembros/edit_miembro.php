@@ -127,10 +127,11 @@ include '../admin/admin_header.php';
                         <?php endforeach; ?>
                     </div>
 
-                    <!-- Botón para guardar los cambios -->
-                    <button type="submit" class="btn-general">Guardar Cambios</button>
-                    <!-- Botón para cancelar -->
-                    <a href="miembros.php" class="btn-general cancel-button">Cancelar</a>
+                    <div class="button-container">
+                        <button type="submit" class="btn-general">Guardar Cambios</button>
+                        <a href="<?= htmlspecialchars($_SERVER['HTTP_REFERER'] ?? 'miembros.php') ?>" class="btn-general btn-secondary">Cancelar</a>
+                    </div>
+
                 </form>
             <?php else: ?>
                 <p>Miembro no encontrado.</p>
