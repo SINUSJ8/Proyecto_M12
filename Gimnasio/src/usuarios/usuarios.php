@@ -17,32 +17,41 @@ if (isset($_SESSION['mensaje'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_usuario = intval($_POST['id_usuario']);
 
-    if ($_SESSION['id_usuario'] !== $id_usuario && $_SESSION['id_usuario'] !== 1) {
-        $_SESSION['mensaje'] = "No tienes permisos para realizar esta acción.";
+    // Verificar si el usuario tiene permiso para realizar la acción
+    if ($id_usuario === 1) { // Proteger al superadmin
+        $_SESSION['mensaje'] = "No puedes modificar o eliminar al superadministrador.";
         header('Location: usuarios.php');
         exit();
     }
 
-    if (isset($_POST['restaurar_usuario'])) {
-        if ($id_usuario === 1 && $_SESSION['id_usuario'] !== 1) {
-            $_SESSION['mensaje'] = "No puedes restaurar al administrador general.";
-            header('Location: usuarios.php');
-            exit();
-        }
-        restaurarUsuario($conn, $id_usuario);
-        $_SESSION['mensaje'] = "El usuario ha sido restaurado correctamente a un rol básico.";
-    } elseif (isset($_POST['eliminar_usuario'])) {
-        if ($id_usuario === 1 || ($_SESSION['id_usuario'] !== 1 && $usuario['rol'] === 'admin' && $_SESSION['id_usuario'] !== 1)) {
-            $_SESSION['mensaje'] = "No tienes permisos para eliminar este usuario.";
-            header('Location: usuarios.php');
-            exit();
-        }
+    if ($id_usuario === $_SESSION['id_usuario']) { // Evitar acciones sobre sí mismo
+        $_SESSION['mensaje'] = "No puedes modificar o eliminar tu propia cuenta.";
+        header('Location: usuarios.php');
+        exit();
+    }
+
+    // Verificar si se intenta eliminar/editar a otro administrador
+    $stmt = $conn->prepare("SELECT rol FROM usuario WHERE id_usuario = ?");
+    $stmt->bind_param('i', $id_usuario);
+    $stmt->execute();
+    $usuario = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if ($usuario['rol'] === 'admin' && $_SESSION['id_usuario'] !== 1) { // Proteger a otros admins
+        $_SESSION['mensaje'] = "No tienes permiso para modificar o eliminar a otro administrador.";
+        header('Location: usuarios.php');
+        exit();
+    }
+
+    // Realizar la acción correspondiente
+    if (isset($_POST['eliminar_usuario'])) {
         eliminarUsuario($conn, $id_usuario);
         $_SESSION['mensaje'] = "El usuario ha sido eliminado correctamente.";
     }
     header('Location: usuarios.php');
     exit();
 }
+
 
 // Configuración de paginación
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -221,11 +230,41 @@ include '../admin/admin_header.php';
                             <td><?php echo htmlspecialchars($usuario['fecha_creacion']); ?></td>
                             <td>
                                 <div class="button-container">
-                                    <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Editar</a>
-                                    <form method="POST" action="usuarios.php" style="display:inline;">
-                                        <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
-                                        <button type="submit" name="eliminar_usuario" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</button>
-                                    </form>
+                                    <?php
+                                    // Caso 1: Superadministrador (id_usuario = 1)
+                                    if ($_SESSION['id_usuario'] === 1):
+                                        // Botón de editar propio como "Perfil"
+                                        if ($_SESSION['id_usuario'] === $usuario['id_usuario']): ?>
+                                            <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Perfil</a>
+                                        <?php else: ?>
+                                            <!-- Botones activos para superadmin -->
+                                            <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Editar</a>
+                                            <form method="POST" action="usuarios.php" style="display:inline;">
+                                                <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
+                                                <button type="submit" name="eliminar_usuario" class="delete-button"
+                                                    onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</button>
+                                            </form>
+                                        <?php endif; ?>
+                                        <?php
+                                    // Caso 2: Otros administradores
+                                    elseif ($usuario['rol'] === 'admin'):
+                                        // Deshabilitar botones para otros administradores
+                                        if ($_SESSION['id_usuario'] === $usuario['id_usuario']): ?>
+                                            <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Perfil</a>
+                                        <?php else: ?>
+                                            <button class="btn-general btn-disabled" title="No tienes permisos para editar este administrador" disabled>Editar</button>
+                                            <button class="delete-button btn-disabled" title="No tienes permisos para eliminar este administrador" disabled>Eliminar</button>
+                                        <?php endif; ?>
+                                    <?php
+                                    // Caso 3: Usuarios no administradores
+                                    else: ?>
+                                        <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Editar</a>
+                                        <form method="POST" action="usuarios.php" style="display:inline;">
+                                            <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
+                                            <button type="submit" name="eliminar_usuario" class="delete-button"
+                                                onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
@@ -236,6 +275,9 @@ include '../admin/admin_header.php';
                     </tr>
                 <?php endif; ?>
             </tbody>
+
+
+
         </table>
 
         <!-- Paginación -->
@@ -259,4 +301,5 @@ include '../admin/admin_header.php';
     <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/clases.js"></script>
 </body>
+
 </html>
