@@ -35,25 +35,49 @@ $resultEspecialidades = $stmtEspecialidades->get_result();
 $especialidades = $resultEspecialidades->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'] ?? $monitor['nombre'];
-    $email = $_POST['email'] ?? $monitor['email'];
-    $telefono = $_POST['telefono'] ?? $monitor['telefono'];
+    $nombre = trim($_POST['nombre']);
+    $email = trim($_POST['email']);
+    $telefono = isset($_POST['telefono']) ? trim($_POST['telefono']) : null;
     $disponibilidad = $_POST['disponibilidad'] ?? $monitor['disponibilidad'];
 
-    // Actualizar perfil del monitor
-    $sql = "UPDATE usuario SET nombre = ?, email = ?, telefono = ? WHERE id_usuario = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssi", $nombre, $email, $telefono, $id_usuario);
-    $stmt->execute();
+    // Validación del nombre (debe contener al menos una letra)
+    if (!preg_match('/[a-zA-Z]/', $nombre)) {
+        $error = "Por favor, ingresa un nombre válido con al menos una letra.";
+    }
 
-    $sql = "UPDATE monitor SET disponibilidad = ? WHERE id_usuario = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $disponibilidad, $id_usuario);
-    $stmt->execute();
+    // Validación del correo electrónico
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Por favor, ingresa un correo electrónico válido.";
+    }
 
-    header("Location: monitor.php?success=Perfil+actualizado+correctamente");
-    exit();
+    // Validación del teléfono (si está presente, debe tener exactamente 9 dígitos)
+    elseif ($telefono && !preg_match('/^\d{9}$/', $telefono)) {
+        $error = "El teléfono debe tener exactamente 9 dígitos.";
+    }
+
+    // Validación de disponibilidad
+    elseif (!in_array($disponibilidad, ['disponible', 'no disponible'], true)) {
+        $error = "Por favor, selecciona una disponibilidad válida.";
+    }
+
+    // Si no hay errores, procesar los datos
+    if (!isset($error)) {
+        // Actualizar perfil del monitor
+        $sql = "UPDATE usuario SET nombre = ?, email = ?, telefono = ? WHERE id_usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssi", $nombre, $email, $telefono, $id_usuario);
+        $stmt->execute();
+
+        $sql = "UPDATE monitor SET disponibilidad = ? WHERE id_usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("si", $disponibilidad, $id_usuario);
+        $stmt->execute();
+
+        header("Location: monitor.php?success=Perfil+actualizado+correctamente");
+        exit();
+    }
 }
+
 
 include 'monitores_header.php';
 ?>
@@ -98,3 +122,4 @@ include 'monitores_header.php';
 </main>
 
 <?php include '../includes/footer.php'; ?>
+<script src="../assets/js/validacion.js"></script>
