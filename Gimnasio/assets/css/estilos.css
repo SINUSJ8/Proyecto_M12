@@ -521,15 +521,14 @@ table.styled-table th.sortable.sorted-desc:after {
 
 .membresia-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    /* Adaptable a espacio disponible */
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 20px;
-    /* Espacio entre tarjetas */
     margin-top: 20px;
 }
 
 .membresia-card {
-    background-color: #eee69b;
+    background-color: #f3eec3;
+    border: 2px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 15px;
@@ -543,11 +542,13 @@ table.styled-table th.sortable.sorted-desc:after {
 .membresia-card h2 {
     margin: 0 0 10px;
     font-size: 1.5em;
+    color: #3aafa9;
 }
 
 .membresia-card p {
     margin: 0 0 10px;
     font-size: 1em;
+    color: #333;
 }
 
 ul {
@@ -569,39 +570,56 @@ ol {
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 5px;
-    background-color: white;
+    background-color: #fdf5e6;
+    border-radius: 5px;
 }
 
 
 .membresia-card ul li {
     margin-bottom: 5px;
     font-size: 0.9em;
+    color: #333;
 }
 
 .membresia-card form {
     margin-top: auto;
-    /* Coloca el formulario en la parte inferior */
     align-self: end;
 }
 
 .membresia-card select {
     width: 100%;
-    padding: 5px;
+    padding: 10px;
     margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    background-color: #fdf5e6;
 }
 
 .membresia-card button {
-    padding: 10px;
+    padding: 10px 15px;
     background-color: #3aafa9;
     color: #fff;
     border: none;
     border-radius: 5px;
+    font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .membresia-card button:hover {
     background-color: #2b7a78;
+}
+
+.membresia-card .beneficios {
+    max-height: 100px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid #ccc;
+    background-color: #fdf5e6;
+    text-align: left;
+    border-radius: 5px;
+    color: #333;
 }
 
 /* Cuadros de texto y contraseñas */
