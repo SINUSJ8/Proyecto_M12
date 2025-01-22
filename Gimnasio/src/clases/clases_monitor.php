@@ -73,11 +73,20 @@ include '../monitores/monitores_header.php';
         <div class="clases-grid">
             <?php foreach ($clases as $clase): ?>
                 <div class="clase-card">
-                    <h3 class="clase-titulo"><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
-                    <p><strong>Especialidad:</strong> <?php echo htmlspecialchars($clase['especialidad']); ?></p>
-                    <p><strong>Fecha:</strong> <?php echo htmlspecialchars($clase['fecha']); ?></p>
-                    <p><strong>Hora:</strong> <?php echo htmlspecialchars($clase['horario']); ?></p>
-                    <p><strong>Duración:</strong> <?php echo htmlspecialchars($clase['duracion']); ?> minutos</p>
+                    <h3 class="clase-titulo" title="Nombre de la clase"><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
+                    <p><strong>Especialidad:</strong>
+                        <span title="Especialidad de la clase"><?php echo htmlspecialchars($clase['especialidad']); ?></span>
+                    </p>
+                    <p><strong>Fecha:</strong>
+                        <span title="Fecha programada para esta clase"><?php echo htmlspecialchars($clase['fecha']); ?></span>
+                    </p>
+                    <p><strong>Hora:</strong>
+                        <span title="Hora de inicio de la clase"><?php echo htmlspecialchars($clase['horario']); ?></span>
+                    </p>
+                    <p><strong>Duración:</strong>
+                        <span title="Duración total de la clase en minutos"><?php echo htmlspecialchars($clase['duracion']); ?> minutos</span>
+                    </p>
+
 
                     <!-- Lista de participantes -->
                     <h4 class="participantes-titulo">Participantes:</h4>
@@ -98,7 +107,11 @@ include '../monitores/monitores_header.php';
                                         <input type="hidden" name="accion" value="eliminar_participante">
                                         <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
                                         <input type="hidden" name="id_miembro" value="<?php echo $participante['id_miembro']; ?>">
-                                        <button type="submit" class="delete-button" onclick="return confirm('¿Estás seguro de que deseas eliminar a este participante de la clase?')">Eliminar</button>
+                                        <button type="submit" class="delete-button"
+                                            title="Eliminar a <?php echo htmlspecialchars($participante['nombre']); ?> de la clase <?php echo htmlspecialchars($clase['clase_nombre']); ?>"
+                                            onclick="return confirm('¿Estás seguro de que deseas eliminar a este participante de la clase?')">
+                                            Eliminar
+                                        </button>
                                     </form>
                                 </li>
                             <?php endforeach; ?>
