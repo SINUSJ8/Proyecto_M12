@@ -217,6 +217,21 @@ header nav .logout-link:hover {
 .search-form button:hover {
     background-color: #2b7a78;
 }
+.form_container_monitor {
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: left; /
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 20px auto;
+    max-width: 700px;
+    gap: 10px;
+}
+
 
 /* TABLAS */
 table.styled-table {
@@ -791,7 +806,7 @@ button.btn-general {
     background-color: #999;
 }
 
-/* Formulario */
+/* formulario */
 .form-label {
     font-weight: bold;
     font-size: 1.1em;

@@ -48,38 +48,41 @@ include '../admin/admin_header.php';
         <?php endif; ?>
 
         <!-- Formulario de búsqueda -->
-        <form method="GET" action="monitores.php" class="form-inline">
-            <div class="form-group">
-                <label for="busqueda">Buscar Monitor:</label>
-                <input type="text" id="busqueda" name="busqueda" placeholder="Buscar monitor..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-general">
-            </div>
+        <div class="form_container_monitor">
+            <form method="GET" action="monitores.php" class="form-inline">
+                <div class="form-group">
+                    <label for="busqueda">Buscar Monitor:</label>
+                    <input type="text" id="busqueda" name="busqueda" placeholder="Buscar monitor..." value="<?php echo htmlspecialchars($busqueda); ?>" class="input-general">
+                </div>
 
-            <div class="form-group">
-                <label for="especialidad">Especialidad:</label>
-                <select id="especialidad" name="especialidad" class="select-general">
-                    <option value="">Todas las especialidades</option>
-                    <?php foreach ($especialidades as $especialidad): ?>
-                        <option value="<?php echo htmlspecialchars($especialidad['id_especialidad']); ?>" <?php echo ($especialidad_filtro == $especialidad['id_especialidad']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($especialidad['nombre']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label for="especialidad">Especialidad:</label>
+                    <select id="especialidad" name="especialidad" class="select-general">
+                        <option value="">Todas las especialidades</option>
+                        <?php foreach ($especialidades as $especialidad): ?>
+                            <option value="<?php echo htmlspecialchars($especialidad['id_especialidad']); ?>" <?php echo ($especialidad_filtro == $especialidad['id_especialidad']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($especialidad['nombre']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="disponibilidad">Disponibilidad:</label>
-                <select id="disponibilidad" name="disponibilidad" class="select-general">
-                    <option value="">Cualquiera</option>
-                    <option value="Disponible" <?php echo ($disponibilidad_filtro === 'Disponible') ? 'selected' : ''; ?>>Disponible</option>
-                    <option value="No disponible" <?php echo ($disponibilidad_filtro === 'No disponible') ? 'selected' : ''; ?>>No disponible</option>
-                </select>
-            </div>
+                <div class="form-group">
+                    <label for="disponibilidad">Disponibilidad:</label>
+                    <select id="disponibilidad" name="disponibilidad" class="select-general">
+                        <option value="">Cualquiera</option>
+                        <option value="Disponible" <?php echo ($disponibilidad_filtro === 'Disponible') ? 'selected' : ''; ?>>Disponible</option>
+                        <option value="No disponible" <?php echo ($disponibilidad_filtro === 'No disponible') ? 'selected' : ''; ?>>No disponible</option>
+                    </select>
+                </div>
 
-            <div class="form-group button-container">
-                <button type="submit" class="btn-general">Buscar</button>
-                <button type="button" class="btn-general reset-button" onclick="limpiarFormulario()">Limpiar</button>
-            </div>
-        </form>
+                <div class="form-group button-container">
+                    <button type="submit" class="btn-general">Buscar</button>
+                    <a href="monitores.php" class="btn-general limpiar-busqueda">Limpiar</a>
+                    </div>
+            </form>
+        </div>
+
 
 
         <!-- Tabla con lista de monitores y acciones -->

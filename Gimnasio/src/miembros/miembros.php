@@ -51,6 +51,19 @@ include '../admin/admin_header.php';
                 <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
             </div>
         <?php endif; ?>
+        <div class="form_container">
+            <form method="GET" action="miembros.php" class="search-form">
+                <div class="form-inline">
+                    <div class="input-container">
+                        <input type="text" name="busqueda" placeholder="Buscar miembro..." value="<?php echo htmlspecialchars($busqueda ?? ''); ?>" class="input-general">
+                    </div>
+                    <div class="button-container">
+                        <button type="submit" class="btn-general">Buscar</button>
+                        <a href="miembros.php" class="btn-general limpiar-busqueda">Limpiar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
 
         <!-- Tabla con lista de miembros y acciones -->
         <table id="tabla-miembros" class="styled-table">

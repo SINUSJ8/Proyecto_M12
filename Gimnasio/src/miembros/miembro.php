@@ -1,5 +1,5 @@
 <?php
-$title = "Acceso Miembros";
+$title = "Perfil del Miembro";
 include '../miembros/miembro_header.php';
 require_once '../miembros/member_functions.php';
 

@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/general.php';
+$title = "Membresías";
 include_once __DIR__ . '/../includes/header.php';
 
 $conn = obtenerConexion();
@@ -78,5 +79,5 @@ $conn->close();
         </div>
     </main>
 </body>
-
+<?php include_once __DIR__ . '/../includes/footer.php'; ?>
 </html>

@@ -28,7 +28,7 @@ if ($result) {
     }
 }
 
-$title = "Administración";
+$title = "Administración de Especialidades";
 include '../admin/admin_header.php';
 ?>
 <!DOCTYPE html>

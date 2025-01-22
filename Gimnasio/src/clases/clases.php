@@ -154,9 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                 <a href="clases.php?page=<?= $page + 1; ?>&tipo=<?= $tipo; ?>" class="btn-general">Siguiente</a>
             <?php endif; ?>
         </div>
-
-        <?php include '../includes/footer.php'; ?>
-
         <!-- Scripts -->
         <script src="../../assets/js/clases.js"></script>
         <script src="../../assets/js/calendario.js"></script>
@@ -164,4 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
             let clases = <?= $clases_json; ?>;
         </script>
     </main>
+    <?php include_once __DIR__ . '/../includes/footer.php'; ?>
 </body>
+</html>

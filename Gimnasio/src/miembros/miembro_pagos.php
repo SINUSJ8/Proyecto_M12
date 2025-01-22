@@ -1,5 +1,6 @@
 <?php
 // Incluir el header que ya gestiona la sesión del usuario
+$title = "Historial de Pagos";
 include_once '../miembros/miembro_header.php';
 
 // Incluir conexión y funciones generales
@@ -77,6 +78,6 @@ $conn->close();
             <a href="../miembros/miembro.php" class="btn-general">Volver al Perfil</a>
         </div>
     </main>
+    <?php include_once __DIR__ . '/../includes/footer.php'; ?>
 </body>
-
 </html>

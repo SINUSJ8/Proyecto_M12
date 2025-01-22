@@ -198,8 +198,9 @@ include '../admin/admin_header.php';
                             <option value="usuario" <?php echo (isset($_GET['filtro_rol']) && $_GET['filtro_rol'] === 'usuario') ? 'selected' : ''; ?>>Usuario</option>
                         </select>
                     </div>
-                    <div class="buttons-container">
+                    <div class="button-container">
                         <button type="submit" class="btn-general">Buscar</button>
+                        <a href="usuarios.php" class="btn-general limpiar-busqueda">Limpiar</a>
                         <a href="crear_usuario.php" class="btn-general" title="Crea una nueva cuenta de usuario">Crear Usuario</a>
                     </div>
                 </div>
@@ -301,5 +302,4 @@ include '../admin/admin_header.php';
     <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/clases.js"></script>
 </body>
-
 </html>

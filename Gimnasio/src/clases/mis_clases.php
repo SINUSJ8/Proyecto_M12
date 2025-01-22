@@ -1,5 +1,5 @@
 <?php
-$title = "Clases Disponibles";
+$title = "Mis Clases";
 include '../miembros/miembro_header.php';
 require_once '../clases/mi_clase_functions.php';
 
@@ -64,7 +64,7 @@ try {
 ?>
 
 <main>
-    <h1 class="section-title">Clases Disponibles</h1>
+    <h1 class="section-title">Mis Clases</h1>
 
     <!-- Mensaje de confirmación -->
     <?php if (!empty($mensaje)): ?>
