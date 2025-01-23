@@ -196,3 +196,42 @@ function obtenerClasesDisponibles($conn, $especialidades, $id_miembro)
     $stmt->close();
     return $clases;
 }
+function obtenerClasesCalendario($conn, $id_miembro)
+{
+    $sql = "
+        SELECT 
+            c.id_clase,
+            c.nombre,
+            c.fecha,
+            c.horario,
+            c.duracion,
+            c.capacidad_maxima,
+            e.nombre AS especialidad,
+            u.nombre AS monitor,
+            (SELECT COUNT(*) FROM asistencia a WHERE a.id_clase = c.id_clase) AS inscritos,
+            EXISTS (
+                SELECT 1 
+                FROM asistencia a 
+                WHERE a.id_clase = c.id_clase AND a.id_miembro = ?
+            ) AS inscrito
+        FROM clase c
+        INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
+        LEFT JOIN monitor m ON c.id_monitor = m.id_monitor
+        LEFT JOIN usuario u ON m.id_usuario = u.id_usuario
+        WHERE c.fecha >= CURRENT_DATE()
+        ORDER BY c.fecha, c.horario
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_miembro);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $clases = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $clases[] = $row;
+    }
+
+    $stmt->close();
+    return $clases;
+}

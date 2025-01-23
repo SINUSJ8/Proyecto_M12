@@ -217,14 +217,14 @@ header nav .logout-link:hover {
 .search-form button:hover {
     background-color: #2b7a78;
 }
+
 .form_container_monitor {
     background-color: #ffffff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: row;
     align-items: center;
-    text-align: left; /
-    border: 1px solid #ccc;
+    text-align: left;/ border: 1px solid #ccc;
     border-radius: 10px;
     padding: 10px;
     margin: 20px auto;
@@ -1009,6 +1009,191 @@ footer a:hover {
     padding: 10px;
     height: 100%;
     overflow-y: auto;
+}
+
+/* Cambiar el fondo del calendario */
+#calendar {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 50px;
+}
+
+.calendar-description {
+    color: #3aafa9 !important;
+    /* Descripción debajo del título */
+    font-style: italic;
+    /* Opcional: estilizar la descripción */
+}
+
+/* Cambiar el color del título */
+h1.text-center {
+    color: #3aafa9 !important;
+    font-weight: bold;
+    /* Opcional: resaltar el texto */
+}
+
+/* Cambiar el color del texto debajo del título */
+p.text-center.text-muted {
+    color: #3aafa9 !important;
+    font-style: italic;
+    /* Opcional: darle estilo */
+}
+
+/* Cambiar el color del encabezado del calendario (mes, año, día) */
+.fc-toolbar-title {
+    color: #3aafa9 !important;
+    font-weight: bold;
+    /* Resaltar el encabezado */
+}
+
+/* Cambiar el color del encabezado "all-day" */
+.fc-timegrid-axis-cushion {
+    color: #3aafa9 !important;
+    font-weight: bold;
+    /* Opcional: resaltar el texto */
+}
+
+/* Cambiar el color de las horas en la vista de semana y día */
+.fc-timegrid-slot-label {
+    color: #3aafa9 !important;
+    font-weight: bold;
+    /* Opcional: resaltar las horas */
+}
+
+/* Cambiar el color de las líneas divisoras (opcional) */
+.fc-timegrid-axis-frame {
+    border-right: 1px solid #3aafa9 !important;
+}
+
+/* Cambiar el color del fondo del encabezado de "all-day" */
+.fc-timegrid-allday-frame {
+    background-color: rgba(58, 175, 169, 0.1) !important;
+    border-bottom: 2px solid #3aafa9 !important;
+}
+
+/* Cambiar el color del encabezado (mes, año, día) del calendario */
+.fc-toolbar-title {
+    color: #3aafa9 !important;
+    /* Título de la cabecera */
+    font-weight: bold;
+    /* Destacar la cabecera */
+}
+
+/* Estilo de los días */
+.fc-daygrid-day {
+    border: 1px solid #e0e0e0;
+}
+
+/* Eventos en los que estás inscrito */
+.fc .fc-daygrid-event.fc-event-inscrito {
+    background-color: #28a745 !important;
+    /* Verde oscuro */
+    color: #ffffff !important;
+    /* Texto blanco */
+    border: none !important;
+    border-radius: 5px;
+    /* Redondeo */
+    font-weight: bold;
+    padding: 2px;
+}
+
+/* Eventos disponibles */
+.fc .fc-daygrid-event.fc-event-disponible {
+    background-color: #a0ace5 !important;
+    /* Azul oscuro */
+    color: #ffffff !important;
+    /* Texto blanco */
+    border: none !important;
+    border-radius: 5px;
+    /* Redondeo */
+    font-weight: bold;
+    padding: 2px;
+}
+
+/* Ajuste para eventos predeterminados (modo mensual) */
+.fc .fc-daygrid-event {
+    background-color: #ffffff !important;
+    /* Fondo blanco por defecto */
+    color: #3aafa9 !important;
+    /* Texto personalizado */
+    border: 1px solid #3aafa9 !important;
+    /* Borde azul */
+    border-radius: 5px;
+    /* Bordes redondeados */
+    font-weight: bold;
+    padding: 2px;
+}
+
+/* Cambiar el color de los encabezados del calendario (días de la semana) */
+.fc .fc-col-header-cell,
+.fc .fc-col-header-cell * {
+    color: #3aafa9 !important;
+    font-weight: bold !important;
+}
+
+/* Cambiar el color de los números de los días */
+.fc .fc-daygrid-day-number {
+    color: #3aafa9 !important;
+    font-weight: bold !important;
+}
+
+/* Cambiar el color de los botones de navegación */
+.fc-button {
+    background-color: #3aafa9 !important;
+    border-color: #3aafa9 !important;
+    color: #ffffff !important;
+}
+
+/* Cambiar el color de los botones al pasar el mouse */
+.fc-button:hover {
+    background-color: #2e8f86 !important;
+    border-color: #2e8f86 !important;
+}
+
+/* Cambiar el color del día actual */
+.fc-day-today {
+    background-color: rgba(58, 175, 169, 0.1) !important;
+    color: #3aafa9 !important;
+}
+
+/* Cambiar el borde de los eventos */
+.fc-event {
+    border: 1px solid #3aafa9 !important;
+    /* Azul personalizado */
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+/* Cambiar el color del navbar */
+.navbar {
+    background-color: #3aafa9 !important;
+    /* Fondo del navbar */
+}
+
+/* Cambiar el color de los enlaces del navbar */
+.navbar .nav-link {
+    color: #ffffff !important;
+    /* Color blanco para los enlaces */
+    font-weight: bold;
+}
+
+/* Cambiar el color de los enlaces al pasar el mouse */
+.navbar .nav-link:hover {
+    color: #2e8f86 !important;
+    /* Color verde oscuro al pasar el mouse */
+}
+
+/* Botón de cierre de sesión */
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
 }
 
 
