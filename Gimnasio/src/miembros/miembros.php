@@ -1,7 +1,5 @@
 <?php
-
 require_once('../miembros/member_functions.php');
-require_once('../usuarios/user_functions.php');
 
 verificarAdmin();
 
@@ -25,17 +23,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['eliminar_usuario']) &
 }
 
 
+// Capturar término de búsqueda
+$busqueda = isset($_GET['busqueda']) ? trim($_GET['busqueda']) : '';
 // Configuración de paginación
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 8; // Número de resultados por página
 $offset = ($page - 1) * $limit;
 
-// Obtener el número total de miembros
-$total_miembros = obtenerTotalMiembros($conn);
+// Obtener el número total de miembros con el término de búsqueda
+$total_miembros = obtenerTotalMiembros($conn, $busqueda);
 $total_pages = ceil($total_miembros / $limit);
 
-// Obtener los miembros con límite y offset
-$miembros = obtenerMiembrosPaginados($conn, $limit, $offset);
+// Obtener los miembros con límite, offset y término de búsqueda
+
+$miembros = obtenerMiembrosPaginados($conn, $limit, $offset, $busqueda);
+
+
 
 $title = "Gestión de Miembros";
 include '../admin/admin_header.php';
@@ -55,7 +58,12 @@ include '../admin/admin_header.php';
             <form method="GET" action="miembros.php" class="search-form">
                 <div class="form-inline">
                     <div class="input-container">
-                        <input type="text" name="busqueda" placeholder="Buscar miembro..." value="<?php echo htmlspecialchars($busqueda ?? ''); ?>" class="input-general">
+                        <input
+                            type="text"
+                            name="busqueda"
+                            placeholder="Buscar miembro..."
+                            value="<?php echo htmlspecialchars($busqueda ?? ''); ?>"
+                            class="input-general">
                     </div>
                     <div class="button-container">
                         <button type="submit" class="btn-general">Buscar</button>
@@ -63,6 +71,7 @@ include '../admin/admin_header.php';
                     </div>
                 </div>
             </form>
+
         </div>
 
         <!-- Tabla con lista de miembros y acciones -->

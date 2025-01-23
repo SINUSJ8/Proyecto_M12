@@ -453,13 +453,33 @@ function informacionMembresia($id_usuario)
 
     return $datosMiembro;
 }
-function obtenerTotalMiembros($conn)
+function obtenerTotalMiembros($conn, $busqueda = '')
 {
-    $sql = "SELECT COUNT(*) AS total FROM miembro";
-    $result = $conn->query($sql);
+    $sql = "SELECT COUNT(*) AS total 
+            FROM miembro m
+            JOIN usuario u ON m.id_usuario = u.id_usuario";
+
+    // Agregar filtro de búsqueda si hay un término
+    if (!empty($busqueda)) {
+        $sql .= " WHERE u.nombre LIKE ? OR u.email LIKE ?";
+    }
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error en la preparación de la consulta: " . $conn->error);
+    }
+
+    if (!empty($busqueda)) {
+        $busqueda_param = '%' . $busqueda . '%';
+        $stmt->bind_param("ss", $busqueda_param, $busqueda_param);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
     return $result->fetch_assoc()['total'];
 }
-function obtenerMiembrosPaginados($conn, $limit, $offset)
+
+function obtenerMiembrosPaginados($conn, $limit, $offset, $busqueda = '')
 {
     $sql = "SELECT 
                 u.nombre, 
@@ -475,21 +495,36 @@ function obtenerMiembrosPaginados($conn, $limit, $offset)
             LEFT JOIN miembro_membresia mm ON mm.id_miembro = m.id_miembro AND mm.estado = 'activa'
             LEFT JOIN membresia mb ON mm.id_membresia = mb.id_membresia
             LEFT JOIN miembro_entrenamiento me ON me.id_miembro = m.id_miembro
-            LEFT JOIN especialidad e ON me.id_especialidad = e.id_especialidad
-            GROUP BY m.id_miembro
-            ORDER BY u.nombre ASC
-            LIMIT ? OFFSET ?";
+            LEFT JOIN especialidad e ON me.id_especialidad = e.id_especialidad";
+
+    // Agregar filtro de búsqueda si hay un término
+    if (!empty($busqueda)) {
+        $sql .= " WHERE u.nombre LIKE ? OR u.email LIKE ?";
+    }
+
+    $sql .= " GROUP BY m.id_miembro
+              ORDER BY u.nombre ASC
+              LIMIT ? OFFSET ?";
 
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         die("Error en la preparación de la consulta: " . $conn->error);
     }
 
-    $stmt->bind_param("ii", $limit, $offset);
+    if (!empty($busqueda)) {
+        $busqueda_param = '%' . $busqueda . '%';
+        echo "<pre>Parámetros de búsqueda: $busqueda_param</pre>";
+        $stmt->bind_param("ssii", $busqueda_param, $busqueda_param, $limit, $offset);
+    } else {
+        $stmt->bind_param("ii", $limit, $offset);
+    }
+
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
+
+
 
 
 
