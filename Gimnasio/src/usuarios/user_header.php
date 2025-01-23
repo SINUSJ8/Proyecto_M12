@@ -24,7 +24,7 @@ if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] != 'usuario') {
 <body>
     <header>
         <div class="header-content">
-            <h1>Mi Gimnasio</h1>
+            <h1>FitBay</h1>
             <span class="user-name"><?php echo htmlspecialchars($_SESSION['nombre']); ?></span>
         </div>
 
