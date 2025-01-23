@@ -85,7 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
         <?php endif; ?>
 
         <!-- Tabla para mostrar clases -->
-        <section class="form_container_large">
             <table id="tabla-clases" class="styled-table">
                 <thead>
                     <tr>
@@ -136,7 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                     <?php endforeach; ?>
                 </tbody>
             </table>
-        </section>
 
         <!-- Paginación -->
         <div class="pagination">

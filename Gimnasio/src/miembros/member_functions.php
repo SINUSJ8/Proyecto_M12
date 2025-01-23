@@ -513,7 +513,7 @@ function obtenerMiembrosPaginados($conn, $limit, $offset, $busqueda = '')
 
     if (!empty($busqueda)) {
         $busqueda_param = '%' . $busqueda . '%';
-        echo "<pre>Parámetros de búsqueda: $busqueda_param</pre>";
+        echo "<script>console.log('Parámetros de búsqueda: $busqueda_param');</script>";
         $stmt->bind_param("ssii", $busqueda_param, $busqueda_param, $limit, $offset);
     } else {
         $stmt->bind_param("ii", $limit, $offset);

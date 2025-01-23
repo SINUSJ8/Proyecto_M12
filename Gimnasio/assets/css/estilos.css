@@ -224,7 +224,8 @@ header nav .logout-link:hover {
     display: flex;
     flex-direction: row;
     align-items: center;
-    text-align: left;/ border: 1px solid #ccc;
+    text-align: left;
+    border: 1px solid #ccc;
     border-radius: 10px;
     padding: 10px;
     margin: 20px auto;
@@ -581,7 +582,7 @@ ol {
     padding: 0;
     margin: 0;
     text-align: left;
-    max-height: 150px;
+    max-height: 200px;
     overflow-y: auto;
     border: 1px solid #ccc;
     padding: 5px;

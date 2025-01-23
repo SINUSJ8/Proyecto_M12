@@ -86,7 +86,6 @@ include '../admin/admin_header.php';
 
 
         <!-- Tabla con lista de monitores y acciones -->
-        <section class="form_container_large">
             <table id="tabla-monitores" class="styled-table">
                 <thead>
                     <tr>
@@ -117,9 +116,7 @@ include '../admin/admin_header.php';
                     <?php endforeach; ?>
                 </tbody>
             </table>
-        </section>
     </main>
-
     <?php
     include '../includes/footer.php';
     $conn->close();
