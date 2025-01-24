@@ -138,14 +138,20 @@ include '../admin/admin_header.php';
 
         <!-- Mensajes de error o éxito -->
         <?php if (isset($_GET['mensaje'])): ?>
-            <p class="mensaje-confirmacion"><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
+            <div id="mensaje-flotante" class="mensaje-confirmacion">
+                <?php echo htmlspecialchars($_GET['mensaje']); ?>
+            </div>
         <?php elseif (isset($error)): ?>
-            <p class="mensaje-error"><?php echo htmlspecialchars($error); ?></p>
+            <div id="mensaje-flotante" class="mensaje-error">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
         <?php endif; ?>
+
 
         <!-- Formulario para crear clase -->
         <section class="form_container">
-            <form method="POST">
+            <form id="form_clase" method="POST">
+                <input type="hidden" name="accion" value="crear_clase">
                 <label for="nombre">Nombre de la Clase:</label>
                 <input type="text" id="nombre" name="nombre"
                     value="<?= htmlspecialchars($clase['nombre'] ?? '') ?>" required>
@@ -193,7 +199,7 @@ include '../admin/admin_header.php';
         </section>
     </main>
     <script src="../../assets/js/dinamica_especialidades.js"></script>
-    <script src="../../assets/js/validacion_clase.js"></script>
+    <script src="../../assets/js/validacion.js"></script>
     <script>
         configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
         configurarRestriccionesFechaHora('fecha', 'horario');

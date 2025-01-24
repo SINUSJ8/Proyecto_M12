@@ -1,4 +1,4 @@
-document.querySelector('form').addEventListener('submit', function (e) {
+document.getElementById('form_clase').addEventListener('submit', function (e) {
     e.preventDefault(); // Prevenir envío por defecto
 
     const nombre = document.getElementById('nombre').value.trim();

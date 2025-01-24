@@ -337,6 +337,33 @@ function unsetReferer() {
     fetch('../admin/unset_referer.php', { method: 'POST' });
 }
 
+document.getElementById('form_clase').addEventListener('submit', function (e) {
+    e.preventDefault(); // Prevenir el envío del formulario por defecto
 
+    const nombre = document.getElementById('nombre').value.trim();
+    const idMonitor = document.getElementById('id_monitor').value;
+    const idEspecialidad = document.getElementById('id_especialidad').value;
+    const fecha = document.getElementById('fecha').value;
+    const horario = document.getElementById('horario').value;
+    const duracion = parseInt(document.getElementById('duracion').value, 10);
+    const capacidad = parseInt(document.getElementById('capacidad').value, 10);
+
+    // Validar que todos los campos estén llenos
+    if (!nombre || !idMonitor || !idEspecialidad || !fecha || !horario || isNaN(duracion) || duracion <= 0 || isNaN(capacidad) || capacidad <= 0) {
+        mostrarMensajeError("Todos los campos son obligatorios y deben contener valores válidos.");
+        return false;
+    }
+
+    // Validar que la fecha y hora sean futuras
+    const ahora = new Date();
+    const fechaSeleccionada = new Date(`${fecha}T${horario}`);
+    if (fechaSeleccionada < ahora) {
+        mostrarMensajeError("La fecha y hora deben ser futuras.");
+        return false;
+    }
+
+    // Si pasa las validaciones, enviar el formulario
+    this.submit();
+});
 
 
