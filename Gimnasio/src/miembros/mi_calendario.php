@@ -9,7 +9,8 @@ $id_usuario = $_SESSION['id_usuario'];
 
 try {
     $id_miembro = obtenerIdMiembro($conn, $id_usuario);
-    $clases = obtenerClasesCalendario($conn, $id_miembro);
+    $especialidades = obtenerEspecialidadesMiembro($conn, $id_miembro);
+    $clases = obtenerClasesDisponibles($conn, $especialidades, $id_miembro);
 } catch (Exception $e) {
     echo "<p class='mensaje-error'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
     exit;
