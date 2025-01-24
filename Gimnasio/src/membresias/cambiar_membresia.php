@@ -77,9 +77,10 @@ while ($row = $result->fetch_assoc()) {
                     <h2><?php echo htmlspecialchars($membresia['tipo']); ?></h2>
                     <p><strong>Precio:</strong> <?php echo htmlspecialchars($membresia['precio']); ?> €</p>
                     <p><strong>Duración:</strong> <?php echo htmlspecialchars($membresia['duracion']); ?> mes(es)</p>
-                    <p><strong>Beneficios:</strong> <?php echo htmlspecialchars($membresia['beneficios']); ?></p>
+                    <h6><strong>Beneficios:</strong></h6>
+                    <p class="beneficios"><?php echo htmlspecialchars($membresia['beneficios']); ?></p>
 
-                    <h3>Entrenamientos Incluidos:</h3>
+                    <h6><strong>Entrenamientos Incluidos:</strong></h6>
                     <ul>
                         <?php if (!empty($membresia['entrenamientos'])): ?>
                             <?php foreach ($membresia['entrenamientos'] as $entrenamiento): ?>

@@ -89,7 +89,7 @@ $conn->close();
                     </p>
 
                     <h3 title="Lista de entrenamientos incluidos">Entrenamientos Incluidos:</h3>
-                    <ul title="Entrenamientos disponibles con esta membresía">
+                    <ul class="beneficios" title="Entrenamientos disponibles con esta membresía">
                         <?php if (!empty($membresia['entrenamientos'])): ?>
                             <?php foreach ($membresia['entrenamientos'] as $entrenamiento): ?>
                                 <li title="Entrenamiento: <?php echo htmlspecialchars($entrenamiento); ?>">
