@@ -342,3 +342,41 @@ function obtenerParticipantesClase($conn, $id_clase)
     $stmt->close();
     return $participantes;
 }
+function obtenerClasesAsignadasMonitor($conn, $id_monitor)
+{
+    if (!$id_monitor) {
+        throw new Exception("El monitor no tiene un ID válido.");
+    }
+
+    $sqlClases = "
+        SELECT 
+            c.id_clase, 
+            c.nombre AS clase_nombre, 
+            e.nombre AS especialidad, 
+            c.fecha, 
+            c.horario, 
+            c.duracion
+        FROM clase c
+        INNER JOIN monitor m ON c.id_monitor = m.id_monitor
+        INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
+        WHERE c.id_monitor = ?
+        ORDER BY c.fecha, c.horario
+    ";
+
+    $stmt = $conn->prepare($sqlClases);
+    if (!$stmt) {
+        throw new Exception("Error al preparar la consulta: " . $conn->error);
+    }
+
+    $stmt->bind_param("i", $id_monitor);
+    $stmt->execute();
+    $resultClases = $stmt->get_result();
+
+    if ($resultClases->num_rows === 0) {
+        throw new Exception("No se encontraron clases asignadas al monitor con id_monitor: $id_monitor");
+    }
+
+    $clases = $resultClases->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $clases;
+}

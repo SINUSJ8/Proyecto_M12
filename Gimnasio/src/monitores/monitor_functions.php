@@ -209,3 +209,29 @@ function obtenerEntrenamientos($conn)
 
     return $entrenamientos;
 }
+function obtenerIdMonitor($conn, $id_usuario)
+{
+    if (!$conn || !$id_usuario) {
+        return null;
+    }
+
+    try {
+        $sql = "SELECT id_monitor FROM monitor WHERE id_usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return $row['id_monitor'];
+        } else {
+            // Registrar un error si no se encuentra el monitor
+            error_log("No se encontró un monitor asociado con id_usuario: $id_usuario");
+            return null;
+        }
+    } catch (Exception $e) {
+        error_log("Error en obtenerIdMonitor: " . $e->getMessage());
+        return null;
+    }
+}
