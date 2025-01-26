@@ -342,3 +342,100 @@ function obtenerMonitoresActivos($conn)
     $stmt->execute();
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
+// Función para manejar la eliminación con notificaciones
+function eliminarEspecialidadConNotificaciones($conn, $id_especialidad)
+{
+    // Obtener las clases asociadas a la especialidad
+    $sql = "SELECT id_clase, nombre FROM clase WHERE id_especialidad = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_especialidad);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $clases = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    if (empty($clases)) {
+        return "No se encontraron clases asociadas a la especialidad.";
+    }
+
+    // Enviar notificaciones a los miembros inscritos y al monitor de cada clase
+    foreach ($clases as $clase) {
+        $id_clase = $clase['id_clase'];
+        $nombre_clase = $clase['nombre'];
+
+        // Obtener miembros inscritos
+        $miembros = obtenerMiembrosInscritos($conn, $id_clase);
+        foreach ($miembros as $miembro) {
+            $mensaje = "La especialidad y la clase '{$nombre_clase}' a la que estabas inscrito han sido eliminadas. Por favor, revisa las opciones disponibles.";
+            enviarNotificacion($conn, $miembro['id_usuario'], $mensaje);
+        }
+
+        // Obtener el monitor de la clase
+        $monitor = obtenerMonitorDeClase($conn, $id_clase);
+        if ($monitor) {
+            $mensaje = "La clase '{$nombre_clase}' que impartías ha sido eliminada debido a la eliminación de su especialidad asociada.";
+            enviarNotificacion($conn, $monitor['id_usuario'], $mensaje);
+        }
+    }
+
+    // Eliminar las clases asociadas
+    $stmt = $conn->prepare("DELETE FROM clase WHERE id_especialidad = ?");
+    $stmt->bind_param("i", $id_especialidad);
+    $stmt->execute();
+    $stmt->close();
+
+    // Eliminar la especialidad
+    $stmt = $conn->prepare("DELETE FROM especialidad WHERE id_especialidad = ?");
+    $stmt->bind_param("i", $id_especialidad);
+    $stmt->execute();
+    $stmt->close();
+
+    return "La especialidad y sus clases asociadas se han eliminado correctamente. Las notificaciones han sido enviadas.";
+}
+// Función para editar una especialidad y notificar a los usuarios afectados
+function editarEspecialidadConNotificaciones($conn, $id_especialidad, $nuevo_nombre)
+{
+    // Obtener las clases asociadas a la especialidad
+    $sql = "SELECT id_clase, nombre FROM clase WHERE id_especialidad = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_especialidad);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $clases = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    if (empty($clases)) {
+        return "No se encontraron clases asociadas a la especialidad.";
+    }
+
+    // Enviar notificaciones a los miembros y monitores de las clases asociadas
+    foreach ($clases as $clase) {
+        $id_clase = $clase['id_clase'];
+        $nombre_clase = $clase['nombre'];
+
+        // Obtener miembros inscritos
+        $miembros = obtenerMiembrosInscritos($conn, $id_clase);
+        foreach ($miembros as $miembro) {
+            $mensaje = "La especialidad asociada a la clase '{$nombre_clase}' ha cambiado de nombre a '{$nuevo_nombre}'. Por favor, revisa la información actualizada.";
+            enviarNotificacion($conn, $miembro['id_usuario'], $mensaje);
+        }
+
+        // Obtener el monitor de la clase
+        $monitor = obtenerMonitorDeClase($conn, $id_clase);
+        if ($monitor) {
+            $mensaje = "La especialidad de la clase '{$nombre_clase}' que impartes ha cambiado de nombre a '{$nuevo_nombre}'. Por favor, revisa la información actualizada.";
+            enviarNotificacion($conn, $monitor['id_usuario'], $mensaje);
+        }
+    }
+
+    // Actualizar el nombre de la especialidad
+    $stmt = $conn->prepare("UPDATE especialidad SET nombre = ? WHERE id_especialidad = ?");
+    $stmt->bind_param("si", $nuevo_nombre, $id_especialidad);
+    if ($stmt->execute()) {
+        $stmt->close();
+        return "La especialidad se ha actualizado correctamente. Las notificaciones han sido enviadas.";
+    } else {
+        $stmt->close();
+        return "Error al actualizar la especialidad.";
+    }
+}

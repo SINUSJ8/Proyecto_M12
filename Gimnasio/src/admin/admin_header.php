@@ -23,7 +23,7 @@
                 <a href="../monitores/monitores.php">Monitores</a>
                 <a href="../clases/clases.php">Clases</a>
                 <a href="../membresias/membresias.php">Membresías</a>
-                <a href="../config/configuracion.php">Especialidades</a>
+                <a href="../admin/especialidades.php">Especialidades</a>
                 <a href="../admin/notificaciones.php">Notificaciones</a>
                 <a href="../admin/historial_pagos.php">Historial de pagos</a>
             <?php endif; ?>
