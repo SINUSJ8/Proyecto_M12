@@ -297,6 +297,26 @@ table.styled-table th.sortable.sorted-desc:after {
     opacity: 1;
 }
 
+table.styled-table.mis-clases {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    text-align: left;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table.styled-table.mis-clases tbody tr.fila-vacia {
+    height: 70px;
+    background-color: #f9f9f9;
+}
+
+table.styled-table.mis-clases tbody tr.fila-vacia td {
+    border: none;
+}
+
 /* BOTONES */
 /* Contenedor de botones */
 .acciones .button-container {
@@ -390,41 +410,29 @@ table.styled-table th.sortable.sorted-desc:after {
 /* NOTIFICACIONES */
 .notificacion-nueva {
     background-color: #d4edda;
-    /* Verde claro */
     font-weight: bold;
 }
 
 .notificacion-leida {
     background-color: #f8f9fa;
-    /* Gris claro */
     font-weight: normal;
 }
 
 .notificacion-mensaje {
     display: flex;
     flex-direction: column;
-    /* Coloca los elementos uno debajo del otro */
     gap: 15px;
-    /* Espacio entre el textarea y el botón */
     max-width: 400px;
-    /* Limita el ancho para que sea más legible */
     margin: 0 auto;
-    /* Centra el formulario horizontalmente */
 }
 
 .notificacion-mensaje textarea {
     height: 100px;
-    /* Altura ajustable */
     resize: vertical;
-    /* Permite redimensionar solo en la dirección vertical */
     padding: 10px;
-    /* Espaciado interno para mejor legibilidad */
     font-size: 16px;
-    /* Tamaño de fuente */
     border: 1px solid #ccc;
-    /* Borde sutil */
     border-radius: 5px;
-    /* Bordes redondeados */
 }
 
 /* MENSAJES */
@@ -456,16 +464,13 @@ table.styled-table th.sortable.sorted-desc:after {
 .clases-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* Tres columnas */
     gap: 20px;
-    /* Espacio entre las tarjetas */
     margin-top: 20px;
 }
 
 @media (max-width: 768px) {
     .clases-grid {
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        /* Ajustar automáticamente para pantallas más pequeñas */
     }
 }
 
@@ -489,11 +494,8 @@ table.styled-table th.sortable.sorted-desc:after {
 .clase-image {
     width: 100%;
     height: auto;
-    /* Mantener proporciones */
     max-height: 200px;
-    /* Limitar altura máxima */
     object-fit: cover;
-    /* Ajustar la imagen al contenedor */
     border-radius: 5px;
     margin-bottom: 10px;
 }
@@ -640,53 +642,36 @@ input[type="date"],
 input[type="time"],
 select {
     width: 100%;
-    /* Ajusta el ancho completo del contenedor */
     padding: 10px;
-    /* Incrementa el padding para mayor altura */
     margin-bottom: 15px;
-    /* Espaciado entre cada campo */
     border: 1px solid #ccc;
-    /* Borde de color suave */
     border-radius: 8px;
-    /* Bordes redondeados */
     font-size: 16px;
-    /* Tamaño de fuente más grande */
     box-sizing: border-box;
-    /* Incluye padding en el cálculo del ancho */
 }
 
 /* Botones */
 button.btn-general {
     padding: 12px 20px;
-    /* Tamaño más grande para mayor clicabilidad */
     font-size: 16px;
-    /* Fuente más grande */
     border-radius: 8px;
-    /* Botón redondeado */
 }
 
 /* Listas de especialidades */
 .especialidades-lista {
     list-style: none;
-    /* Quita los bullets */
     padding: 0;
-    /* Elimina el padding de la lista */
     margin-bottom: 15px;
-    /* Espaciado inferior */
 }
 
 .especialidades-lista li {
     padding: 5px 0;
-    /* Espaciado interno */
     border-bottom: 1px solid #ddd;
-    /* Línea divisoria */
 }
 
 .especialidades-lista ul {
     list-style: none;
-    /* Elimina los puntos de la lista */
     padding-left: 0;
-    /* Elimina el padding */
 }
 
 .btn-disabled {
@@ -835,7 +820,6 @@ button.btn-general {
     display: inline-block;
     padding: 10px 15px;
     background-color: #3aafa9;
-    /* Mismo color que .btn-general */
     color: #fff;
     font-size: 16px;
     text-align: center;
@@ -848,93 +832,62 @@ button.btn-general {
 
 .pagination a:hover {
     background-color: #2b7a78;
-    /* Mismo color hover que .btn-general */
 }
 
 .pagination a.active {
     font-weight: bold;
     background-color: #2b7a78;
-    /* Mismo color hover para destacar el botón activo */
     pointer-events: none;
-    /* Desactiva clics en el botón activo */
 }
 
 .form-inline {
     display: flex;
     align-items: center;
-    /* Alinea verticalmente */
     justify-content: flex-start;
-    /* Alinea horizontalmente */
     gap: 15px;
-    /* Espaciado entre elementos */
     flex-wrap: wrap;
-    /* Permite que los elementos pasen a la siguiente línea si no caben */
 }
 
 .input-container {
     flex-grow: 1;
-    /* Permite que los campos de entrada se expandan */
 }
 
 footer {
     background-color: #3aafa9;
-    /* Verde principal */
     color: #fff;
-    /* Texto blanco */
     text-align: center;
-    /* Centrar el texto */
     padding: 10px 0;
-    /* Espaciado interno */
     font-size: 14px;
-    /* Tamaño de fuente */
     border-top: 2px solid #2b7a78;
-    /* Línea superior más oscura */
 }
 
 footer {
     background-color: #3aafa9;
-    /* Verde principal */
     color: #fff;
-    /* Texto blanco */
     text-align: center;
-    /* Centrar el texto */
     padding: 10px 0;
-    /* Espaciado interno */
     font-size: 14px;
-    /* Tamaño de fuente */
     border-top: 2px solid #2b7a78;
-    /* Línea superior más oscura */
     position: static;
-    /* Fija el footer al final de la ventana */
     bottom: 0;
-    /* Asegura que se mantenga al final */
     left: 0;
-    /* Inicia desde el borde izquierdo */
     width: 100%;
-    /* Ocupa todo el ancho */
     box-sizing: border-box;
-    /* Incluye padding y border en el tamaño */
 }
 
 footer p {
     margin: 0;
-    /* Quitar margen del texto */
     font-family: Arial, sans-serif;
-    /* Fuente consistente */
 }
 
 footer a {
     color: #fff;
-    /* Enlaces en blanco */
     text-decoration: underline;
-    /* Subrayado para enlaces */
     transition: color 0.3s ease;
-    /* Transición para hover */
 }
 
 footer a:hover {
     color: #2b7a78;
-    /* Cambiar color en hover */
 }
 
 #admin-panel {
@@ -956,9 +909,7 @@ footer a:hover {
 
 .admin_container {
     background-color: #f3f8fa;
-    /* Azul pastel claro */
     border: 1px solid #cce5f6;
-    /* Azul pastel más oscuro */
     border-radius: 5px;
     padding: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1016,44 +967,37 @@ footer a:hover {
 
 .calendar-description {
     color: #3aafa9 !important;
-    /* Descripción debajo del título */
     font-style: italic;
-    /* Opcional: estilizar la descripción */
 }
 
 /* Cambiar el color del título */
 h1.text-center {
     color: #3aafa9 !important;
     font-weight: bold;
-    /* Opcional: resaltar el texto */
 }
 
 /* Cambiar el color del texto debajo del título */
 p.text-center.text-muted {
     color: #3aafa9 !important;
     font-style: italic;
-    /* Opcional: darle estilo */
 }
 
 /* Cambiar el color del encabezado del calendario (mes, año, día) */
 .fc-toolbar-title {
     color: #3aafa9 !important;
     font-weight: bold;
-    /* Resaltar el encabezado */
 }
 
 /* Cambiar el color del encabezado "all-day" */
 .fc-timegrid-axis-cushion {
     color: #3aafa9 !important;
     font-weight: bold;
-    /* Opcional: resaltar el texto */
 }
 
 /* Cambiar el color de las horas en la vista de semana y día */
 .fc-timegrid-slot-label {
     color: #3aafa9 !important;
     font-weight: bold;
-    /* Opcional: resaltar las horas */
 }
 
 /* Cambiar el color de las líneas divisoras (opcional) */
@@ -1069,10 +1013,7 @@ p.text-center.text-muted {
 
 /* Cambiar el color del encabezado (mes, año, día) del calendario */
 .fc-toolbar-title {
-    color: #3aafa9 !important;
-    /* Título de la cabecera */
-    font-weight: bold;
-    /* Destacar la cabecera */
+    color: #3aafa9 !important;/ font-weight: bold;
 }
 
 /* Estilo de los días */
@@ -1083,12 +1024,9 @@ p.text-center.text-muted {
 /* Eventos en los que estás inscrito */
 .fc .fc-daygrid-event.fc-event-inscrito {
     background-color: #28a745 !important;
-    /* Verde oscuro */
     color: #ffffff !important;
-    /* Texto blanco */
     border: none !important;
     border-radius: 5px;
-    /* Redondeo */
     font-weight: bold;
     padding: 2px;
 }
@@ -1096,12 +1034,9 @@ p.text-center.text-muted {
 /* Eventos disponibles */
 .fc .fc-daygrid-event.fc-event-disponible {
     background-color: #a0ace5 !important;
-    /* Azul oscuro */
     color: #ffffff !important;
-    /* Texto blanco */
     border: none !important;
     border-radius: 5px;
-    /* Redondeo */
     font-weight: bold;
     padding: 2px;
 }
@@ -1109,13 +1044,9 @@ p.text-center.text-muted {
 /* Ajuste para eventos predeterminados (modo mensual) */
 .fc .fc-daygrid-event {
     background-color: #ffffff !important;
-    /* Fondo blanco por defecto */
     color: #3aafa9 !important;
-    /* Texto personalizado */
     border: 1px solid #3aafa9 !important;
-    /* Borde azul */
     border-radius: 5px;
-    /* Bordes redondeados */
     font-weight: bold;
     padding: 2px;
 }
@@ -1155,7 +1086,6 @@ p.text-center.text-muted {
 /* Cambiar el borde de los eventos */
 .fc-event {
     border: 1px solid #3aafa9 !important;
-    /* Azul personalizado */
     font-weight: bold;
     border-radius: 5px;
 }
@@ -1163,20 +1093,17 @@ p.text-center.text-muted {
 /* Cambiar el color del navbar */
 .navbar {
     background-color: #3aafa9 !important;
-    /* Fondo del navbar */
 }
 
 /* Cambiar el color de los enlaces del navbar */
 .navbar .nav-link {
     color: #ffffff !important;
-    /* Color blanco para los enlaces */
     font-weight: bold;
 }
 
 /* Cambiar el color de los enlaces al pasar el mouse */
 .navbar .nav-link:hover {
     color: #2e8f86 !important;
-    /* Color verde oscuro al pasar el mouse */
 }
 
 /* Botón de cierre de sesión */

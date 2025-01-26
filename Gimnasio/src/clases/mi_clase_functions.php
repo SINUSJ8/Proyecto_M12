@@ -97,30 +97,7 @@ function claseEstaCompleta($conn, $id_clase)
     return intval($data['inscritos']) >= intval($data['capacidad_maxima']);
 }
 
-function obtenerClasesInscritas($conn, $id_miembro)
-{
-    $sql = "
-        SELECT c.id_clase, c.nombre, c.fecha, c.horario
-        FROM asistencia a
-        INNER JOIN clase c ON a.id_clase = c.id_clase
-        WHERE a.id_miembro = ?
-          AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
-        ORDER BY c.fecha, c.horario
-    ";
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id_miembro);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $clases = [];
-
-    while ($row = $result->fetch_assoc()) {
-        $clases[] = $row;
-    }
-
-    $stmt->close();
-    return $clases;
-}
 
 /**
  * Obtiene las especialidades de un miembro.
@@ -224,6 +201,131 @@ function obtenerClasesCalendario($conn, $id_miembro)
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id_miembro);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $clases = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $clases[] = $row;
+    }
+
+    $stmt->close();
+    return $clases;
+}
+/*
+function obtenerClasesInscritas($conn, $id_miembro)
+{
+    $sql = "
+        SELECT c.id_clase, c.nombre, c.fecha, c.horario
+        FROM asistencia a
+        INNER JOIN clase c ON a.id_clase = c.id_clase
+        WHERE a.id_miembro = ?
+          AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
+        ORDER BY c.fecha, c.horario
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_miembro);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $clases = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $clases[] = $row;
+    }
+
+    $stmt->close();
+    return $clases;
+}
+    */
+function obtenerClasesInscritas($conn, $id_miembro, $limit, $offset)
+{
+    $sql = "
+        SELECT c.*, e.nombre AS especialidad
+        FROM asistencia a
+        JOIN clase c ON a.id_clase = c.id_clase
+        JOIN especialidad e ON c.id_especialidad = e.id_especialidad
+        WHERE a.id_miembro = ?
+        LIMIT ? OFFSET ?
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iii", $id_miembro, $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+function contarClasesInscritas($conn, $id_miembro)
+{
+    $sql = "
+        SELECT COUNT(*) AS total
+        FROM asistencia a
+        JOIN clase c ON a.id_clase = c.id_clase
+        WHERE a.id_miembro = ?
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_miembro);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $total = $result->fetch_assoc()['total'];
+    $stmt->close();
+    return $total;
+}
+function contarClasesDisponibles($conn, $especialidades, $id_miembro)
+{
+    $ids_especialidades = implode(',', array_map('intval', $especialidades));
+    $sql = "
+        SELECT COUNT(*) AS total
+        FROM clase c
+        WHERE c.id_especialidad IN ($ids_especialidades)
+        AND c.id_clase NOT IN (
+            SELECT id_clase FROM asistencia WHERE id_miembro = ?
+        )
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_miembro);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $total = $result->fetch_assoc()['total'];
+    $stmt->close();
+    return $total;
+}
+function obtenerClasesDisponiblesPaginadas($conn, $especialidades, $id_miembro, $limit, $offset)
+{
+    $especialidadesStr = implode(',', array_map('intval', $especialidades)); // Asegurar valores enteros
+
+    $sql = "
+        SELECT 
+            c.id_clase,
+            c.nombre,
+            c.fecha,
+            c.horario,
+            c.duracion,
+            c.capacidad_maxima,
+            e.nombre AS especialidad,
+            u.nombre AS monitor, -- Obtener el nombre del monitor desde la tabla usuario
+            (SELECT COUNT(*) FROM asistencia a WHERE a.id_clase = c.id_clase) AS inscritos,
+            EXISTS (
+                SELECT 1 
+                FROM asistencia a 
+                WHERE a.id_clase = c.id_clase AND a.id_miembro = ?
+            ) AS inscrito,
+            CASE
+                WHEN (SELECT COUNT(*) FROM asistencia a WHERE a.id_clase = c.id_clase) >= c.capacidad_maxima THEN 1
+                ELSE 0
+            END AS completa
+        FROM clase c
+        INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
+        LEFT JOIN monitor m ON c.id_monitor = m.id_monitor -- Vincular monitores con las clases
+        LEFT JOIN usuario u ON m.id_usuario = u.id_usuario -- Obtener el nombre del monitor desde usuario
+        WHERE c.id_especialidad IN ($especialidadesStr)
+          AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
+        ORDER BY c.fecha, c.horario
+        LIMIT ? OFFSET ?
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iii", $id_miembro, $limit, $offset);
     $stmt->execute();
     $result = $stmt->get_result();
     $clases = [];

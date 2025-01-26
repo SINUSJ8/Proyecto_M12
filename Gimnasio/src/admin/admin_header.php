@@ -15,6 +15,7 @@
 <body>
     <header>
         <h1>Panel de Administración</h1>
+        <span class="user-name"><?php echo htmlspecialchars($_SESSION['nombre']); ?></span>
         <nav id="navegacion-rapida">
             <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
                 <a href="../admin/admin.php">Panel Principal</a>
