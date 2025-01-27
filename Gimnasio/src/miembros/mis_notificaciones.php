@@ -67,8 +67,6 @@ include 'miembro_header.php';
                 <?php endforeach; ?>
             </tbody>
         </table>
-
-        <!-- Paginación -->
         <!-- Paginación -->
         <div class="pagination">
             <?php if ($page > 1): ?>
