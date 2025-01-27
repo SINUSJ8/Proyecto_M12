@@ -148,6 +148,76 @@ include 'admin_header.php';
     </section>
 
     <a href="notificaciones_enviadas.php" class="btn-general">Ver Notificaciones Enviadas</a>
+    <!-- Mostrar notificaciones dirigidas al administrador -->
+    <section>
+        <h3>Mis Notificaciones</h3>
+        <?php
+        // Configuración de paginación
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 10; // Número de notificaciones por página
+        $offset = ($page - 1) * $limit;
+
+        // Obtener el número total de notificaciones del administrador
+        $total_query = $conn->prepare("SELECT COUNT(*) AS total FROM notificacion WHERE id_usuario = ?");
+        $total_query->bind_param("i", $_SESSION['id_usuario']);
+        $total_query->execute();
+        $total_result = $total_query->get_result()->fetch_assoc();
+        $total_notificaciones = $total_result['total'];
+        $total_pages = ceil($total_notificaciones / $limit);
+
+        // Obtener las notificaciones del administrador con límite y offset
+        $query = $conn->prepare("
+            SELECT mensaje, fecha, leida 
+            FROM notificacion 
+            WHERE id_usuario = ? 
+            ORDER BY fecha DESC 
+            LIMIT ? OFFSET ?
+        ");
+        $query->bind_param("iii", $_SESSION['id_usuario'], $limit, $offset);
+        $query->execute();
+        $notificaciones = $query->get_result()->fetch_all(MYSQLI_ASSOC);
+        marcarNotificacionesComoLeidas($conn, $_SESSION['id_usuario']);
+        // Mostrar las notificaciones
+        if (empty($notificaciones)): ?>
+            <p class="mensaje-info">No tienes notificaciones.</p>
+        <?php else: ?>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Mensaje</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($notificaciones as $notificacion): ?>
+                        <tr class="<?php echo $notificacion['leida'] ? 'notificacion-leida' : 'notificacion-nueva'; ?>">
+                            <td><?php echo htmlspecialchars($notificacion['mensaje']); ?></td>
+                            <td><?php echo htmlspecialchars($notificacion['fecha']); ?></td>
+                            <td><?php echo $notificacion['leida'] ? 'Leída' : 'Nueva'; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+            <div class="pagination">
+                <?php if ($page > 1): ?>
+                    <a href="notificaciones.php?page=<?php echo $page - 1; ?>" class="btn-general">Anterior</a>
+                <?php endif; ?>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <a href="notificaciones.php?page=<?php echo $i; ?>" class="btn-general <?php echo $i === $page ? 'active' : ''; ?>">
+                        <?php echo $i; ?>
+                    </a>
+                <?php endfor; ?>
+
+                <?php if ($page < $total_pages): ?>
+                    <a href="notificaciones.php?page=<?php echo $page + 1; ?>" class="btn-general">Siguiente</a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+    </section>
 </main>
 
 <?php include '../includes/footer.php'; ?>
