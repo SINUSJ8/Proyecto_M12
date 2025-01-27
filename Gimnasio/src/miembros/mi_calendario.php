@@ -8,9 +8,9 @@ $conn = obtenerConexion();
 $id_usuario = $_SESSION['id_usuario'];
 
 try {
+    // Obtener el ID del miembro y sus clases
     $id_miembro = obtenerIdMiembro($conn, $id_usuario);
-    $especialidades = obtenerEspecialidadesMiembro($conn, $id_miembro);
-    $clases = obtenerClasesDisponibles($conn, $especialidades, $id_miembro);
+    $clases = obtenerClasesCalendario($conn, $id_miembro);
 } catch (Exception $e) {
     echo "<p class='mensaje-error'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
     exit;
@@ -21,10 +21,10 @@ $eventos = [];
 foreach ($clases as $clase) {
     $eventos[] = [
         'title' => $clase['nombre'] . ' (' . $clase['especialidad'] . ')',
-        'start' => $clase['fecha'] . 'T' . $clase['horario'], // Fecha y hora
-        'end' => $clase['fecha'] . 'T' . date('H:i:s', strtotime($clase['horario'] . ' +' . $clase['duracion'] . ' minutes')), // Duración de la clase
-        'color' => $clase['inscrito'] ? '#28a745' : '#a0ace5', // Verde si está inscrito, azul si no
-        'textColor' => '#ffffff', // Texto blanco para contraste
+        'start' => $clase['fecha'] . 'T' . $clase['horario'],
+        'end' => $clase['fecha'] . 'T' . date('H:i:s', strtotime($clase['horario'] . ' +' . $clase['duracion'] . ' minutes')),
+        'color' => $clase['inscrito'] ? '#28a745' : '#a0ace5',
+        'textColor' => '#ffffff',
         'extendedProps' => [
             'id_clase' => $clase['id_clase'],
             'inscrito' => $clase['inscrito'],
@@ -57,15 +57,15 @@ foreach ($clases as $clase) {
 
             const calendarEl = document.getElementById('calendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth', // Vista por defecto (mes)
-                themeSystem: 'bootstrap', // Integración con Bootstrap
-                locale: 'es', // Idioma español
+                initialView: 'dayGridMonth',
+                themeSystem: 'bootstrap',
+                locale: 'es',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay' // Vistas disponibles
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: eventos, // Pasar eventos al calendario
+                events: eventos,
                 eventClick: function(info) {
                     const evento = info.event.extendedProps;
                     if (evento.inscrito) {

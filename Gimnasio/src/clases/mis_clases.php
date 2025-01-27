@@ -15,17 +15,30 @@ $offset_inscritas = ($page_inscritas - 1) * $per_page;
 $offset_disponibles = ($page_disponibles - 1) * $per_page;
 
 try {
+    // Obtener el ID del miembro
     $id_miembro = obtenerIdMiembro($conn, $id_usuario);
 
-    if (!$id_especialidad) {
-        $stmt = $conn->prepare("SELECT id_especialidad FROM miembro_entrenamiento WHERE id_miembro = ?");
-        $stmt->bind_param("i", $id_miembro);
-        $stmt->execute();
-        $stmt->bind_result($id_especialidad);
-        $stmt->fetch();
-        $stmt->close();
+    // Obtener especialidades del miembro
+    $especialidades = obtenerEspecialidadesMiembro($conn, $id_miembro);
+
+    // Asegurar que $especialidades sea un array
+    if (empty($especialidades)) {
+        $especialidades = [];
     }
 
+    // Obtener el total de clases inscritas y disponibles
+    $total_clases_inscritas = contarClasesInscritas($conn, $id_miembro);
+    $total_clases_disponibles = contarClasesDisponibles($conn, $especialidades, $id_miembro);
+
+    // Calcular el total de páginas
+    $total_pages_inscritas = ceil($total_clases_inscritas / $per_page);
+    $total_pages_disponibles = ceil($total_clases_disponibles / $per_page);
+
+    // Obtener las clases inscritas y disponibles
+    $clasesInscritas = obtenerClasesInscritas($conn, $id_miembro, $per_page, $offset_inscritas);
+    $clasesDisponibles = obtenerClasesDisponiblesPaginadas($conn, $especialidades, $id_miembro, $per_page, $offset_disponibles);
+
+    // Manejo de acciones (apuntarse o borrarse)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id_clase = intval($_POST['id_clase']);
         $accion = $_POST['accion'];
@@ -36,28 +49,46 @@ try {
             } elseif (yaInscritoEnClase($conn, $id_clase, $id_miembro)) {
                 $mensaje = 'Ya estás inscrito en esta clase.';
             } else {
-                $mensaje = apuntarseClase($conn, $id_clase, $id_miembro) ? '¡Te has inscrito correctamente!' : 'Error al inscribirte.';
+                $resultado = apuntarseClase($conn, $id_clase, $id_miembro);
+                if ($resultado) {
+                    $mensaje = '¡Te has inscrito correctamente!';
+                } else {
+                    $mensaje = 'Error al inscribirte en la clase.';
+                }
             }
         } elseif ($accion === 'borrarse') {
-            $mensaje = borrarseClase($conn, $id_clase, $id_miembro) ? 'Te has dado de baja correctamente.' : 'Error al darte de baja.';
+            $resultado = borrarseClase($conn, $id_clase, $id_miembro);
+            if ($resultado) {
+                $mensaje = 'Te has dado de baja correctamente.';
+            } else {
+                $mensaje = 'Error al darte de baja.';
+            }
         }
+
+        // Recalcular las clases y la paginación después de la acción
+        $total_clases_inscritas = contarClasesInscritas($conn, $id_miembro);
+        $total_pages_inscritas = ceil($total_clases_inscritas / $per_page);
+        if ($page_inscritas > $total_pages_inscritas) {
+            $page_inscritas = max(1, $total_pages_inscritas);
+            $offset_inscritas = ($page_inscritas - 1) * $per_page;
+        }
+        $clasesInscritas = obtenerClasesInscritas($conn, $id_miembro, $per_page, $offset_inscritas);
+
+        $total_clases_disponibles = contarClasesDisponibles($conn, $especialidades, $id_miembro);
+        $total_pages_disponibles = ceil($total_clases_disponibles / $per_page);
+        if ($page_disponibles > $total_pages_disponibles) {
+            $page_disponibles = max(1, $total_pages_disponibles);
+            $offset_disponibles = ($page_disponibles - 1) * $per_page;
+        }
+        $clasesDisponibles = obtenerClasesDisponiblesPaginadas($conn, $especialidades, $id_miembro, $per_page, $offset_disponibles);
     }
-
-    $especialidades = obtenerEspecialidadesMiembro($conn, $id_miembro);
-    $total_clases_inscritas = contarClasesInscritas($conn, $id_miembro);
-    $total_clases_disponibles = contarClasesDisponibles($conn, $especialidades, $id_miembro);
-
-    $total_pages_inscritas = ceil($total_clases_inscritas / $per_page);
-    $total_pages_disponibles = ceil($total_clases_disponibles / $per_page);
-
-    $clasesInscritas = obtenerClasesInscritas($conn, $id_miembro, $per_page, $offset_inscritas);
-    $clasesDisponibles = obtenerClasesDisponiblesPaginadas($conn, $especialidades, $id_miembro, $per_page, $offset_disponibles);
 } catch (Exception $e) {
     echo "<p class='mensaje-error'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
     exit;
 }
-
 ?>
+
+
 
 <main>
     <h1 class="section-title">Mis Clases</h1>
@@ -134,7 +165,7 @@ try {
                     <th>Duración</th>
                     <th>Capacidad</th>
                     <th>Monitor</th>
-                    <th>Acciones</th>
+                    <th>Estado</th>
                 </tr>
             </thead>
             <tbody>
@@ -142,15 +173,15 @@ try {
                     <tr>
                         <td><?= htmlspecialchars($clase['nombre']); ?></td>
                         <td><?= htmlspecialchars($clase['especialidad']); ?></td>
-                        <td><?= htmlspecialchars($clase['fecha']); ?></td>
+                        <td><?= date('d/m/Y', strtotime($clase['fecha'])); ?></td>
                         <td><?= htmlspecialchars($clase['horario']); ?></td>
                         <td><?= htmlspecialchars($clase['duracion']); ?> minutos</td>
                         <td><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
                         <td><?= htmlspecialchars($clase['monitor'] ?? ''); ?></td>
                         <td>
-                            <?php if ($clase['inscrito']): ?>
+                            <?php if ($clase['estado'] === 'inscrito'): ?>
                                 <span class="mensaje-inscrito">Ya inscrito</span>
-                            <?php elseif ($clase['completa']): ?>
+                            <?php elseif ($clase['estado'] === 'completa'): ?>
                                 <span class="mensaje-completa">Completa</span>
                             <?php else: ?>
                                 <form method="POST">
@@ -162,34 +193,35 @@ try {
                         </td>
                     </tr>
                 <?php endforeach; ?>
-
                 <!-- Añadir filas vacías para mantener el tamaño -->
                 <?php for ($i = count($clasesDisponibles); $i < $per_page; $i++): ?>
                     <tr class="fila-vacia">
-                        <td colspan="8">&nbsp;</td>
+                        <td colspan="4">&nbsp;</td>
                     </tr>
                 <?php endfor; ?>
             </tbody>
         </table>
 
+        <!-- Paginación -->
         <div class="pagination">
             <?php if ($page_disponibles > 1): ?>
-                <a href="?page_disponibles=<?= $page_disponibles - 1; ?>&page_inscritas=<?= $page_inscritas; ?>" class="btn-general">Anterior</a>
+                <a href="?page_disponibles=<?= $page_disponibles - 1; ?>" class="btn-general">Anterior</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages_disponibles; $i++): ?>
-                <a href="?page_disponibles=<?= $i; ?>&page_inscritas=<?= $page_inscritas; ?>" class="btn-general <?= $i === $page_disponibles ? 'active' : ''; ?>">
+                <a href="?page_disponibles=<?= $i; ?>" class="btn-general <?= $i === $page_disponibles ? 'active' : ''; ?>">
                     <?= $i; ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($page_disponibles < $total_pages_disponibles): ?>
-                <a href="?page_disponibles=<?= $page_disponibles + 1; ?>&page_inscritas=<?= $page_inscritas; ?>" class="btn-general">Siguiente</a>
+                <a href="?page_disponibles=<?= $page_disponibles + 1; ?>" class="btn-general">Siguiente</a>
             <?php endif; ?>
         </div>
     <?php else: ?>
         <p class="mensaje-info">No hay clases disponibles para tus especialidades.</p>
     <?php endif; ?>
+
 
 </main>
 

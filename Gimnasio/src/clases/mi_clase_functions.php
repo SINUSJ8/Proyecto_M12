@@ -129,8 +129,7 @@ function obtenerEspecialidadesMiembro($conn, $id_miembro)
 }
 function obtenerClasesDisponibles($conn, $especialidades, $id_miembro)
 {
-    $especialidadesStr = implode(',', array_map('intval', $especialidades)); // Asegurar valores enteros
-
+    $especialidadesStr = implode(',', array_map('intval', $especialidades));
     $sql = "
         SELECT 
             c.id_clase,
@@ -175,6 +174,15 @@ function obtenerClasesDisponibles($conn, $especialidades, $id_miembro)
 }
 function obtenerClasesCalendario($conn, $id_miembro)
 {
+    // Obtener las especialidades del miembro
+    $especialidades = obtenerEspecialidadesMiembro($conn, $id_miembro);
+
+    // Si no hay especialidades, retornar un array vacío
+    if (empty($especialidades)) {
+        return [];
+    }
+
+    $especialidadesStr = implode(',', array_map('intval', $especialidades));
     $sql = "
         SELECT 
             c.id_clase,
@@ -271,28 +279,36 @@ function contarClasesInscritas($conn, $id_miembro)
     $stmt->close();
     return $total;
 }
-function contarClasesDisponibles($conn, $especialidades, $id_miembro)
+function contarClasesDisponibles($conn, $especialidades)
 {
-    $ids_especialidades = implode(',', array_map('intval', $especialidades));
+    // Si no hay especialidades, retornar 0 directamente
+    if (empty($especialidades)) {
+        return 0;
+    }
+    $especialidadesStr = implode(',', array_map('intval', $especialidades));
+
     $sql = "
         SELECT COUNT(*) AS total
         FROM clase c
-        WHERE c.id_especialidad IN ($ids_especialidades)
-        AND c.id_clase NOT IN (
-            SELECT id_clase FROM asistencia WHERE id_miembro = ?
-        )
+        WHERE c.id_especialidad IN ($especialidadesStr)
+          AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
     ";
+
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id_miembro);
     $stmt->execute();
     $result = $stmt->get_result();
     $total = $result->fetch_assoc()['total'];
     $stmt->close();
     return $total;
 }
+
 function obtenerClasesDisponiblesPaginadas($conn, $especialidades, $id_miembro, $limit, $offset)
 {
-    $especialidadesStr = implode(',', array_map('intval', $especialidades)); // Asegurar valores enteros
+    // Si no hay especialidades, retornar un array vacío
+    if (empty($especialidades)) {
+        return [];
+    }
+    $especialidadesStr = implode(',', array_map('intval', $especialidades));
 
     $sql = "
         SELECT 
@@ -303,21 +319,21 @@ function obtenerClasesDisponiblesPaginadas($conn, $especialidades, $id_miembro, 
             c.duracion,
             c.capacidad_maxima,
             e.nombre AS especialidad,
-            u.nombre AS monitor, -- Obtener el nombre del monitor desde la tabla usuario
+            u.nombre AS monitor,
             (SELECT COUNT(*) FROM asistencia a WHERE a.id_clase = c.id_clase) AS inscritos,
-            EXISTS (
-                SELECT 1 
-                FROM asistencia a 
-                WHERE a.id_clase = c.id_clase AND a.id_miembro = ?
-            ) AS inscrito,
             CASE
-                WHEN (SELECT COUNT(*) FROM asistencia a WHERE a.id_clase = c.id_clase) >= c.capacidad_maxima THEN 1
-                ELSE 0
-            END AS completa
+                WHEN EXISTS (
+                    SELECT 1 
+                    FROM asistencia a 
+                    WHERE a.id_clase = c.id_clase AND a.id_miembro = ?
+                ) THEN 'inscrito'
+                WHEN (SELECT COUNT(*) FROM asistencia a WHERE a.id_clase = c.id_clase) >= c.capacidad_maxima THEN 'completa'
+                ELSE 'disponible'
+            END AS estado
         FROM clase c
         INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
-        LEFT JOIN monitor m ON c.id_monitor = m.id_monitor -- Vincular monitores con las clases
-        LEFT JOIN usuario u ON m.id_usuario = u.id_usuario -- Obtener el nombre del monitor desde usuario
+        LEFT JOIN monitor m ON c.id_monitor = m.id_monitor
+        LEFT JOIN usuario u ON m.id_usuario = u.id_usuario
         WHERE c.id_especialidad IN ($especialidadesStr)
           AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
         ORDER BY c.fecha, c.horario
@@ -328,8 +344,8 @@ function obtenerClasesDisponiblesPaginadas($conn, $especialidades, $id_miembro, 
     $stmt->bind_param("iii", $id_miembro, $limit, $offset);
     $stmt->execute();
     $result = $stmt->get_result();
-    $clases = [];
 
+    $clases = [];
     while ($row = $result->fetch_assoc()) {
         $clases[] = $row;
     }
