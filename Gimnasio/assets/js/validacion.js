@@ -59,38 +59,26 @@ function mostrarMensajeError(mensaje) {
         mensajeError.remove();
     }, 5000);
 }
-// Función para mostrar y eliminar mensajes del servidor
+// Función para ocultar y eliminar mensajes después de 5 segundos
 function manejarMensajeServidor() {
     const mensaje = document.getElementById('mensaje-flotante');
     if (mensaje) {
-        // Elimina el mensaje después de 5 segundos
-        setTimeout(() => {
-            mensaje.style.transition = 'opacity 0.5s ease';
-            mensaje.style.opacity = '0';
-            setTimeout(() => mensaje.remove(), 500); // Remueve el elemento tras la transición
-        }, 5000);
-    }
-}
+        console.log("Mensaje encontrado:", mensaje.textContent); // Depuración
 
-// Ejecutar al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-    const mensaje = document.getElementById('mensaje-flotante');
-    if (mensaje) {
-        console.log("Mensaje encontrado:", mensaje.textContent); // Para verificar en la consola
         setTimeout(() => {
-            mensaje.style.transition = 'opacity 0.5s ease';
             mensaje.style.opacity = '0';
-            console.log("Ocultando mensaje..."); // Confirmación en consola
             setTimeout(() => {
-                mensaje.remove();
+                mensaje.style.display = 'none'; // Oculta el mensaje antes de removerlo
                 console.log("Mensaje eliminado."); // Confirmación en consola
             }, 500);
         }, 5000);
     } else {
         console.log("No se encontró el mensaje flotante.");
     }
-});
+}
 
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', manejarMensajeServidor);
 
 
 // Función para validar el formulario de actualización de usuario en la página de perfil

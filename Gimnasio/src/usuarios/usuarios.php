@@ -6,51 +6,60 @@ verificarAdmin();
 
 $conn = obtenerConexion();
 
-// Mostrar mensaje de sesión si existe
-if (isset($_SESSION['mensaje'])) {
-    $clase = obtenerClaseMensaje($_SESSION['mensaje']);
-    echo '<p class="' . $clase . '">' . htmlspecialchars($_SESSION['mensaje']) . '</p>';
-    unset($_SESSION['mensaje']);
+//  Mostrar mensaje si existe en la URL
+if (isset($_GET['mensaje'])) {
+    $clase = (isset($_GET['type']) && $_GET['type'] === 'error') ? 'mensaje-error' : 'mensaje-confirmacion';
 }
 
-// Procesar solicitudes POST
+//  Procesar solicitudes POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_usuario = intval($_POST['id_usuario']);
 
-    // Verificar si el usuario tiene permiso para realizar la acción
-    if ($id_usuario === 1) { // Proteger al superadmin
-        $_SESSION['mensaje'] = "No puedes modificar o eliminar al superadministrador.";
-        header('Location: usuarios.php');
+    //  Proteger al superadmin
+    if ($id_usuario === 1) {
+        header('Location: usuarios.php?mensaje=No puedes modificar o eliminar al superadministrador&type=error');
         exit();
     }
 
-    if ($id_usuario === $_SESSION['id_usuario']) { // Evitar acciones sobre sí mismo
-        $_SESSION['mensaje'] = "No puedes modificar o eliminar tu propia cuenta.";
-        header('Location: usuarios.php');
+    //  Evitar que un usuario se elimine/modifique a sí mismo
+    if ($id_usuario === $_SESSION['id_usuario']) {
+        header('Location: usuarios.php?mensaje=No puedes modificar o eliminar tu propia cuenta&type=error');
         exit();
     }
 
-    // Verificar si se intenta eliminar/editar a otro administrador
+    //  Verificar si el usuario existe
     $stmt = $conn->prepare("SELECT rol FROM usuario WHERE id_usuario = ?");
     $stmt->bind_param('i', $id_usuario);
     $stmt->execute();
     $usuario = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    if ($usuario['rol'] === 'admin' && $_SESSION['id_usuario'] !== 1) { // Proteger a otros admins
-        $_SESSION['mensaje'] = "No tienes permiso para modificar o eliminar a otro administrador.";
-        header('Location: usuarios.php');
+    if (!$usuario) {
+        header('Location: usuarios.php?mensaje=El usuario no existe&type=error');
         exit();
     }
 
-    // Realizar la acción correspondiente
-    if (isset($_POST['eliminar_usuario'])) {
-        eliminarUsuario($conn, $id_usuario);
-        $_SESSION['mensaje'] = "El usuario ha sido eliminado correctamente.";
+    //  Proteger a otros administradores (excepto si el superadmin está eliminando)
+    if ($usuario['rol'] === 'admin' && $_SESSION['id_usuario'] !== 1) {
+        header('Location: usuarios.php?mensaje=No tienes permiso para modificar o eliminar a otro administrador&type=error');
+        exit();
     }
-    header('Location: usuarios.php');
+
+    //  Acción de eliminación de usuario
+    if (isset($_POST['eliminar_usuario'])) {
+        if (eliminarUsuario($conn, $id_usuario)) {
+            header('Location: usuarios.php?mensaje=El usuario ha sido eliminado correctamente&type=confirmacion');
+        } else {
+            header('Location: usuarios.php?mensaje=Error al eliminar el usuario&type=error');
+        }
+        exit();
+    }
+
+    //  Si llega aquí sin acción, redirige con un mensaje de error
+    header('Location: usuarios.php?mensaje=Acción no válida&type=error');
     exit();
 }
+
 
 
 // Configuración de paginación
@@ -181,7 +190,12 @@ include '../admin/admin_header.php';
 <body>
     <main>
         <h2 class="section-title">Gestión de Usuarios</h2>
-
+        <?php if (isset($_GET['mensaje'])): ?>
+            <?php $clase = (isset($_GET['type']) && $_GET['type'] === 'error') ? 'mensaje-error' : 'mensaje-confirmacion'; ?>
+            <div id="mensaje-flotante" class="<?= $clase; ?>">
+                <?= htmlspecialchars($_GET['mensaje']); ?>
+            </div>
+        <?php endif; ?>
         <!-- Formulario de búsqueda -->
         <div class="form_container">
             <form method="GET" action="usuarios.php" class="search-form">
@@ -302,4 +316,6 @@ include '../admin/admin_header.php';
     <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/clases.js"></script>
 </body>
+
+
 </html>

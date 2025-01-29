@@ -114,23 +114,60 @@ function manejarAccionUsuario($conn, $pagina = "usuarios.php")
 
 function eliminarUsuario($conn, $id_usuario)
 {
-    if ($_SESSION['id_usuario'] !== 1 && $_SESSION['id_usuario'] !== $id_usuario) {
-        $_SESSION['mensaje'] = "No tienes permisos para eliminar este usuario.";
-        header('Location: usuarios.php');
+    session_start();
+
+    // Verificar que el usuario tiene sesión activa y rol definido
+    if (!isset($_SESSION['id_usuario'], $_SESSION['rol'])) {
+        header('Location: usuarios.php?mensaje=Acceso no autorizado&type=error');
         exit();
     }
 
+    // Proteger al superadmin de ser eliminado
     if ($id_usuario === 1) {
-        $_SESSION['mensaje'] = "No puedes eliminar al administrador general.";
-        header('Location: usuarios.php');
+        header('Location: usuarios.php?mensaje=No puedes eliminar al administrador general&type=error');
         exit();
     }
 
-    $stmt = $conn->prepare("DELETE FROM usuario WHERE id_usuario = ?");
+    // Permitir que solo los administradores eliminen usuarios
+    if ($_SESSION['rol'] !== 'admin') {
+        header('Location: usuarios.php?mensaje=No tienes permisos para eliminar este usuario&type=error');
+        exit();
+    }
+
+    // Comprobar si el usuario que se intenta eliminar existe
+    $stmt = $conn->prepare("SELECT id_usuario, rol FROM usuario WHERE id_usuario = ?");
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();
+    $resultado = $stmt->get_result();
+    $usuario = $resultado->fetch_assoc();
     $stmt->close();
+
+    if (!$usuario) {
+        header('Location: usuarios.php?mensaje=El usuario no existe&type=error');
+        exit();
+    }
+
+    // Si el usuario a eliminar es otro administrador, permitir solo al superadmin eliminarlo
+    if ($usuario['rol'] === 'admin' && $_SESSION['id_usuario'] !== 1) {
+        header('Location: usuarios.php?mensaje=Solo el superadministrador puede eliminar a otro administrador&type=error');
+        exit();
+    }
+
+    // Proceder con la eliminación
+    $stmt = $conn->prepare("DELETE FROM usuario WHERE id_usuario = ?");
+    $stmt->bind_param("i", $id_usuario);
+    if ($stmt->execute()) {
+        $stmt->close();
+        header('Location: usuarios.php?mensaje=El usuario ha sido eliminado correctamente&type=confirmacion');
+        exit();
+    } else {
+        $stmt->close();
+        header('Location: usuarios.php?mensaje=Error al eliminar el usuario&type=error');
+        exit();
+    }
 }
+
+
 
 function crearMiembro($conn, $id_usuario, $pagina = "usuarios.php")
 {
@@ -286,14 +323,41 @@ function actualizarDatosUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_telefo
 
 function modUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_email, $nuevo_telefono, $nuevo_rol, $nueva_contrasenya = null, $paginaRedireccion = "edit_usuario.php")
 {
-    // Validar el teléfono (debe tener exactamente 9 dígitos si no está vacío)
-    if (!empty($nuevo_telefono) && !preg_match('/^\d{9}$/', $nuevo_telefono)) {
-        redirigirConMensaje("El teléfono debe tener exactamente 9 dígitos", $paginaRedireccion . "&error");
+    // Verificar si la sesión está activa y si el usuario tiene permisos
+    session_start();
+    if (!isset($_SESSION['id_usuario'], $_SESSION['rol'])) {
+        redirigirConMensaje("Acceso no autorizado", "usuarios.php&type=error");
         exit();
     }
+
+    // Consultar el rol del usuario que se está modificando
+    $stmt = $conn->prepare("SELECT rol FROM usuario WHERE id_usuario = ?");
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+    $usuarioModificado = $resultado->fetch_assoc();
+    $stmt->close();
+
+    if (!$usuarioModificado) {
+        redirigirConMensaje("El usuario no existe", "usuarios.php&type=error");
+        exit();
+    }
+
+    // Si el usuario a modificar es un administrador, solo el superadmin (ID 1) puede modificarlo
+    if ($usuarioModificado['rol'] === 'admin' && $_SESSION['id_usuario'] !== 1) {
+        redirigirConMensaje("No tienes permisos para modificar a otro administrador", $paginaRedireccion . "&type=error");
+        exit();
+    }
+
+    // Validar el teléfono (debe tener exactamente 9 dígitos si no está vacío)
+    if (!empty($nuevo_telefono) && !preg_match('/^\d{9}$/', $nuevo_telefono)) {
+        redirigirConMensaje("El teléfono debe tener exactamente 9 dígitos", $paginaRedireccion . "&type=error");
+        exit();
+    }
+
     // Verificar si el administrador intenta cambiar su propio rol
     if ((int)$_SESSION['id_usuario'] === (int)$id_usuario && $nuevo_rol !== 'admin') {
-        redirigirConMensaje("No puedes cambiar tu propio rol.", $paginaRedireccion);
+        redirigirConMensaje("No puedes cambiar tu propio rol.", $paginaRedireccion . "&type=error");
         exit();
     }
 
@@ -353,12 +417,13 @@ function modUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_email, $nuevo_tele
         }
 
         // Redirigir con mensaje de éxito
-        redirigirConMensaje("Datos actualizados correctamente", $paginaRedireccion);
+        redirigirConMensaje("Datos actualizados correctamente", $paginaRedireccion . "&type=confirmacion");
     } else {
         // Redirigir con mensaje de error si la actualización falló
-        redirigirConMensaje("Error al actualizar los datos", $paginaRedireccion);
+        redirigirConMensaje("Error al actualizar los datos", $paginaRedireccion . "&type=error");
     }
 }
+
 
 function obtenerUsuarios($conn, $id_admin, $busqueda = '', $orden_columna = 'nombre', $orden_direccion = 'ASC')
 {

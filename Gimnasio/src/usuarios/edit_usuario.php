@@ -44,8 +44,9 @@ $conn->close();
 
         <!-- Mostrar mensaje de confirmación si existe -->
         <?php if (isset($_GET['mensaje'])): ?>
-            <div id="mensaje-flotante" class="mensaje-confirmacion">
-                <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
+            <?php $clase = (isset($_GET['type']) && $_GET['type'] === 'error') ? 'mensaje-error' : 'mensaje-confirmacion'; ?>
+            <div id="mensaje-flotante" class="<?= $clase; ?>">
+                <?= htmlspecialchars($_GET['mensaje']); ?>
             </div>
         <?php endif; ?>
 
