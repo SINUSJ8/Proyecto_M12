@@ -329,7 +329,8 @@ function modUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_email, $nuevo_tele
         redirigirConMensaje("Acceso no autorizado", "usuarios.php&type=error");
         exit();
     }
-
+    $id_sesion = $_SESSION['id_usuario'];
+    $rol_sesion = $_SESSION['rol'];
     // Consultar el rol del usuario que se está modificando
     $stmt = $conn->prepare("SELECT rol FROM usuario WHERE id_usuario = ?");
     $stmt->bind_param("i", $id_usuario);
@@ -343,11 +344,12 @@ function modUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_email, $nuevo_tele
         exit();
     }
 
-    // Si el usuario a modificar es un administrador, solo el superadmin (ID 1) puede modificarlo
-    if ($usuarioModificado['rol'] === 'admin' && $_SESSION['id_usuario'] !== 1) {
+    // Si el usuario a modificar es otro administrador y no es el superadmin, bloquear la edición
+    if ($usuarioModificado['rol'] === 'admin' && (int)$id_usuario !== (int)$id_sesion && (int)$id_sesion !== 1) {
         redirigirConMensaje("No tienes permisos para modificar a otro administrador", $paginaRedireccion . "&type=error");
         exit();
     }
+
 
     // Validar el teléfono (debe tener exactamente 9 dígitos si no está vacío)
     if (!empty($nuevo_telefono) && !preg_match('/^\d{9}$/', $nuevo_telefono)) {
