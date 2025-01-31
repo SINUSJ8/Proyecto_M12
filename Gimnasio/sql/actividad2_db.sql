@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS membresia (
     tipo VARCHAR(50) UNIQUE,
     precio DECIMAL(10, 2),
     duracion INT COMMENT 'Duración en meses',
-    beneficios TEXT
+    beneficios TEXT,
+    estado ENUM('disponible', 'descontinuada') DEFAULT 'disponible' COMMENT 'Si está en uso o retirada'
 );
 
 -- Tabla específica para miembros
@@ -116,9 +117,10 @@ CREATE TABLE IF NOT EXISTS pago (
     id_miembro INT,
     monto DECIMAL(10, 2),
     fecha_pago DATE,
-    metodo_pago ENUM('efectivo', 'tarjeta', 'transferencia','bizum','paypal') DEFAULT 'tarjeta',
+    metodo_pago ENUM('google_pay', 'tarjeta', 'transferencia','bizum','paypal') DEFAULT 'tarjeta',
     FOREIGN KEY (id_miembro) REFERENCES miembro(id_miembro) ON DELETE CASCADE
 );
+
 
 -- Tabla para notificaciones enviadas a los usuarios
 CREATE TABLE IF NOT EXISTS notificacion (

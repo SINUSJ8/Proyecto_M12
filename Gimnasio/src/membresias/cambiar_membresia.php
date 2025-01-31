@@ -97,7 +97,7 @@ while ($row = $result->fetch_assoc()) {
                             <label for="metodo_pago_<?php echo $id; ?>">Método de Pago:</label>
                             <select name="metodo_pago" id="metodo_pago_<?php echo $id; ?>" required>
                                 <option value="tarjeta">Tarjeta</option>
-                                <option value="efectivo">Efectivo</option>
+                                <option value="google_pay">Google pay</option>
                                 <option value="transferencia">Transferencia</option>
                                 <option value="paypal">PayPal</option>
                                 <option value="bizum">Bizum</option>

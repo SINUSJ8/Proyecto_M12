@@ -312,15 +312,20 @@ function obtenerClasesMasPopulares($conn, $limite)
     $stmt = $conn->prepare("SELECT clase.nombre, COUNT(asistencia.id_clase) as inscripciones FROM clase LEFT JOIN asistencia ON clase.id_clase = asistencia.id_clase GROUP BY clase.id_clase ORDER BY inscripciones DESC LIMIT ?");
     $stmt->bind_param("i", $limite);
     $stmt->execute();
-    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $resultado = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+    return !empty($resultado) ? $resultado : []; // Retorna un array vacío si no hay datos
 }
 
 function obtenerClaseMaxMiembros($conn)
 {
     $stmt = $conn->prepare("SELECT clase.nombre, COUNT(asistencia.id_clase) as miembros FROM clase LEFT JOIN asistencia ON clase.id_clase = asistencia.id_clase GROUP BY clase.id_clase ORDER BY miembros DESC LIMIT 1");
     $stmt->execute();
-    return $stmt->get_result()->fetch_assoc();
+    $resultado = $stmt->get_result()->fetch_assoc();
+
+    return !empty($resultado) ? $resultado : ["nombre" => "No hay clases registradas", "miembros" => 0]; // Retorna valores predeterminados
 }
+
 
 function obtenerIngresosTotales($conn)
 {

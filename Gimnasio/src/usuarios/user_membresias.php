@@ -106,7 +106,7 @@ $conn->close();
                             <label for="metodo_pago_<?php echo $id; ?>" title="Selecciona el método de pago">Método de Pago:</label>
                             <select name="metodo_pago" id="metodo_pago_<?php echo $id; ?>" required>
                                 <option value="tarjeta">Tarjeta</option>
-                                <option value="efectivo">Efectivo</option>
+                                <option value="google_pay">Google pay</option>
                                 <option value="transferencia">Transferencia</option>
                                 <option value="Paypal">Paypal</option>
                                 <option value="Bizum">Bizum</option>

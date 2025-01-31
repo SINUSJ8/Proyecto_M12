@@ -119,7 +119,7 @@ if (isset($_GET['mensaje'])) {
         <label for="metodo_pago">Método de Pago:</label>
         <select name="metodo_pago" id="metodo_pago">
             <option value="tarjeta" <?php echo $miembro['metodo_pago'] === 'tarjeta' ? 'selected' : ''; ?>>Tarjeta</option>
-            <option value="efectivo" <?php echo $miembro['metodo_pago'] === 'efectivo' ? 'selected' : ''; ?>>Efectivo</option>
+            <option value="google_pay" <?php echo $miembro['metodo_pago'] === 'google_pay' ? 'selected' : ''; ?>>Google pay</option>
             <option value="transferencia" <?php echo $miembro['metodo_pago'] === 'transferencia' ? 'selected' : ''; ?>>Transferencia</option>
             <option value="paypal" <?php echo $miembro['metodo_pago'] === 'paypal' ? 'selected' : ''; ?>>PayPal</option>
             <option value="bizum" <?php echo $miembro['metodo_pago'] === 'bizum' ? 'selected' : ''; ?>>Bizum</option>
