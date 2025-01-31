@@ -36,18 +36,31 @@ CREATE TABLE IF NOT EXISTS miembro (
     FOREIGN KEY (id_membresia) REFERENCES membresia(id_membresia) ON DELETE SET NULL
 );
 
+-- Tabla para el almacenamiento del método de pago
+CREATE TABLE IF NOT EXISTS metodo_pago_guardado (
+    id_metodo INT AUTO_INCREMENT PRIMARY KEY,
+    id_miembro INT NOT NULL,
+    metodo ENUM('google_pay', 'tarjeta', 'transferencia', 'bizum', 'paypal') DEFAULT 'tarjeta',
+    detalles_encriptados TEXT,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (id_miembro) REFERENCES miembro(id_miembro) ON DELETE CASCADE
+);
+
 -- Relación entre miembros y tipos de membresía (historial de membresías)
 CREATE TABLE IF NOT EXISTS miembro_membresia (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    id_miembro INT,
-    id_membresia INT,
-    monto_pagado DECIMAL(10, 2),
-    fecha_inicio DATE,
-    fecha_fin DATE,
+    id_miembro INT NOT NULL,
+    id_membresia INT NOT NULL,
+    monto_pagado DECIMAL(10, 2) NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
     estado ENUM('activa', 'expirada') DEFAULT 'activa',
+    id_metodo_pago INT NULL,
     renovacion_automatica BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (id_miembro) REFERENCES miembro(id_miembro) ON DELETE CASCADE,
-    FOREIGN KEY (id_membresia) REFERENCES membresia(id_membresia) ON DELETE CASCADE
+    FOREIGN KEY (id_membresia) REFERENCES membresia(id_membresia) ON DELETE CASCADE,
+    FOREIGN KEY (id_metodo_pago) REFERENCES metodo_pago_guardado(id_metodo) ON DELETE SET NULL
 );
 
 -- Tabla específica para monitores
@@ -147,7 +160,6 @@ CREATE TABLE membresia_entrenamiento (
     FOREIGN KEY (id_membresia) REFERENCES membresia(id_membresia) ON DELETE CASCADE,
     FOREIGN KEY (id_entrenamiento) REFERENCES especialidad(id_especialidad) ON DELETE CASCADE
 );
-
 
 -- Insertar especialidades de ejemplo
 INSERT INTO especialidad (nombre) VALUES ('Yoga'), ('Pilates'), ('Cardio'), ('Pesas'), ('Entrenamiento Funcional');

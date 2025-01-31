@@ -2,11 +2,13 @@
 $title = "Información de Membresía";
 include '../miembros/miembro_header.php';
 require_once '../miembros/member_functions.php';
+require_once '../Includes/general.php';
 
+$conn = obtenerConexion();
 $nombre = $_SESSION['nombre'];
 $id_usuario = $_SESSION['id_usuario'];
 
-// Llama a la función para obtener la información del miembro
+// Obtener información del miembro
 $miembro = informacionMembresia($id_usuario);
 
 if (!$miembro) {
@@ -14,36 +16,58 @@ if (!$miembro) {
     exit;
 }
 
-// Mensaje de confirmación
+// Inicializar mensaje
 $mensaje = "";
+
+// Procesar formulario si se envió
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $renovacion = isset($_POST['renovacion_automatica']) ? (int)$_POST['renovacion_automatica'] : null;
     $metodo_pago = $_POST['metodo_pago'] ?? null;
 
-    $resultado = actualizarPreferenciasMembresia($id_usuario, $renovacion, $metodo_pago);
+    require_once '../miembros/member_functions.php';
 
-    if ($resultado === "Preferencias actualizadas exitosamente.") {
-        header("Location: mi_membresia.php?mensaje=" . urlencode($resultado));
+    // Verificar si el usuario tiene membresía activa antes de actualizar la renovación automática
+    $mensajes = [];
+
+    if (!is_null($renovacion)) {
+        $resultadoRenovacion = actualizarPreferenciasMembresia($id_usuario, $renovacion);
+        if ($resultadoRenovacion) {
+            $mensajes[] = $resultadoRenovacion;
+        }
+    }
+
+    // Actualizar método de pago si se ha enviado
+    if (!empty($metodo_pago)) {
+        $resultadoPago = actualizarMetodoPagoGuardado($id_usuario, $metodo_pago);
+        if ($resultadoPago) {
+            $mensajes[] = $resultadoPago;
+        }
+    }
+
+    // Si hay mensajes, redirigir con la notificación
+    if (!empty($mensajes)) {
+        $mensaje = implode(" | ", $mensajes);
+        header("Location: mi_membresia.php?mensaje=" . urlencode($mensaje));
         exit();
-    } else {
-        $mensaje = $resultado; // Mostrar mensaje de error directamente
     }
 }
-
 
 // Mostrar mensaje si está presente en la URL
 if (isset($_GET['mensaje'])) {
     $mensaje = htmlspecialchars($_GET['mensaje']);
 }
-
 ?>
+
+
 
 <main class="form_container">
     <h1 class="section-title">Información de Membresía</h1>
     <h2>Bienvenido, <?php echo htmlspecialchars($nombre); ?>!</h2>
 
-    <?php if ($mensaje): ?>
-        <p class="mensaje-confirmacion"><?php echo htmlspecialchars($mensaje); ?></p>
+    <?php if (!empty($mensaje)): ?>
+        <p class="<?php echo (strpos($mensaje, 'Error') !== false) ? 'mensaje-error' : 'mensaje-confirmacion'; ?>">
+            <?php echo htmlspecialchars($mensaje); ?>
+        </p>
     <?php endif; ?>
 
     <h3>Detalles de tu Membresía</h3>
@@ -118,15 +142,18 @@ if (isset($_GET['mensaje'])) {
 
         <label for="metodo_pago">Método de Pago:</label>
         <select name="metodo_pago" id="metodo_pago">
-            <option value="tarjeta" <?php echo $miembro['metodo_pago'] === 'tarjeta' ? 'selected' : ''; ?>>Tarjeta</option>
-            <option value="google_pay" <?php echo $miembro['metodo_pago'] === 'google_pay' ? 'selected' : ''; ?>>Google pay</option>
-            <option value="transferencia" <?php echo $miembro['metodo_pago'] === 'transferencia' ? 'selected' : ''; ?>>Transferencia</option>
-            <option value="paypal" <?php echo $miembro['metodo_pago'] === 'paypal' ? 'selected' : ''; ?>>PayPal</option>
-            <option value="bizum" <?php echo $miembro['metodo_pago'] === 'bizum' ? 'selected' : ''; ?>>Bizum</option>
+            <option value="" selected>No cambiar</option> <!-- Opción predeterminada -->
+            <option value="tarjeta" <?php echo ($miembro['metodo_pago'] === 'tarjeta') ? '' : ''; ?>>Tarjeta</option>
+            <option value="google_pay" <?php echo ($miembro['metodo_pago'] === 'google_pay') ? '' : ''; ?>>Google Pay</option>
+            <option value="transferencia" <?php echo ($miembro['metodo_pago'] === 'transferencia') ? '' : ''; ?>>Transferencia</option>
+            <option value="paypal" <?php echo ($miembro['metodo_pago'] === 'paypal') ? '' : ''; ?>>PayPal</option>
+            <option value="bizum" <?php echo ($miembro['metodo_pago'] === 'bizum') ? '' : ''; ?>>Bizum</option>
         </select>
+
 
         <button type="submit" class="btn-general">Guardar Cambios</button>
     </form>
+
     <div class="button-container">
         <a href="cambiar_membresia.php" class="btn-general">Cambiar Membresía</a>
     </div>

@@ -689,7 +689,7 @@ function marcarNotificacionesComoLeidas($conn, $id_usuario)
     $stmt->execute();
     $stmt->close();
 }
-function actualizarPreferenciasMembresia($id_usuario, $renovacion_automatica, $metodo_pago)
+function actualizarPreferenciasMembresia($id_usuario, $renovacion_automatica)
 {
     $conn = obtenerConexion();
 
@@ -721,48 +721,62 @@ function actualizarPreferenciasMembresia($id_usuario, $renovacion_automatica, $m
         return "No hay una membresía activa.";
     }
 
-    $success = true;
-
-    // Actualizar la renovación automática
-    if ($renovacion_automatica !== null) {
+    // Actualizar solo la renovación automática
+    if (!is_null($renovacion_automatica)) {
         $query_renovacion = "UPDATE miembro_membresia SET renovacion_automatica = ? WHERE id = ?";
         $stmt_renovacion = $conn->prepare($query_renovacion);
         $stmt_renovacion->bind_param("ii", $renovacion_automatica, $id_membresia_activa);
-        $success = $stmt_renovacion->execute() && $success;
+        $success = $stmt_renovacion->execute();
         $stmt_renovacion->close();
-    }
-
-    // Actualizar el método de pago más reciente
-    if ($metodo_pago !== null) {
-        $query_pago_existente = "
-            SELECT id_pago 
-            FROM pago 
-            WHERE id_miembro = ? 
-            ORDER BY fecha_pago DESC 
-            LIMIT 1
-        ";
-        $stmt_pago_existente = $conn->prepare($query_pago_existente);
-        $stmt_pago_existente->bind_param("i", $id_miembro);
-        $stmt_pago_existente->execute();
-        $result_pago_existente = $stmt_pago_existente->get_result();
-        $pago_existente = $result_pago_existente->fetch_assoc();
-        $stmt_pago_existente->close();
-
-        if ($pago_existente) {
-            $query_actualizar_pago = "UPDATE pago SET metodo_pago = ? WHERE id_pago = ?";
-            $stmt_actualizar_pago = $conn->prepare($query_actualizar_pago);
-            $stmt_actualizar_pago->bind_param("si", $metodo_pago, $pago_existente['id_pago']);
-            $success = $stmt_actualizar_pago->execute() && $success;
-            $stmt_actualizar_pago->close();
-        } else {
-            $query_insertar_pago = "INSERT INTO pago (id_miembro, monto, fecha_pago, metodo_pago) VALUES (?, 0, NOW(), ?)";
-            $stmt_insertar_pago = $conn->prepare($query_insertar_pago);
-            $stmt_insertar_pago->bind_param("is", $id_miembro, $metodo_pago);
-            $success = $stmt_insertar_pago->execute() && $success;
-            $stmt_insertar_pago->close();
-        }
+    } else {
+        $success = false;
     }
 
     $conn->close();
-    return $success ? "Preferencias actualizadas exitosamente." : "Error al actualizar las preferencias.";
+    return $success ? "Renovación automática actualizada correctamente." : "Error al actualizar la renovación automática.";
+}
+
+function actualizarMetodoPagoGuardado($id_usuario, $metodo_pago)
+{
+    $conn = obtenerConexion();
+
+    // Verificar si el usuario tiene un miembro asociado
+    $stmt_miembro = $conn->prepare("SELECT id_miembro FROM miembro WHERE id_usuario = ?");
+    $stmt_miembro->bind_param("i", $id_usuario);
+    $stmt_miembro->execute();
+    $result_miembro = $stmt_miembro->get_result();
+    $miembro = $result_miembro->fetch_assoc();
+    $stmt_miembro->close();
+
+    if (!$miembro) {
+        return "Error: No se encontró un miembro asociado a este usuario.";
+    }
+
+    $id_miembro = $miembro['id_miembro'];
+
+    // Verificar si ya existe un método de pago guardado
+    $stmt_check = $conn->prepare("SELECT id_metodo FROM metodo_pago_guardado WHERE id_miembro = ?");
+    $stmt_check->bind_param("i", $id_miembro);
+    $stmt_check->execute();
+    $result_check = $stmt_check->get_result();
+    $existe = $result_check->fetch_assoc();
+    $stmt_check->close();
+
+    if ($existe) {
+        // Si ya existe, actualizar el método de pago
+        $stmt = $conn->prepare("UPDATE metodo_pago_guardado SET metodo = ?, fecha_registro = NOW() WHERE id_miembro = ?");
+        $stmt->bind_param("si", $metodo_pago, $id_miembro);
+    } else {
+        // Si no existe, insertar un nuevo método de pago
+        $stmt = $conn->prepare("INSERT INTO metodo_pago_guardado (id_miembro, metodo) VALUES (?, ?)");
+        $stmt->bind_param("is", $id_miembro, $metodo_pago);
+    }
+
+    if ($stmt->execute()) {
+        $stmt->close();
+        return "Método de pago actualizado correctamente.";
+    } else {
+        $stmt->close();
+        return "Error al actualizar el método de pago.";
+    }
 }
