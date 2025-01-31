@@ -385,7 +385,7 @@ function informacionMembresia($id_usuario)
 {
     $conexion = obtenerConexion();
 
-    // Consulta principal para obtener datos del miembro y membresía activa
+    // Consulta para obtener la información del miembro y su último pago
     $sql = "
         SELECT 
             u.nombre AS nombre_usuario,
@@ -400,15 +400,17 @@ function informacionMembresia($id_usuario)
             (
                 SELECT p.metodo_pago 
                 FROM pago p 
-                WHERE p.id_miembro = m.id_miembro 
-                ORDER BY p.fecha_pago DESC 
+                INNER JOIN miembro mi ON p.id_miembro = mi.id_miembro
+                WHERE mi.id_usuario = u.id_usuario
+                ORDER BY p.fecha_pago DESC, p.id_pago DESC
                 LIMIT 1
             ) AS metodo_pago,
             (
                 SELECT p.fecha_pago 
                 FROM pago p 
-                WHERE p.id_miembro = m.id_miembro 
-                ORDER BY p.fecha_pago DESC 
+                INNER JOIN miembro mi ON p.id_miembro = mi.id_miembro
+                WHERE mi.id_usuario = u.id_usuario
+                ORDER BY p.fecha_pago DESC, p.id_pago DESC
                 LIMIT 1
             ) AS fecha_pago
         FROM usuario u
@@ -453,6 +455,7 @@ function informacionMembresia($id_usuario)
 
     return $datosMiembro;
 }
+
 function obtenerTotalMiembros($conn, $busqueda = '')
 {
     $sql = "SELECT COUNT(*) AS total 

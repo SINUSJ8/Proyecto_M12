@@ -48,34 +48,51 @@ include '../admin/admin_header.php';
 </head>
 
 <body>
-    <h2 class="section-title">Administración de Especialidades</h2>
-    <main class="form_container">
+    <main>
+        <h2 class="section-title">Administración de Especialidades</h2>
+
         <?php if (!empty($mensaje)): ?>
             <div class="<?php echo strpos($mensaje, 'Error') === false ? 'mensaje-confirmacion' : 'mensaje-error'; ?>">
                 <?php echo htmlspecialchars($mensaje); ?>
             </div>
         <?php endif; ?>
-        <form method="POST" action="especialidades.php">
+
+        <form method="POST" action="especialidades.php" class="form-container">
             <h3>Añadir Nueva Especialidad</h3>
             <label for="nueva_especialidad">Nombre de la Especialidad:</label>
             <input type="text" id="nueva_especialidad" name="nueva_especialidad" class="input-general" required>
             <button type="submit" class="btn-general">Añadir Especialidad</button>
         </form>
+
         <h3>Especialidades Disponibles</h3>
-        <ul class="especialidades-lista">
+        <div class="especialidades-container">
             <?php foreach ($especialidades as $especialidad): ?>
-                <li class="especialidad-item">
+                <div class="especialidad-card">
                     <form method="POST" action="especialidades.php" class="especialidad-form">
                         <input type="hidden" name="id_especialidad" value="<?php echo $especialidad['id_especialidad']; ?>">
                         <input type="text" name="nombre_especialidad" value="<?php echo htmlspecialchars($especialidad['nombre']); ?>" class="input-general" required>
-                        <button type="submit" name="editar_especialidad" class="btn-general edit-button">Editar</button>
-                        <button type="submit" name="eliminar_especialidad" class="delete-button" onclick="return confirm('¿Estás seguro de que deseas eliminar esta especialidad?')">Eliminar</button>
+                        <div class="button-group">
+                            <button type="submit" name="editar_especialidad" class="btn-general edit-button">Editar</button>
+                            <button type="submit" name="eliminar_especialidad" class="delete-button" onclick="return confirm('¿Estás seguro de que deseas eliminar esta especialidad?')">Eliminar</button>
+                        </div>
                     </form>
-                </li>
+                </div>
             <?php endforeach; ?>
-        </ul>
+        </div>
     </main>
     <?php include '../includes/footer.php'; ?>
+    <script>
+        // Esperar 5 segundos y ocultar el mensaje
+        setTimeout(function() {
+            let mensaje = document.querySelector('.mensaje-confirmacion, .mensaje-error');
+            if (mensaje) {
+                mensaje.style.transition = "opacity 0.5s ease-out";
+                mensaje.style.opacity = "0";
+                setTimeout(() => mensaje.remove(), 500); // Eliminar el mensaje después de la animación
+            }
+        }, 5000);
+    </script>
+
 </body>
 
 </html>

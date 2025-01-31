@@ -70,7 +70,7 @@ include '../admin/admin_header.php';
 <html lang="es">
 
 <body>
-    <main class="form_container form_container_large">
+    <main>
 
 
 

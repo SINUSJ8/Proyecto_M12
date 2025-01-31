@@ -177,12 +177,15 @@ function obtenerClasesCalendario($conn, $id_miembro)
     // Obtener las especialidades del miembro
     $especialidades = obtenerEspecialidadesMiembro($conn, $id_miembro);
 
-    // Si no hay especialidades, retornar un array vacío
+    // Si no tiene especialidades, retornar un array vacío
     if (empty($especialidades)) {
         return [];
     }
 
+    // Convertir las especialidades en una lista de valores para la consulta SQL
     $especialidadesStr = implode(',', array_map('intval', $especialidades));
+
+    // Consulta para obtener solo las clases de las especialidades del miembro
     $sql = "
         SELECT 
             c.id_clase,
@@ -203,7 +206,8 @@ function obtenerClasesCalendario($conn, $id_miembro)
         INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
         LEFT JOIN monitor m ON c.id_monitor = m.id_monitor
         LEFT JOIN usuario u ON m.id_usuario = u.id_usuario
-        WHERE c.fecha >= CURRENT_DATE()
+        WHERE c.id_especialidad IN ($especialidadesStr) -- Aquí se filtran las especialidades del miembro
+          AND c.fecha >= CURRENT_DATE()
         ORDER BY c.fecha, c.horario
     ";
 
@@ -220,6 +224,7 @@ function obtenerClasesCalendario($conn, $id_miembro)
     $stmt->close();
     return $clases;
 }
+
 /*
 function obtenerClasesInscritas($conn, $id_miembro)
 {
