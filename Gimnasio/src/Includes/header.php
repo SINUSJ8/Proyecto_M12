@@ -25,6 +25,7 @@
             <a class="logout" href="<?php echo BASE_URL; ?>src/auth/log.php">
                 <img class="logo" src="<?php echo BASE_URL; ?>assets/imgs/icono.png" alt="FitBay">
             </a>
+            <a href="<?php echo BASE_URL; ?>src/auth/reg.php">Registrarse</a>
         </nav>
     </header>
 </body>

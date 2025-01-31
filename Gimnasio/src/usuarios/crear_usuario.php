@@ -9,12 +9,10 @@ $conn = obtenerConexion();
 $title = "Crear Usuario";
 include '../admin/admin_header.php';
 
-// Inicializar mensajes
-$mensaje = null;
-$tipo_mensaje = null;
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
     // Capturar los datos del formulario
+    $_SESSION['form_data'] = $_POST; // Guardar los datos en la sesión
+
     $nombre = $_POST['nombre'];
     $email = $_POST['email'];
     $contrasenya = $_POST['contrasenya'];
@@ -23,39 +21,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
 
     // Validaciones en el servidor
     if (!preg_match('/[a-zA-Z]/', $nombre)) {
-        $mensaje = "Por favor, ingresa un nombre válido con al menos una letra.";
-        $tipo_mensaje = "error";
+        $_SESSION['error'] = "Por favor, ingresa un nombre válido con al menos una letra.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $mensaje = "Por favor, ingresa un correo electrónico válido.";
-        $tipo_mensaje = "error";
+        $_SESSION['error'] = "Por favor, ingresa un correo electrónico válido.";
     } elseif ($contrasenya !== $confirmar_contrasenya) {
-        $mensaje = "Las contraseñas no coinciden.";
-        $tipo_mensaje = "error";
+        $_SESSION['error'] = "Las contraseñas no coinciden.";
     } elseif (strlen($contrasenya) < 6) {
-        $mensaje = "La contraseña debe tener al menos 6 caracteres.";
-        $tipo_mensaje = "error";
+        $_SESSION['error'] = "La contraseña debe tener al menos 6 caracteres.";
     } else {
         // Llamar a la función para crear el usuario
         try {
             crearFormUsuario($conn, $nombre, $email, $contrasenya, $confirmar_contrasenya, 'usuario');
-            $mensaje = "Usuario creado exitosamente.";
-            $tipo_mensaje = "success";
+            $_SESSION['mensaje'] = "Usuario creado exitosamente.";
+            unset($_SESSION['form_data']); // Limpiar los datos del formulario si fue exitoso
         } catch (Exception $e) {
-            $mensaje = "Error al crear el usuario: " . $e->getMessage();
-            $tipo_mensaje = "error";
+            $_SESSION['error'] = "Error al crear el usuario: " . $e->getMessage();
         }
     }
+
+    // Redirigir para evitar que el formulario se reenvíe al recargar la página
+    header("Location: crear_usuario.php");
+    exit();
 }
+
+
 
 ?>
 
 <body>
     <main>
-        <!-- Mostrar mensaje de error o éxito -->
-        <?php if ($mensaje): ?>
-            <div id="mensaje-flotante" class="<?php echo $tipo_mensaje === 'error' ? 'mensaje-error' : 'mensaje-confirmacion'; ?>">
-                <?php echo htmlspecialchars($mensaje); ?>
+        <!-- Mostrar mensaje de confirmación -->
+        <?php if (isset($_SESSION['mensaje_confirmacion'])): ?>
+            <div id="mensaje-flotante" class="mensaje-confirmacion">
+                <p><?php echo htmlspecialchars($_SESSION['mensaje_confirmacion']); ?></p>
             </div>
+            <?php unset($_SESSION['mensaje_confirmacion'], $_SESSION['form_data']); // Borrar todos los datos al éxito 
+            ?>
+        <?php endif; ?>
+
+        <!-- Mostrar mensaje de error -->
+        <?php if (isset($_SESSION['mensaje_error'])): ?>
+            <div id="mensaje-flotante" class="mensaje-error">
+                <p><?php echo htmlspecialchars($_SESSION['mensaje_error']); ?></p>
+            </div>
+            <?php unset($_SESSION['mensaje_error']); ?>
         <?php endif; ?>
 
         <!-- Formulario para crear un nuevo usuario -->
@@ -63,10 +72,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
             <h3 class="section-title">Agregar Usuario Manualmente</h3>
             <form action="crear_usuario.php" method="POST" class="form_general" onsubmit="return validarFormulario()">
                 <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" class="input-general" required value="<?php echo isset($nombre) ? htmlspecialchars($nombre) : ''; ?>">
+                <input type="text" id="nombre" name="nombre" class="input-general" required
+                    value="<?php echo isset($_SESSION['form_data']['nombre']) ? htmlspecialchars($_SESSION['form_data']['nombre']) : ''; ?>">
 
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" class="input-general" required value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
+                <input type="email" id="email" name="email" class="input-general" required
+                    value="<?php echo isset($_SESSION['form_data']['email']) ? htmlspecialchars($_SESSION['form_data']['email']) : ''; ?>">
 
                 <label for="contrasenya">Contraseña:</label>
                 <input type="password" id="contrasenya" name="contrasenya" class="input-general" required>
@@ -86,7 +97,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
     <script>
         manejarMensajeServidor();
     </script>
+
     <?php include '../includes/footer.php'; ?>
 </body>
+
+
 
 </html>

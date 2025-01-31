@@ -42,24 +42,24 @@ function redirigirConMensaje($mensaje, $pagina)
 
 function verificarAdmin()
 {
-    // Verificar que el usuario esté autenticado y tenga rol de administrador
     if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
-        header("Location: index.php?error=No+tienes+permisos+de+administrador");
+        $_SESSION['error'] = "No tienes permisos de administrador.";
+        header("Location: index.php");
         exit();
     }
 
-    // Mostrar mensaje de error si existe
+    // No imprimir los mensajes, solo guardarlos para mostrarlos en el body
     if (isset($_SESSION['error'])) {
-        echo "<p class='mensaje-error'>{$_SESSION['error']}</p>";
+        $_SESSION['mensaje_error'] = $_SESSION['error'];
         unset($_SESSION['error']);
     }
 
-    // Mostrar mensaje de confirmación si existe
     if (isset($_SESSION['mensaje'])) {
-        echo "<p class='mensaje-confirmacion'>{$_SESSION['mensaje']}</p>";
+        $_SESSION['mensaje_confirmacion'] = $_SESSION['mensaje'];
         unset($_SESSION['mensaje']);
     }
 }
+
 
 function iniciarSesionUsuario($email, $contrasenya)
 {

@@ -93,7 +93,6 @@ $conn->close();
 
         <div class="button-container">
             <button type="submit" class="btn-general">Actualizar Datos</button>
-            <button type="button" class="btn-general" onclick="window.location.href='../../index.php'">Volver</button>
         </div>
     </form>
 </main>

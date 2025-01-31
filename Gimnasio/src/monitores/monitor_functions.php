@@ -70,19 +70,28 @@ function eliminarMonitor($conn, $id_usuario)
         $stmt->execute();
         $stmt->close();
 
-        // También eliminar el registro de usuario si se desea eliminar completamente
+        // Eliminar el registro de usuario
         $stmt = $conn->prepare("DELETE FROM usuario WHERE id_usuario = ?");
         $stmt->bind_param("i", $id_usuario);
         $stmt->execute();
         $stmt->close();
 
         $conn->commit();
-        return ["success" => true, "message" => "Monitor eliminado correctamente."];
+
+        // Guardar mensaje de éxito en la sesión
+        $_SESSION['mensaje'] = "Monitor eliminado correctamente.";
     } catch (Exception $e) {
         $conn->rollback();
-        return ["success" => false, "message" => "Error al eliminar el monitor: " . $e->getMessage()];
+
+        // Guardar mensaje de error en la sesión
+        $_SESSION['error'] = "Error al eliminar el monitor: " . $e->getMessage();
     }
+
+    // Redirigir después de establecer el mensaje
+    header("Location: monitores.php");
+    exit();
 }
+
 
 function obtenerMonitorPorID($conn, $id_usuario)
 {

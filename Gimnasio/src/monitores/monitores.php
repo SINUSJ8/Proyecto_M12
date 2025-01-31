@@ -41,11 +41,22 @@ include '../admin/admin_header.php';
         <h2 class="section-title">Gestión de Monitores</h2>
 
         <!-- Mostrar mensaje de confirmación si existe -->
-        <?php if (isset($_GET['mensaje'])): ?>
-            <div class="mensaje-confirmacion">
-                <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
+        <?php if (isset($_SESSION['mensaje_confirmacion'])): ?>
+            <div id="mensaje-flotante" class="mensaje-confirmacion">
+                <p><?php echo htmlspecialchars($_SESSION['mensaje_confirmacion']); ?></p>
             </div>
+            <?php unset($_SESSION['mensaje_confirmacion'], $_SESSION['form_data']); // Borrar todos los datos al éxito 
+            ?>
         <?php endif; ?>
+
+        <!-- Mostrar mensaje de error -->
+        <?php if (isset($_SESSION['mensaje_error'])): ?>
+            <div id="mensaje-flotante" class="mensaje-error">
+                <p><?php echo htmlspecialchars($_SESSION['mensaje_error']); ?></p>
+            </div>
+            <?php unset($_SESSION['mensaje_error']); ?>
+        <?php endif; ?>
+
 
         <!-- Formulario de búsqueda -->
         <div class="form_container_monitor">
@@ -79,43 +90,43 @@ include '../admin/admin_header.php';
                 <div class="form-group button-container">
                     <button type="submit" class="btn-general">Buscar</button>
                     <a href="monitores.php" class="btn-general limpiar-busqueda">Limpiar</a>
-                    </div>
+                </div>
             </form>
         </div>
 
 
 
         <!-- Tabla con lista de monitores y acciones -->
-            <table id="tabla-monitores" class="styled-table">
-                <thead>
+        <table id="tabla-monitores" class="styled-table">
+            <thead>
+                <tr>
+                    <th onclick="ordenarTablaM(0, 'tabla-monitores')" class="sortable">Nombre</th>
+                    <th onclick="ordenarTablaM(1, 'tabla-monitores')" class="sortable">Email</th>
+                    <th onclick="ordenarTablaM(2, 'tabla-monitores')" class="sortable">Especialidades</th>
+                    <th onclick="ordenarTablaM(3, 'tabla-monitores')" class="sortable">Experiencia</th>
+                    <th onclick="ordenarTablaM(4, 'tabla-monitores')" class="sortable">Disponibilidad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($monitores as $monitor): ?>
                     <tr>
-                        <th onclick="ordenarTablaM(0, 'tabla-monitores')" class="sortable">Nombre</th>
-                        <th onclick="ordenarTablaM(1, 'tabla-monitores')" class="sortable">Email</th>
-                        <th onclick="ordenarTablaM(2, 'tabla-monitores')" class="sortable">Especialidades</th>
-                        <th onclick="ordenarTablaM(3, 'tabla-monitores')" class="sortable">Experiencia</th>
-                        <th onclick="ordenarTablaM(4, 'tabla-monitores')" class="sortable">Disponibilidad</th>
-                        <th>Acciones</th>
+                        <td><?php echo htmlspecialchars($monitor['nombre']); ?></td>
+                        <td><?php echo htmlspecialchars($monitor['email']); ?></td>
+                        <td><?php echo htmlspecialchars($monitor['especialidades']); ?></td>
+                        <td><?php echo htmlspecialchars($monitor['experiencia']); ?> años</td>
+                        <td><?php echo htmlspecialchars($monitor['disponibilidad']); ?></td>
+                        <td class="acciones">
+                            <form method="POST" action="monitores.php" onsubmit="return confirmarEliminacion();" style="margin-bottom: 5px;">
+                                <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($monitor['id_usuario']); ?>">
+                                <button type="submit" class="delete-button" name="eliminar_usuario">Eliminar</button>
+                            </form>
+                            <a href="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($monitor['id_usuario']); ?>" class="btn-general edit-button">Editar</a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($monitores as $monitor): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($monitor['nombre']); ?></td>
-                            <td><?php echo htmlspecialchars($monitor['email']); ?></td>
-                            <td><?php echo htmlspecialchars($monitor['especialidades']); ?></td>
-                            <td><?php echo htmlspecialchars($monitor['experiencia']); ?> años</td>
-                            <td><?php echo htmlspecialchars($monitor['disponibilidad']); ?></td>
-                            <td class="acciones">
-                                <form method="POST" action="monitores.php" onsubmit="return confirmarEliminacion();" style="margin-bottom: 5px;">
-                                    <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($monitor['id_usuario']); ?>">
-                                    <button type="submit" class="delete-button" name="eliminar_usuario">Eliminar</button>
-                                </form>
-                                <a href="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($monitor['id_usuario']); ?>" class="btn-general edit-button">Editar</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </main>
     <?php
     include '../includes/footer.php';

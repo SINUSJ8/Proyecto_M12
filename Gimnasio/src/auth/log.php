@@ -21,16 +21,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
     <main>
-        <!-- Mensajes de confirmación y error -->
-        <?php if (isset($_GET['mensaje'])): ?>
-            <div class="mensaje-confirmacion">
-                <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
+        <!-- Mostrar mensaje de confirmación o error almacenado en la sesión -->
+        <?php if (isset($_SESSION['mensaje'])): ?>
+            <div id="mensaje-flotante" class="mensaje-confirmacion">
+                <p><?php echo htmlspecialchars($_SESSION['mensaje']); ?></p>
+                <a href="log.php" class="btn-general">Iniciar Sesión</a>
             </div>
+            <?php unset($_SESSION['mensaje']); ?>
         <?php endif; ?>
 
-        <?php if (isset($_GET['error']) || isset($_SESSION['error'])): ?>
-            <div class="mensaje-error">
-                <p><?php echo isset($_GET['error']) ? htmlspecialchars($_GET['error']) : htmlspecialchars($_SESSION['error']); ?></p>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div id="mensaje-flotante" class="mensaje-error">
+                <p><?php echo htmlspecialchars($_SESSION['error']); ?></p>
             </div>
             <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
