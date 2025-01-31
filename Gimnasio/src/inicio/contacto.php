@@ -7,14 +7,42 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
     include_once __DIR__ . '/../miembros/miembro_header.php';
 } else {
     include_once __DIR__ . '/../includes/header.php';
+
 }
+
+// Procesar el formulario al enviarlo
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = $_POST['nombre'];
+    $email = $_POST['email'];
+    $telefono = $_POST['telefono'];
+    $descripcion = $_POST['descripcion'];
+
+    // pendiente enlace notificaciones
+
+    // Redirigir con mensaje de éxito
+    header("Location: contacto.php?success=Mensaje+enviado+correctamente");
+    exit();
+}
+
+
+
+//Definir la función al enviar formulario
+function enviarFormulario ($paginaRedireccionFormulario = "contacto.php")
+    {
+        redirigirConMensaje("Datos actualizados correctamente", $paginaRedireccionFormulario);
+    }
 ?>
 
 <main class="form_container">
     <h1 class="section-title">Formulario de contacto</h1>
     <p class="intro-text">Envíanos tu consulta y te responderemos lo antes posible.</p>
 
-    <form action="formulario.php" method="POST" onsubmit="return validarFormulario()">
+    <!-- Mostrar mensaje de éxito -->
+    <?php if (isset($_GET['success'])): ?>
+        <p class="mensaje-confirmacion"><?php echo htmlspecialchars($_GET['success']); ?></p>
+    <?php endif; ?>
+
+    <form action="contacto.php" method="POST" onsubmit="return enviarFormulario();">
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" required>
 
@@ -33,11 +61,14 @@ if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'miembro') {
 
         <button type="submit" class="btn-general">Enviar</button>
     </form>
+    
 
     <!-- Botón Volver -->
     <div class="button-container">
         <a href="<?php echo BASE_URL; ?>index.php" class="button">Volver al inicio</a>
     </div>
+    <script src="../assets/js/validacion.js"></script>
 </main>
 
-<?php include_once __DIR__ . '/../includes/footer.php'; ?>
+<?php include_once __DIR__ . '/../includes/footer.php'; 
+?>
