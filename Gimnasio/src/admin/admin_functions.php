@@ -133,10 +133,11 @@ function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entren
 
 
 
-function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $beneficios, $entrenamientos = [])
+function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $beneficios, $estado, $entrenamientos = [])
 {
-    $stmt = $conn->prepare("UPDATE membresia SET tipo = ?, precio = ?, duracion = ?, beneficios = ? WHERE id_membresia = ?");
-    $stmt->bind_param("sdiss", $tipo, $precio, $duracion, $beneficios, $id_membresia);
+    $stmt = $conn->prepare("UPDATE membresia SET tipo = ?, precio = ?, duracion = ?, beneficios = ?, estado = ? WHERE id_membresia = ?");
+    $stmt->bind_param("sdissi", $tipo, $precio, $duracion, $beneficios, $estado, $id_membresia);
+
     if ($stmt->execute()) {
         $stmt->close();
 

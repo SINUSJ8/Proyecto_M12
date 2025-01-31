@@ -96,6 +96,11 @@ include '../admin/admin_header.php';
                     </div>
 
                     <div class="membresia-section sombreado">
+                        <label>Estado:</label>
+                        <span><?php echo htmlspecialchars($membresia['estado']); ?></span>
+                    </div>
+
+                    <div class="membresia-section sombreado">
                         <label>Beneficios:</label>
                         <p><?php echo nl2br(htmlspecialchars($membresia['beneficios'])); ?></p>
                     </div>

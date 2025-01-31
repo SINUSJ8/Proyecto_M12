@@ -24,14 +24,16 @@ if (strpos($referer, 'index.php') === false && !isset($_SESSION['id_usuario'])) 
     exit();
 }
 
-// Consulta para obtener las membresías con sus entrenamientos asociados
+// Consulta para obtener solo las membresías disponibles con sus entrenamientos asociados
 $query = "
     SELECT m.id_membresia, m.tipo, m.precio, m.duracion, m.beneficios, e.nombre AS entrenamiento
     FROM membresia m
     LEFT JOIN membresia_entrenamiento me ON m.id_membresia = me.id_membresia
     LEFT JOIN especialidad e ON me.id_entrenamiento = e.id_especialidad
+    WHERE m.estado = 'disponible'  -- Solo mostrar membresías disponibles
     ORDER BY m.id_membresia
 ";
+
 
 $result = $conn->query($query);
 $membresias = [];

@@ -25,14 +25,16 @@ $result_actual = $stmt_actual->get_result();
 $membresia_actual = $result_actual->fetch_assoc()['id_membresia'] ?? null;
 $stmt_actual->close();
 
-// Consultar todas las membresías y sus entrenamientos asociados
+// Consultar todas las membresías disponibles y sus entrenamientos asociados
 $query = "
     SELECT m.id_membresia, m.tipo, m.precio, m.duracion, m.beneficios, e.nombre AS entrenamiento
     FROM membresia m
     LEFT JOIN membresia_entrenamiento me ON m.id_membresia = me.id_membresia
     LEFT JOIN especialidad e ON me.id_entrenamiento = e.id_especialidad
+    WHERE m.estado = 'disponible'  -- Solo mostrar membresías disponibles
     ORDER BY m.id_membresia
 ";
+
 $result = $conn->query($query);
 $membresias = [];
 

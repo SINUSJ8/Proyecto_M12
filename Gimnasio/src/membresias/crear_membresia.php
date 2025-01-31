@@ -15,19 +15,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $precio = floatval($_POST['precio'] ?? 0);
         $duracion = intval($_POST['duracion'] ?? 0);
         $beneficios = trim($_POST['beneficios'] ?? '');
+
         if (!empty($tipo)) {
             $mensaje = agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entrenamientos_seleccionados);
         } else {
             $mensaje = "Error: El campo 'tipo' es obligatorio.";
         }
-    } elseif (isset($_POST['editar_membresia'])) {
+    } elseif (isset($_POST['editar_membresia'])) {  // <- Aquí se cerró el `if` anterior correctamente
         $id_membresia = $_POST['id_membresia'] ?? 0;
         $tipo = trim($_POST['tipo'] ?? '');
         $precio = floatval($_POST['precio'] ?? 0);
         $duracion = intval($_POST['duracion'] ?? 0);
         $beneficios = trim($_POST['beneficios'] ?? '');
+        $estado = $_POST['estado'] ?? 'disponible'; // Capturar el estado
+
         if (!empty($tipo)) {
-            $mensaje = editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $beneficios, $entrenamientos_seleccionados);
+            $mensaje = editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $beneficios, $estado, $entrenamientos_seleccionados);
         } else {
             $mensaje = "Error: El campo 'tipo' es obligatorio.";
         }
@@ -126,7 +129,7 @@ include '../admin/admin_header.php';
                     <form method="POST" action="crear_membresia.php" class="membresia-form">
                         <input type="hidden" name="id_membresia" value="<?php echo $membresia['id_membresia']; ?>">
 
-                        <!-- Sección de tipo, precio y duración -->
+                        <!-- Sección de tipo, precio, duración y estado -->
                         <div class="membresia-section sombreado">
                             <label>Tipo:</label>
                             <input type="text" name="tipo" value="<?php echo htmlspecialchars($membresia['tipo']); ?>" required>
@@ -136,7 +139,14 @@ include '../admin/admin_header.php';
 
                             <label>Duración (meses):</label>
                             <input type="number" name="duracion" value="<?php echo htmlspecialchars($membresia['duracion']); ?>" required>
+
+                            <label>Estado:</label>
+                            <select name="estado">
+                                <option value="disponible" <?php echo ($membresia['estado'] == 'disponible') ? 'selected' : ''; ?>>Disponible</option>
+                                <option value="descontinuada" <?php echo ($membresia['estado'] == 'descontinuada') ? 'selected' : ''; ?>>Descontinuada</option>
+                            </select>
                         </div>
+
 
                         <!-- Beneficios -->
                         <div class="membresia-section sombreado">
@@ -162,7 +172,7 @@ include '../admin/admin_header.php';
 
                         <!-- Botones -->
                         <div class="membresia-botones">
-                            <button type="submit" name="editar_membresia" class="btn-general">Editar</button>
+                            <button type="submit" name="editar_membresia" class="btn-general">Confirmar cambios</button>
                             <button type="submit" name="eliminar_membresia"
                                 class="delete-button <?php echo ($membresia['id_membresia'] == 1) ? 'btn-disabled' : ''; ?>"
                                 onclick="return confirm('¿Estás seguro de que deseas eliminar esta membresía?')"
