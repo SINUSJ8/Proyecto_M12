@@ -62,7 +62,7 @@ if ($result) {
     }
 }
 $entrenamientos = obtenerEntrenamientos($conn); // Obtener entrenamientos disponibles
-$title = "Membresías";
+$title = "Crear Membresía";
 include '../admin/admin_header.php';
 ?>
 
@@ -96,7 +96,8 @@ include '../admin/admin_header.php';
             </div>
             <div class="membresia-form-item">
                 <label for="beneficios">Beneficios:</label>
-                <textarea id="beneficios" name="beneficios" rows="3"></textarea>
+                <textarea id="beneficios" name="beneficios" rows="5"></textarea>
+
             </div>
 
             <!-- Checkboxes para asignar entrenamientos -->
@@ -140,7 +141,7 @@ include '../admin/admin_header.php';
                         <!-- Beneficios -->
                         <div class="membresia-section sombreado">
                             <label>Beneficios:</label>
-                            <textarea name="beneficios" rows="3"><?php echo htmlspecialchars($membresia['beneficios']); ?></textarea>
+                            <textarea name="beneficios" rows="5"><?php echo htmlspecialchars($membresia['beneficios']); ?></textarea>
                         </div>
 
                         <!-- Entrenamientos -->

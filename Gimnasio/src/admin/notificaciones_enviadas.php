@@ -3,7 +3,7 @@ require_once('../includes/general.php');
 verificarAdmin();
 
 $conn = obtenerConexion();
-
+$title = "Notificaciones enviadas";
 // Paginación
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 15;

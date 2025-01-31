@@ -13,7 +13,7 @@
 <body>
     <header>
         <div class="header-content">
-            <a href= "<?php echo BASE_URL; ?>index.php">
+            <a href="<?php echo BASE_URL; ?>index.php">
                 <img src="<?php echo BASE_URL; ?>assets/imgs/FitBay.png" alt="FitBay" class="logo" width="20%">
             </a>
         </div>
@@ -22,8 +22,8 @@
             <a href="<?php echo BASE_URL; ?>src/membresias/membresias_publicas.php">Membresías</a>
             <a href="<?php echo BASE_URL; ?>src/inicio/contacto.php">Contacto</a>
             <a href="<?php echo BASE_URL; ?>src/inicio/about.php">Acerca de</a>
-            <a href="<?php echo BASE_URL; ?>src/auth/log.php">
-                <img src="<?php echo BASE_URL; ?>assets/imgs/icono.png" alt="FitBay" class="logo" width="3%">
+            <a class="logout" href="<?php echo BASE_URL; ?>src/auth/log.php">
+                <img class="logo" src="<?php echo BASE_URL; ?>assets/imgs/icono.png" alt="FitBay">
             </a>
         </nav>
     </header>

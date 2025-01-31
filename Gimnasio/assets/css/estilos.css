@@ -40,6 +40,17 @@ header {
     z-index: 10;
 }
 
+.adminHeader {
+    background-color: #555;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
 header h1 {
     font-size: 24px;
 }
@@ -57,9 +68,115 @@ header nav .logout-link {
     font-family: inherit;
 }
 
-header nav a:hover,
+header nav .logout-admin {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    align-items: center;
+    justify-content: center;
+}
+
+header nav a:hover {
+    color: #2b7a78;
+}
+
+header nav .logout-admin:hover {
+    color: #7e2323;
+}
+
 header nav .logout-link:hover {
     color: #2b7a78;
+}
+
+/* Estilo general del menú horizontal */
+#navegacion-rapida {
+    display: flex;
+    justify-content: center;
+    background-color: #3aafa9;
+    padding: 10px 0;
+}
+
+#navegacion-rapida-admin {
+    display: flex;
+    justify-content: center;
+    background-color: #555;
+    padding: 10px 0;
+}
+
+.menu-horizontal {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background-color: #2b7a78;
+    display: flex;
+    border-radius: 5px;
+    align-items: center;
+}
+
+.menu-horizontal>li {
+    position: relative;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.menu-horizontal li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: block;
+}
+
+.menu-horizontal li:hover {
+    background-color: #3aafa9;
+}
+
+/* Estilos para los submenús (menu-vertical) */
+.menu-vertical {
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #2b7a78;
+    display: none;
+    padding: 0;
+    width: 200px;
+    border-radius: 5px;
+}
+
+.menu-vertical li {
+    padding: 10px;
+    border-bottom: 1px solid #2b7a78;
+    border-radius: 5px;
+    border: 2px solid white;
+}
+
+.menu-vertical li a {
+    color: white;
+    display: block;
+    text-decoration: none;
+}
+
+.menu-vertical li:hover {
+    background-color: #3aafa9;
+}
+
+/* Mostrar el submenú cuando el usuario pasa el ratón sobre el elemento padre */
+.menu-horizontal>li:hover>.menu-vertical {
+    display: block;
+}
+
+.logout {
+    max-width: 3%;
+}
+
+.logo {
+    max-width: 30%;
 }
 
 /*IMAGENES PORTADA*/
@@ -512,6 +629,18 @@ table.styled-table.mis-clases tbody tr.fila-vacia td {
     margin-bottom: 5px;
 }
 
+textarea {
+    min-height: 120px;
+    width: 100%;
+    resize: vertical;
+}
+
+.membresia-form-item textarea {
+    min-height: 150px;
+    width: 100%;
+    resize: vertical;
+}
+
 
 .clase-sin-monitor {
     background-color: #ffe6e6;
@@ -701,11 +830,15 @@ button.btn-general {
 }
 
 .membresia-item {
-    background-color: #f9f9f9;
+    background-color: #3aafa9;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.membresia-tipo {
+    font-weight: bold;
 }
 
 .section-title {
@@ -730,6 +863,14 @@ button.btn-general {
     list-style: none;
     padding: 0;
     margin: 10px 0;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.membresia-section p {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 0;
 }
 
 .entrenamientos-lista li {
@@ -937,7 +1078,7 @@ footer a:hover {
 
 #ingresos {
     grid-area: ingresos;
-    background-color: #d4aeb0;
+    background-color: #ddcecf;
     border: 1px solid #dfbcc6;
 }
 
