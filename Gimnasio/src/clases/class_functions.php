@@ -373,8 +373,9 @@ function obtenerClasesAsignadasMonitor($conn, $id_monitor)
     $resultClases = $stmt->get_result();
 
     if ($resultClases->num_rows === 0) {
-        throw new Exception("No se encontraron clases asignadas al monitor con id_monitor: $id_monitor");
+        return [];
     }
+
 
     $clases = $resultClases->fetch_all(MYSQLI_ASSOC);
     $stmt->close();

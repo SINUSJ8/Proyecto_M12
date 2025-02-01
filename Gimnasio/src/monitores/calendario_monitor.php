@@ -4,6 +4,7 @@ require_once '../includes/general.php';
 include '../monitores/monitores_header.php';
 require_once '../monitores/monitor_functions.php';
 require_once '../clases/class_functions.php';
+
 $conn = obtenerConexion();
 $id_usuario = $_SESSION['id_usuario'];
 
@@ -12,12 +13,12 @@ try {
     $especialidades = obtenerEspecialidades($conn, $id_monitor);
     $clases = obtenerClasesAsignadasMonitor($conn, $id_monitor);
 } catch (Exception $e) {
-    echo "<p class='mensaje-error'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
-    exit;
+    $clases = []; // Si hay un error, aseguramos que sea un array vacío
 }
 
 // Convertir las clases en formato JSON para FullCalendar
 $eventos = [];
+
 foreach ($clases as $clase) {
     $eventos[] = [
         'title' => $clase['clase_nombre'] . ' (' . $clase['especialidad'] . ')',
@@ -26,12 +27,11 @@ foreach ($clases as $clase) {
         'textColor' => '#ffffff',
         'extendedProps' => [
             'id_clase' => $clase['id_clase'],
-
         ],
     ];
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -46,15 +46,15 @@ foreach ($clases as $clase) {
         <h1 class="text-center"><?= $title; ?></h1>
         <p class="text-center text-muted">Consulta tus clases en el calendario.</p>
 
-        <!-- Contenedor del calendario -->
+        <!-- El calendario siempre se renderiza, incluso si está vacío -->
         <div id="calendar"></div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const eventos = <?= json_encode($eventos); ?>;
-
             const calendarEl = document.getElementById('calendar');
+            const eventos = <?= json_encode($eventos); ?>; // Siempre será un array (puede estar vacío)
+
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 themeSystem: 'bootstrap',
@@ -64,7 +64,7 @@ foreach ($clases as $clase) {
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                events: eventos,
+                events: eventos, // Se cargan los eventos (puede ser un array vacío)
                 eventClick: function(info) {
                     const evento = info.event.extendedProps;
                     alert(
@@ -78,6 +78,7 @@ foreach ($clases as $clase) {
             calendar.render();
         });
     </script>
+
 </body>
 <?php include '../includes/footer.php'; ?>
 
