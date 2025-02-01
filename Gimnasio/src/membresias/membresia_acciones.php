@@ -47,23 +47,33 @@ if (!$idUsuario) {
 // Ejecutar la acción correspondiente
 if ($accion === 'activar') {
     $resultado = activarMembresia($conn, $idMembresia);
-    if ($resultado) {
+    if ($resultado === false) {
+        $mensaje = "No se puede activar una membresía con fecha de expiración pasada.";
+        $nuevoEstado = "expirada";
+    } else {
         $mensaje = "Membresía activada correctamente.";
         enviarNotificacion($conn, $idUsuario, "Tu membresía '$tipoMembresia' ha sido activada.");
-    } else {
-        $mensaje = "No se puede activar una membresía con fecha de expiración pasada.";
+        $nuevoEstado = "activa";
     }
 } elseif ($accion === 'desactivar') {
     $resultado = desactivarMembresia($conn, $idMembresia);
     if ($resultado) {
         $mensaje = "Membresía desactivada correctamente.";
         enviarNotificacion($conn, $idUsuario, "Tu membresía '$tipoMembresia' ha sido desactivada.");
+        $nuevoEstado = "expirada";
     } else {
         $mensaje = "Error al desactivar la membresía.";
+        $nuevoEstado = "activa"; // Si falla, sigue siendo activa
     }
 } elseif ($accion === 'eliminar') {
     $resultado = eliminarMiembroMembresia($conn, $idMembresia);
-    $mensaje = $resultado ? "Membresía eliminada correctamente." : "Error al eliminar la membresía.";
+    if ($resultado) {
+        $mensaje = "Membresía eliminada correctamente.";
+        $nuevoEstado = "eliminada";
+    } else {
+        $mensaje = "Error al eliminar la membresía.";
+        $nuevoEstado = "desconocido";
+    }
 } else {
     header("Content-Type: application/json");
     echo json_encode(["status" => "error", "message" => "Acción no válida."]);
@@ -74,8 +84,13 @@ if ($accion === 'activar') {
 header("Content-Type: application/json");
 echo json_encode([
     "status" => $resultado ? "success" : "error",
-    "message" => $mensaje
+    "message" => $mensaje,
+    "nuevo_estado" => $nuevoEstado
 ]);
+
+$conn->close();
+exit();
+
 
 $conn->close();
 exit();

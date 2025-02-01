@@ -237,11 +237,11 @@ function activarMembresia($conn, $idMembresia)
     $stmtFecha->close();
 
     if (!$idMembresiaReal) {
-        return "Error: La membresía no existe.";
+        return false; //  No se encontró la membresía
     }
 
     if (!$fechaFin || strtotime($fechaFin) <= strtotime(date("Y-m-d"))) {
-        return "Error: La membresía ha expirado y no puede activarse.";
+        return false; //  La membresía ha expirado
     }
 
     // Desactivar otras membresías activas del mismo miembro
