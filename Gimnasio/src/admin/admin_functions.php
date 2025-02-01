@@ -48,6 +48,23 @@ function agregarEspecialidad($conn, $nombre_especialidad)
     if (empty($nombre_especialidad)) {
         return "Por favor, introduce un nombre de especialidad.";
     }
+
+    // Normalizar el nombre a minúsculas para la comparación
+    $nombre_normalizado = strtolower($nombre_especialidad);
+
+    // Verificar si la especialidad ya existe (ignorando mayúsculas y minúsculas)
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM especialidad WHERE LOWER(nombre) = ?");
+    $stmt->bind_param("s", $nombre_normalizado);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($count > 0) {
+        return "Ya existe una especialidad con ese nombre.";
+    }
+
+    // Insertar la nueva especialidad si no existe duplicado
     $stmt = $conn->prepare("INSERT INTO especialidad (nombre) VALUES (?)");
     $stmt->bind_param("s", $nombre_especialidad);
     if ($stmt->execute()) {
@@ -60,44 +77,28 @@ function agregarEspecialidad($conn, $nombre_especialidad)
     }
 }
 
-function editarEspecialidad($conn, $id_especialidad, $nombre_especialidad)
-{
-    if (empty($nombre_especialidad)) {
-        return "Por favor, introduce un nombre de especialidad.";
-    }
-    $stmt = $conn->prepare("UPDATE especialidad SET nombre = ? WHERE id_especialidad = ?");
-    $stmt->bind_param("si", $nombre_especialidad, $id_especialidad);
-    if ($stmt->execute()) {
-        $stmt->close();
-        return "Especialidad actualizada exitosamente.";
-    } else {
-        $error = "Error al actualizar la especialidad: " . $stmt->error;
-        $stmt->close();
-        return $error;
-    }
-}
-
-function eliminarEspecialidad($conn, $id_especialidad)
-{
-    $stmt = $conn->prepare("DELETE FROM especialidad WHERE id_especialidad = ?");
-    $stmt->bind_param("i", $id_especialidad);
-    if ($stmt->execute()) {
-        $stmt->close();
-        return "Especialidad eliminada exitosamente.";
-    } else {
-        $error = "Error al eliminar la especialidad: " . $stmt->error;
-        $stmt->close();
-        return $error;
-    }
-}
-
-
 function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entrenamientos = [])
 {
     if (empty($tipo) || $precio <= 0 || $duracion <= 0) {
         return "Todos los campos son obligatorios y deben tener valores válidos.";
     }
 
+    // Normalizar el nombre a minúsculas para comparación
+    $tipo_normalizado = strtolower($tipo);
+
+    // Verificar si ya existe una membresía con el mismo nombre (ignorando mayúsculas y minúsculas)
+    $stmt = $conn->prepare("SELECT id_membresia FROM membresia WHERE LOWER(tipo) = ?");
+    $stmt->bind_param("s", $tipo_normalizado);
+    $stmt->execute();
+    $stmt->bind_result($existing_id);
+    $stmt->fetch();
+    $stmt->close();
+
+    if (!empty($existing_id)) {
+        return "Ya existe una membresía con ese nombre.";
+    }
+
+    // Insertar la nueva membresía
     $stmt = $conn->prepare("INSERT INTO membresia (tipo, precio, duracion, beneficios) VALUES (?, ?, ?, ?)");
     if (!$stmt) {
         return "Error al preparar la consulta: " . $conn->error;
@@ -108,6 +109,7 @@ function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entren
         $id_membresia = $conn->insert_id;
         $stmt->close();
 
+        // Si hay entrenamientos asociados, los insertamos en la tabla membresia_entrenamiento
         if (!empty($entrenamientos)) {
             $stmt = $conn->prepare("INSERT INTO membresia_entrenamiento (id_membresia, id_entrenamiento) VALUES (?, ?)");
             if (!$stmt) {
@@ -135,7 +137,31 @@ function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entren
 
 function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $beneficios, $estado, $entrenamientos = [])
 {
+    if (empty($tipo) || $precio <= 0 || $duracion <= 0) {
+        return "Todos los campos son obligatorios y deben tener valores válidos.";
+    }
+
+    // Normalizar el nombre a minúsculas para comparación
+    $tipo_normalizado = strtolower($tipo);
+
+    // Verificar si ya existe otra membresía con el mismo nombre (ignorando mayúsculas y minúsculas)
+    $stmt = $conn->prepare("SELECT id_membresia FROM membresia WHERE LOWER(tipo) = ? AND id_membresia != ?");
+    $stmt->bind_param("si", $tipo_normalizado, $id_membresia);
+    $stmt->execute();
+    $stmt->bind_result($existing_id);
+    $stmt->fetch();
+    $stmt->close();
+
+    if (!empty($existing_id)) {
+        return "Ya existe otra membresía con ese nombre.";
+    }
+
+    // Intentar actualizar la membresía
     $stmt = $conn->prepare("UPDATE membresia SET tipo = ?, precio = ?, duracion = ?, beneficios = ?, estado = ? WHERE id_membresia = ?");
+    if (!$stmt) {
+        return "Error al preparar la consulta: " . $conn->error;
+    }
+
     $stmt->bind_param("sdissi", $tipo, $precio, $duracion, $beneficios, $estado, $id_membresia);
 
     if ($stmt->execute()) {
@@ -149,9 +175,15 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
 
         if (!empty($entrenamientos)) {
             $stmt = $conn->prepare("INSERT INTO membresia_entrenamiento (id_membresia, id_entrenamiento) VALUES (?, ?)");
+            if (!$stmt) {
+                return "Error al preparar la consulta de entrenamientos: " . $conn->error;
+            }
+
             foreach ($entrenamientos as $id_entrenamiento) {
                 $stmt->bind_param("ii", $id_membresia, $id_entrenamiento);
-                $stmt->execute();
+                if (!$stmt->execute()) {
+                    return "Error al insertar entrenamiento: " . $stmt->error;
+                }
             }
             $stmt->close();
         }
@@ -163,6 +195,7 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         return $error;
     }
 }
+
 
 
 function eliminarMembresia($conn, $id_membresia)
@@ -478,6 +511,25 @@ function obtenerMonitoresConEspecialidad($conn, $id_especialidad)
 
 function editarEspecialidadConNotificaciones($conn, $id_especialidad, $nuevo_nombre)
 {
+    if (empty($nuevo_nombre)) {
+        return "Por favor, introduce un nombre de especialidad.";
+    }
+
+    // Normalizar el nombre a minúsculas para la comparación
+    $nombre_normalizado = strtolower($nuevo_nombre);
+
+    // Verificar si ya existe otra especialidad con el mismo nombre (ignorando mayúsculas y minúsculas)
+    $stmt = $conn->prepare("SELECT id_especialidad FROM especialidad WHERE LOWER(nombre) = ? AND id_especialidad != ?");
+    $stmt->bind_param("si", $nombre_normalizado, $id_especialidad);
+    $stmt->execute();
+    $stmt->bind_result($existing_id);
+    $stmt->fetch();
+    $stmt->close();
+
+    if (!empty($existing_id)) {
+        return "Ya existe otra especialidad con ese nombre.";
+    }
+
     // Obtener las clases asociadas a la especialidad
     $sql = "SELECT id_clase, nombre FROM clase WHERE id_especialidad = ?";
     $stmt = $conn->prepare($sql);
@@ -510,17 +562,22 @@ function editarEspecialidadConNotificaciones($conn, $id_especialidad, $nuevo_nom
         }
     }
 
-    // Actualizar el nombre de la especialidad
-    $stmt = $conn->prepare("UPDATE especialidad SET nombre = ? WHERE id_especialidad = ?");
-    $stmt->bind_param("si", $nuevo_nombre, $id_especialidad);
-    if ($stmt->execute()) {
-        $stmt->close();
-        return "Especialidad actualizada correctamente.";
-    } else {
-        $stmt->close();
-        return "Error al actualizar la especialidad.";
+    // Intentar actualizar la especialidad
+    try {
+        $stmt = $conn->prepare("UPDATE especialidad SET nombre = ? WHERE id_especialidad = ?");
+        $stmt->bind_param("si", $nuevo_nombre, $id_especialidad);
+        if ($stmt->execute()) {
+            $stmt->close();
+            return "Especialidad actualizada correctamente.";
+        } else {
+            $stmt->close();
+            return "Error al actualizar la especialidad.";
+        }
+    } catch (mysqli_sql_exception $e) {
+        return "Error al actualizar la especialidad: " . $e->getMessage();
     }
 }
+
 
 function eliminarEspecialidadConNotificaciones($conn, $id_especialidad)
 {
