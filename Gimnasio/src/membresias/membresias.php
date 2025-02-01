@@ -80,11 +80,11 @@ include '../admin/admin_header.php';
 
 <body>
     <main>
-        <h2 class="section-title">Detalles de Membresías por Miembros</h2>
+        <h2 class="section-title" title="Lista detallada de membresías activas y expiradas">Detalles de Membresías por Miembros</h2>
 
         <!-- Mostrar mensajes -->
         <?php if (isset($_GET['mensaje'])): ?>
-            <div class="mensaje-confirmacion">
+            <div class="mensaje-confirmacion" title="Mensaje de confirmación de acciones">
                 <p><?php echo htmlspecialchars($_GET['mensaje']); ?></p>
             </div>
         <?php endif; ?>
@@ -92,99 +92,102 @@ include '../admin/admin_header.php';
         <!-- Formulario de búsqueda -->
         <div class="form_container">
             <form method="GET" action="membresias.php" style="display: inline;">
-                <input type="text" name="busqueda" placeholder="Buscar membresía o usuario..." value="<?php echo htmlspecialchars($busqueda); ?>">
-                <button type="submit" class="btn-general">Buscar</button>
-                <a href="membresias.php" class="btn-general limpiar-busqueda">Limpiar</a>
-                <a href="crear_membresia.php" class="btn-general limpiar-busqueda">Crear Membresía</a>
+                <input type="text"
+                    name="busqueda"
+                    placeholder="Buscar membresía o usuario..."
+                    value="<?php echo htmlspecialchars($busqueda); ?>"
+                    title="Introduce el nombre del usuario o el tipo de membresía para buscar">
+                <button type="submit" class="btn-general" title="Buscar membresías o usuarios que coincidan con el término ingresado">Buscar</button>
+                <a href="membresias.php" class="btn-general limpiar-busqueda" title="Restablecer la búsqueda y mostrar todos los registros">Limpiar</a>
+                <a href="crear_membresia.php" class="btn-general limpiar-busqueda" title="Crear una nueva membresía">Crear Membresía</a>
             </form>
         </div>
-
 
         <!-- Tabla de datos -->
         <?php if (!empty($membresias_miembros)): ?>
             <table id="tabla-membresias" class="styled-table">
                 <thead>
                     <tr>
-                        <th onclick="ordenarTablaMe(0)" class="sortable">Nombre Miembro</th>
-                        <th onclick="ordenarTablaMe(1)" class="sortable">Email</th>
-                        <th onclick="ordenarTablaMe(2)" class="sortable">Teléfono</th>
-                        <th onclick="ordenarTablaMe(3)" class="sortable">Membresía</th>
-                        <th onclick="ordenarTablaMe(4)" class="sortable">Precio</th>
-                        <th onclick="ordenarTablaMe(5)" class="sortable">Duración</th>
-                        <th onclick="ordenarTablaMe(6)" class="sortable">Fecha Inicio</th>
-                        <th onclick="ordenarTablaMe(7)" class="sortable">Fecha Fin</th>
-                        <th onclick="ordenarTablaMe(8)" class="sortable">Estado</th>
-                        <th onclick="ordenarTablaMe(9)" class="sortable">Renovación Automática</th>
-                        <th>Acciones</th>
+                        <th onclick="ordenarTablaMe(0)" class="sortable" title="Ordenar por Nombre">Nombre Miembro</th>
+                        <th onclick="ordenarTablaMe(1)" class="sortable" title="Ordenar por Email">Email</th>
+                        <th onclick="ordenarTablaMe(2)" class="sortable" title="Ordenar por Teléfono">Teléfono</th>
+                        <th onclick="ordenarTablaMe(3)" class="sortable" title="Ordenar por Tipo de Membresía">Membresía</th>
+                        <th onclick="ordenarTablaMe(4)" class="sortable" title="Ordenar por Precio">Precio</th>
+                        <th onclick="ordenarTablaMe(5)" class="sortable" title="Ordenar por Duración">Duración</th>
+                        <th onclick="ordenarTablaMe(6)" class="sortable" title="Ordenar por Fecha de Inicio">Fecha Inicio</th>
+                        <th onclick="ordenarTablaMe(7)" class="sortable" title="Ordenar por Fecha de Expiración">Fecha Fin</th>
+                        <th onclick="ordenarTablaMe(8)" class="sortable" title="Ordenar por Estado de la Membresía">Estado</th>
+                        <th onclick="ordenarTablaMe(9)" class="sortable" title="Ordenar por Estado de Renovación Automática">Renovación Automática</th>
+                        <th title="Acciones disponibles para cada registro">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($membresias_miembros as $dato): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($dato['nombre_usuario']); ?></td>
-                            <td><?php echo htmlspecialchars($dato['email']); ?></td>
-                            <td><?php echo htmlspecialchars(!empty($dato['telefono']) ? $dato['telefono'] : 'N/A'); ?></td>
-                            <td><?php echo htmlspecialchars($dato['tipo_membresia']); ?></td>
-                            <td><?php echo htmlspecialchars($dato['precio']); ?> €</td>
-                            <td><?php echo htmlspecialchars($dato['duracion']); ?> meses</td>
-                            <td><?php echo htmlspecialchars($dato['fecha_inicio']); ?></td>
-                            <td><?php echo htmlspecialchars($dato['fecha_fin']); ?></td>
-                            <td><?php echo htmlspecialchars($dato['estado']); ?></td>
-                            <td><?php echo $dato['renovacion_automatica'] ? 'Sí' : 'No'; ?></td>
+                            <td title="Nombre del usuario"><?php echo htmlspecialchars($dato['nombre_usuario']); ?></td>
+                            <td title="Correo electrónico del usuario"><?php echo htmlspecialchars($dato['email']); ?></td>
+                            <td title="Número de contacto del usuario"><?php echo htmlspecialchars(!empty($dato['telefono']) ? $dato['telefono'] : 'N/A'); ?></td>
+                            <td title="Tipo de membresía adquirida"><?php echo htmlspecialchars($dato['tipo_membresia']); ?></td>
+                            <td title="Precio de la membresía"><?php echo htmlspecialchars($dato['precio']); ?> €</td>
+                            <td title="Duración de la membresía en meses"><?php echo htmlspecialchars($dato['duracion']); ?> meses</td>
+                            <td title="Fecha en que comenzó la membresía"><?php echo htmlspecialchars($dato['fecha_inicio']); ?></td>
+                            <td title="Fecha en que expira la membresía"><?php echo htmlspecialchars($dato['fecha_fin']); ?></td>
+                            <td title="Estado actual de la membresía"><?php echo htmlspecialchars($dato['estado']); ?></td>
+                            <td title="Indica si la membresía se renovará automáticamente"><?php echo $dato['renovacion_automatica'] ? 'Sí' : 'No'; ?></td>
                             <td>
-                                <?php if ($dato['estado'] === 'activa'): ?>
-                                    <!-- Mostrar solo el botón para desactivar -->
-                                    <form action="membresia_acciones.php" method="POST" style="display:inline;">
-                                        <input type="hidden" name="id_membresia" value="<?php echo htmlspecialchars($dato['id']); ?>">
-                                        <input type="hidden" name="accion" value="desactivar">
-                                        <input type="hidden" name="busqueda" value="<?php echo htmlspecialchars($busqueda); ?>">
-                                        <button type="submit" class="btn-general btn-desactivar">Desactivar</button>
-                                    </form>
-                                <?php elseif ($dato['estado'] === 'expirada'): ?>
-                                    <!-- Mostrar solo el botón para activar -->
-                                    <form action="membresia_acciones.php" method="POST" style="display:inline;">
-                                        <input type="hidden" name="id_membresia" value="<?php echo htmlspecialchars($dato['id']); ?>">
-                                        <input type="hidden" name="accion" value="activar">
-                                        <input type="hidden" name="busqueda" value="<?php echo htmlspecialchars($busqueda); ?>">
-                                        <button type="submit" class="btn-general btn-activar">Activar</button>
-                                    </form>
-                                <?php endif; ?>
+                                <!-- Botón único para activar/desactivar con AJAX -->
+                                <button type="button"
+                                    class="estado-button btn btn-general <?php echo $dato['estado'] === 'activa' ? 'btn-warning btn-desactivar' : 'btn-success btn-activar'; ?>"
+                                    data-id="<?php echo htmlspecialchars($dato['id']); ?>"
+                                    data-accion="<?php echo $dato['estado'] === 'activa' ? 'desactivar' : 'activar'; ?>"
+                                    data-busqueda="<?php echo htmlspecialchars($busqueda); ?>"
+                                    title="<?php echo $dato['estado'] === 'activa' ? 'Desactivar esta membresía. El usuario no podrá usarla hasta que se active nuevamente.' : 'Activar esta membresía. El usuario podrá usarla de inmediato.'; ?>">
+                                    <?php echo $dato['estado'] === 'activa' ? 'Desactivar' : 'Activar'; ?>
+                                </button>
 
-                                <!-- Botón para eliminar siempre disponible -->
-                                <form action="membresia_acciones.php" method="POST" style="display:inline;">
-                                    <input type="hidden" name="id_membresia" value="<?php echo htmlspecialchars($dato['id']); ?>">
-                                    <input type="hidden" name="accion" value="eliminar">
-                                    <input type="hidden" name="busqueda" value="<?php echo htmlspecialchars($busqueda); ?>">
-                                    <button type="submit" class="delete-button" onclick="return confirm('¿Seguro que deseas eliminar esta membresía?');">Eliminar</button>
-                                </form>
+                                <!-- Botón para eliminar SIEMPRE DISPONIBLE con AJAX -->
+                                <button type="button"
+                                    class="delete-button btn btn-danger"
+                                    data-id="<?php echo htmlspecialchars($dato['id']); ?>"
+                                    title="Eliminar este registro de membresía. Esto NO elimina la membresía ni afecta al usuario, solo borra el registro de su historial.">
+                                    Eliminar
+                                </button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         <?php else: ?>
-            <p>No hay membresías registradas para mostrar.</p>
+            <p title="Mensaje cuando no hay registros disponibles">No hay membresías registradas para mostrar.</p>
         <?php endif; ?>
-                </tbody>
-            </table>
+
         <!-- Paginación -->
         <div class="pagination">
             <?php if ($page > 1): ?>
-                <a href="membresias.php?page=<?php echo $page - 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>" class="btn-general">Anterior</a>
+                <a href="membresias.php?page=<?php echo $page - 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>"
+                    class="btn-general" title="Ir a la página anterior">Anterior</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="membresias.php?page=<?php echo $i; ?>&busqueda=<?php echo urlencode($busqueda); ?>" class="btn-general <?php echo $i === $page ? 'active' : ''; ?>">
+                <a href="membresias.php?page=<?php echo $i; ?>&busqueda=<?php echo urlencode($busqueda); ?>"
+                    class="btn-general <?php echo $i === $page ? 'active' : ''; ?>"
+                    title="Ir a la página <?php echo $i; ?>">
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($page < $total_pages): ?>
-                <a href="membresias.php?page=<?php echo $page + 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>" class="btn-general">Siguiente</a>
+                <a href="membresias.php?page=<?php echo $page + 1; ?>&busqueda=<?php echo urlencode($busqueda); ?>"
+                    class="btn-general" title="Ir a la página siguiente">Siguiente</a>
             <?php endif; ?>
         </div>
     </main>
-    <script src="../../assets/js/clases.js"></script>
+
     <?php include '../includes/footer.php'; ?>
+    <script src="../../assets/js/clases.js"></script>
+    <script src="../../assets/js/membresias.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
+
 </html>

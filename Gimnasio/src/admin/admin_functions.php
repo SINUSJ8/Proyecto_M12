@@ -167,8 +167,35 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
 
 function eliminarMembresia($conn, $id_membresia)
 {
+    // Verificar si hay miembros con esta membresía activa
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM miembro WHERE id_membresia = ?");
+    $stmt->bind_param("i", $id_membresia);
+    $stmt->execute();
+    $stmt->bind_result($cantidad_miembros);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Si hay miembros activos, no permitir la eliminación
+    if ($cantidad_miembros > 0) {
+        return "No se puede eliminar la membresía porque hay miembros activos con esta membresía.";
+    }
+
+    // Verificar si la membresía está en el historial de membresías activas
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM miembro_membresia WHERE id_membresia = ? AND estado = 'activa'");
+    $stmt->bind_param("i", $id_membresia);
+    $stmt->execute();
+    $stmt->bind_result($cantidad_historial);
+    $stmt->fetch();
+    $stmt->close();
+
+    if ($cantidad_historial > 0) {
+        return "No se puede eliminar la membresía porque hay registros en el historial con estado activo.";
+    }
+
+    // Si no hay miembros con esta membresía, proceder con la eliminación
     $stmt = $conn->prepare("DELETE FROM membresia WHERE id_membresia = ?");
     $stmt->bind_param("i", $id_membresia);
+
     if ($stmt->execute()) {
         $stmt->close();
         return "Membresía eliminada exitosamente.";
@@ -178,6 +205,7 @@ function eliminarMembresia($conn, $id_membresia)
         return $error;
     }
 }
+
 function eliminarMiembroMembresia($conn, $id_miembro_membresia)
 {
     $stmt = $conn->prepare("DELETE FROM miembro_membresia WHERE id = ?");
@@ -194,18 +222,26 @@ function eliminarMiembroMembresia($conn, $id_miembro_membresia)
 
 function activarMembresia($conn, $idMembresia)
 {
-    // Verificar si la fecha de expiración es posterior a la fecha actual
-    $sqlFecha = "SELECT fecha_fin, id_miembro FROM miembro_membresia WHERE id = ?";
+    // Verificar si la membresía existe y obtener la fecha de expiración y el miembro asociado
+    $sqlFecha = "
+        SELECT mm.fecha_fin, mm.id_miembro, m.id_membresia 
+        FROM miembro_membresia mm
+        INNER JOIN membresia m ON mm.id_membresia = m.id_membresia
+        WHERE mm.id = ?
+    ";
     $stmtFecha = $conn->prepare($sqlFecha);
     $stmtFecha->bind_param("i", $idMembresia);
     $stmtFecha->execute();
-    $stmtFecha->bind_result($fechaFin, $idMiembro);
+    $stmtFecha->bind_result($fechaFin, $idMiembro, $idMembresiaReal);
     $stmtFecha->fetch();
     $stmtFecha->close();
 
+    if (!$idMembresiaReal) {
+        return "Error: La membresía no existe.";
+    }
+
     if (!$fechaFin || strtotime($fechaFin) <= strtotime(date("Y-m-d"))) {
-        // Fecha de expiración inválida o pasada
-        return false;
+        return "Error: La membresía ha expirado y no puede activarse.";
     }
 
     // Desactivar otras membresías activas del mismo miembro
@@ -222,19 +258,60 @@ function activarMembresia($conn, $idMembresia)
     $resultado = $stmtActivar->execute();
     $stmtActivar->close();
 
-    return $resultado;
+    if ($resultado) {
+        // Agregar los entrenamientos de la membresía al miembro
+        $sqlEntrenamientos = "
+            INSERT INTO miembro_entrenamiento (id_miembro, id_especialidad)
+            SELECT ?, me.id_entrenamiento
+            FROM membresia_entrenamiento me
+            WHERE me.id_membresia = ?
+            ON DUPLICATE KEY UPDATE id_especialidad = id_especialidad;
+        ";
+        $stmtEntrenamientos = $conn->prepare($sqlEntrenamientos);
+        $stmtEntrenamientos->bind_param("ii", $idMiembro, $idMembresiaReal);
+        $stmtEntrenamientos->execute();
+        $stmtEntrenamientos->close();
+    }
+
+    return $resultado ? "Membresía activada exitosamente." : "Error al activar la membresía.";
 }
+
 
 
 function desactivarMembresia($conn, $idMembresia)
 {
+    // Obtener el id_miembro y verificar si la membresía existe
+    $sqlMiembro = "SELECT id_miembro FROM miembro_membresia WHERE id = ?";
+    $stmtMiembro = $conn->prepare($sqlMiembro);
+    $stmtMiembro->bind_param("i", $idMembresia);
+    $stmtMiembro->execute();
+    $stmtMiembro->bind_result($idMiembro);
+    $stmtMiembro->fetch();
+    $stmtMiembro->close();
+
+    if (!$idMiembro) {
+        return "Error: La membresía no existe o ya fue eliminada.";
+    }
+
+    // Desactivar la membresía
     $sql = "UPDATE miembro_membresia SET estado = 'expirada' WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('i', $idMembresia);
     $resultado = $stmt->execute();
     $stmt->close();
-    return $resultado;
+
+    if ($resultado) {
+        // Eliminar los entrenamientos asociados al miembro
+        $sqlEliminarEntrenamientos = "DELETE FROM miembro_entrenamiento WHERE id_miembro = ?";
+        $stmtEliminarEntrenamientos = $conn->prepare($sqlEliminarEntrenamientos);
+        $stmtEliminarEntrenamientos->bind_param("i", $idMiembro);
+        $stmtEliminarEntrenamientos->execute();
+        $stmtEliminarEntrenamientos->close();
+    }
+
+    return $resultado ? "Membresía desactivada exitosamente." : "Error al desactivar la membresía.";
 }
+
 
 
 function asignarMembresiaAlMiembro($conn, $id_miembro, $id_membresia)
