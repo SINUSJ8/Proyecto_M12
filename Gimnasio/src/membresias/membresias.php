@@ -14,34 +14,35 @@ $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
 // Consulta principal con paginación
 $sql = "
     SELECT 
-        mm.id AS id,
-        u.nombre AS nombre_usuario,
-        u.email,
-        u.telefono,
-        m.tipo AS tipo_membresia,
-        m.precio,
-        m.duracion,
-        mm.fecha_inicio,
-        mm.fecha_fin,
-        mm.estado,
-        mm.renovacion_automatica
-    FROM 
-        miembro_membresia mm
-    INNER JOIN miembro mb ON mm.id_miembro = mb.id_miembro
-    INNER JOIN usuario u ON mb.id_usuario = u.id_usuario
-    INNER JOIN membresia m ON mm.id_membresia = m.id_membresia
-    WHERE 
-        u.nombre LIKE ? OR
-        m.tipo LIKE ?
-    ORDER BY 
-        CASE 
-            WHEN m.tipo = 'anual' THEN 1
-            WHEN m.tipo = 'mensual' THEN 2
-            WHEN m.tipo = 'limitada' THEN 3
-            ELSE 4
-        END,
-        m.precio ASC
-    LIMIT ? OFFSET ?
+    mm.id AS id,
+    u.id_usuario,  -- Asegúrate de incluir esta línea
+    u.nombre AS nombre_usuario,
+    u.email,
+    u.telefono,
+    m.tipo AS tipo_membresia,
+    m.precio,
+    m.duracion,
+    mm.fecha_inicio,
+    mm.fecha_fin,
+    mm.estado,
+    mm.renovacion_automatica
+FROM 
+    miembro_membresia mm
+INNER JOIN miembro mb ON mm.id_miembro = mb.id_miembro
+INNER JOIN usuario u ON mb.id_usuario = u.id_usuario
+INNER JOIN membresia m ON mm.id_membresia = m.id_membresia
+WHERE 
+    u.nombre LIKE ? OR
+    m.tipo LIKE ?
+ORDER BY 
+    CASE 
+        WHEN m.tipo = 'anual' THEN 1
+        WHEN m.tipo = 'mensual' THEN 2
+        WHEN m.tipo = 'limitada' THEN 3
+        ELSE 4
+    END,
+    m.precio ASC
+LIMIT ? OFFSET ?;
 ";
 
 $stmt = $conn->prepare($sql);
@@ -123,19 +124,18 @@ include '../admin/admin_header.php';
                 </thead>
                 <tbody>
                     <?php foreach ($membresias_miembros as $dato): ?>
-                        <tr>
-                            <td title="Nombre del usuario"><?php echo htmlspecialchars($dato['nombre_usuario']); ?></td>
-                            <td title="Correo electrónico del usuario"><?php echo htmlspecialchars($dato['email']); ?></td>
-                            <td title="Número de contacto del usuario"><?php echo htmlspecialchars(!empty($dato['telefono']) ? $dato['telefono'] : 'N/A'); ?></td>
-                            <td title="Tipo de membresía adquirida"><?php echo htmlspecialchars($dato['tipo_membresia']); ?></td>
-                            <td title="Precio de la membresía"><?php echo htmlspecialchars($dato['precio']); ?> €</td>
-                            <td title="Duración de la membresía en meses"><?php echo htmlspecialchars($dato['duracion']); ?> meses</td>
-                            <td title="Fecha en que comenzó la membresía"><?php echo htmlspecialchars($dato['fecha_inicio']); ?></td>
-                            <td title="Fecha en que expira la membresía"><?php echo htmlspecialchars($dato['fecha_fin']); ?></td>
-                            <td title="Estado actual de la membresía"><?php echo htmlspecialchars($dato['estado']); ?></td>
-                            <td title="Indica si la membresía se renovará automáticamente"><?php echo $dato['renovacion_automatica'] ? 'Sí' : 'No'; ?></td>
+                        <tr data-usuario="<?php echo htmlspecialchars($dato['id_usuario']); ?>">
+                            <td><?php echo htmlspecialchars($dato['nombre_usuario']); ?></td>
+                            <td><?php echo htmlspecialchars($dato['email']); ?></td>
+                            <td><?php echo htmlspecialchars(!empty($dato['telefono']) ? $dato['telefono'] : 'N/A'); ?></td>
+                            <td><?php echo htmlspecialchars($dato['tipo_membresia']); ?></td>
+                            <td><?php echo htmlspecialchars($dato['precio']); ?> €</td>
+                            <td><?php echo htmlspecialchars($dato['duracion']); ?> meses</td>
+                            <td><?php echo htmlspecialchars($dato['fecha_inicio']); ?></td>
+                            <td><?php echo htmlspecialchars($dato['fecha_fin']); ?></td>
+                            <td><?php echo htmlspecialchars($dato['estado']); ?></td>
+                            <td><?php echo $dato['renovacion_automatica'] ? 'Sí' : 'No'; ?></td>
                             <td>
-                                <!-- Botón único para activar/desactivar con AJAX -->
                                 <button type="button"
                                     class="estado-button btn btn-general <?php echo $dato['estado'] === 'activa' ? 'btn-warning btn-desactivar' : 'btn-success btn-activar'; ?>"
                                     data-id="<?php echo htmlspecialchars($dato['id']); ?>"
@@ -144,8 +144,6 @@ include '../admin/admin_header.php';
                                     title="<?php echo $dato['estado'] === 'activa' ? 'Desactivar esta membresía. El usuario no podrá usarla hasta que se active nuevamente.' : 'Activar esta membresía. El usuario podrá usarla de inmediato.'; ?>">
                                     <?php echo $dato['estado'] === 'activa' ? 'Desactivar' : 'Activar'; ?>
                                 </button>
-
-                                <!-- Botón para eliminar SIEMPRE DISPONIBLE con AJAX -->
                                 <button type="button"
                                     class="delete-button btn btn-danger"
                                     data-id="<?php echo htmlspecialchars($dato['id']); ?>"
