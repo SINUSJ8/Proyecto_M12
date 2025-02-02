@@ -630,6 +630,56 @@ table.styled-table.mis-clases tbody tr.fila-vacia td {
     margin-bottom: 5px;
 }
 
+/*Contenedor clases monitor*/
+.participantes-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.participantes-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.participante-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.participante-item:last-child {
+    border-bottom: none;
+}
+
+
+.participante-item form {
+    display: inline;
+    margin-left: 10px;
+}
+
+.delete-button {
+    padding: 5px 8px;
+    font-size: 14px;
+    background-color: #a34d4d;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+    background-color: #7e2323;
+}
+
+
 textarea {
     min-height: 120px;
     width: 100%;

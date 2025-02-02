@@ -121,20 +121,21 @@ include '../monitores/monitores_header.php';
                             <ul class="participantes-lista">
                                 <?php foreach ($participantes as $participante): ?>
                                     <li class="participante-item">
-                                        <?php echo htmlspecialchars($participante['nombre']); ?> - <em><?php echo htmlspecialchars($participante['email']); ?></em>
-                                        <form method="POST" action="clases_monitor.php" style="display:inline;">
+                                        <span><?php echo htmlspecialchars($participante['nombre']); ?> - <em><?php echo htmlspecialchars($participante['email']); ?></em></span>
+                                        <form method="POST" action="clases_monitor.php">
                                             <input type="hidden" name="accion" value="eliminar_participante">
                                             <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
                                             <input type="hidden" name="id_miembro" value="<?php echo $participante['id_miembro']; ?>">
-                                            <button type="submit" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar a este participante?')">
-                                                Eliminar
-                                            </button>
+                                            <button type="button" class="delete-button">X</button>
                                         </form>
+
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
+
                         <?php endif; ?>
                     </div>
+
                 </div>
             <?php endforeach; ?>
         </div>
@@ -157,5 +158,48 @@ include '../monitores/monitores_header.php';
         </div>
     <?php endif; ?>
 </main>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const deleteButtons = document.querySelectorAll(".delete-button");
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const form = this.closest("form");
+
+                Swal.fire({
+                    title: "¿Eliminar participante?",
+                    text: "Esta acción no se puede deshacer.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Sí, eliminar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const mensajeConfirmacion = document.querySelector(".mensaje-confirmacion");
+        if (mensajeConfirmacion) {
+            setTimeout(() => {
+                mensajeConfirmacion.style.opacity = "0";
+                setTimeout(() => {
+                    mensajeConfirmacion.style.display = "none";
+                }, 500);
+            }, 5000);
+        }
+    });
+</script>
 
 <?php include '../includes/footer.php'; ?>
