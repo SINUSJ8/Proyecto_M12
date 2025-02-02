@@ -14,7 +14,6 @@ $title = "Clases Asignadas";
 $id_monitor = $_SESSION['id_usuario'];
 
 // Manejar la eliminación de participantes
-// Manejar la eliminación de participantes
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['accion'] === 'eliminar_participante') {
     $id_clase = intval($_POST['id_clase']);
     $id_miembro = intval($_POST['id_miembro']);
@@ -27,20 +26,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['
     $nombreClase = $stmtClase->get_result()->fetch_assoc()['nombre'] ?? 'Clase desconocida';
     $stmtClase->close();
 
+    // Obtener el ID del usuario del miembro eliminado
+    $sqlUsuario = "SELECT id_usuario FROM miembro WHERE id_miembro = ?";
+    $stmtUsuario = $conn->prepare($sqlUsuario);
+    $stmtUsuario->bind_param("i", $id_miembro);
+    $stmtUsuario->execute();
+    $resultUsuario = $stmtUsuario->get_result();
+    $id_usuario_miembro = $resultUsuario->fetch_assoc()['id_usuario'] ?? null;
+    $stmtUsuario->close();
+
     // Llamar a la función para eliminar al participante
     $resultado = eliminarParticipanteDeClase($conn, $id_clase, $id_miembro, $id_monitor);
 
-    if ($resultado['success']) {
-        // Enviar notificación al miembro afectado
+    if ($resultado['success'] && $id_usuario_miembro) {
+        // Enviar notificación al usuario del miembro afectado
         $mensaje = "Has sido eliminado de la clase '{$nombreClase}'. Si crees que esto es un error, por favor, contacta al gimnasio.";
-        enviarNotificacion($conn, $id_miembro, $mensaje);
+        enviarNotificacion($conn, $id_usuario_miembro, $mensaje);
     }
 
     // Redirigir con el mensaje del resultado
     header("Location: clases_monitor.php?mensaje=" . urlencode($resultado['mensaje']));
     exit();
 }
-
 
 // Obtener clases asignadas al monitor
 $sqlClases = "
@@ -73,50 +80,37 @@ include '../monitores/monitores_header.php';
         <div class="clases-grid">
             <?php foreach ($clases as $clase): ?>
                 <div class="clase-card">
-                    <h3 class="clase-titulo" title="Nombre de la clase"><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
-                    <p><strong>Especialidad:</strong>
-                        <span title="Especialidad de la clase"><?php echo htmlspecialchars($clase['especialidad']); ?></span>
-                    </p>
-                    <p><strong>Fecha:</strong>
-                        <span title="Fecha programada para esta clase"><?php echo htmlspecialchars($clase['fecha']); ?></span>
-                    </p>
-                    <p><strong>Hora:</strong>
-                        <span title="Hora de inicio de la clase"><?php echo htmlspecialchars($clase['horario']); ?></span>
-                    </p>
-                    <p><strong>Duración:</strong>
-                        <span title="Duración total de la clase en minutos"><?php echo htmlspecialchars($clase['duracion']); ?> minutos</span>
-                    </p>
+                    <h3 class="clase-titulo"><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
+                    <p><strong>Especialidad:</strong> <?php echo htmlspecialchars($clase['especialidad']); ?></p>
+                    <p><strong>Fecha:</strong> <?php echo htmlspecialchars($clase['fecha']); ?></p>
+                    <p><strong>Hora:</strong> <?php echo htmlspecialchars($clase['horario']); ?></p>
+                    <p><strong>Duración:</strong> <?php echo htmlspecialchars($clase['duracion']); ?> minutos</p>
 
-
-                    <!-- Lista de participantes -->
+                    <!-- Lista de participantes con scroll -->
                     <h4 class="participantes-titulo">Participantes:</h4>
-                    <?php
-                    $participantes = obtenerParticipantesClase($conn, $clase['id_clase']);
-                    if (empty($participantes)):
-                    ?>
-                        <p class="mensaje-info">No hay participantes inscritos en esta clase.</p>
-                    <?php else: ?>
-                        <ul class="participantes-lista">
-                            <?php foreach ($participantes as $participante): ?>
-                                <li class="participante-item">
-                                    <?php echo htmlspecialchars($participante['nombre']); ?> -
-                                    <em><?php echo htmlspecialchars($participante['email']); ?></em>
-
-                                    <!-- Botón para eliminar participante -->
-                                    <form method="POST" action="clases_monitor.php" style="display:inline;">
-                                        <input type="hidden" name="accion" value="eliminar_participante">
-                                        <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
-                                        <input type="hidden" name="id_miembro" value="<?php echo $participante['id_miembro']; ?>">
-                                        <button type="submit" class="delete-button"
-                                            title="Eliminar a <?php echo htmlspecialchars($participante['nombre']); ?> de la clase <?php echo htmlspecialchars($clase['clase_nombre']); ?>"
-                                            onclick="return confirm('¿Estás seguro de que deseas eliminar a este participante de la clase?')">
-                                            Eliminar
-                                        </button>
-                                    </form>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
+                    <div class="participantes-container">
+                        <?php
+                        $participantes = obtenerParticipantesClase($conn, $clase['id_clase']);
+                        if (empty($participantes)): ?>
+                            <p class="mensaje-info">No hay participantes inscritos en esta clase.</p>
+                        <?php else: ?>
+                            <ul class="participantes-lista">
+                                <?php foreach ($participantes as $participante): ?>
+                                    <li class="participante-item">
+                                        <?php echo htmlspecialchars($participante['nombre']); ?> - <em><?php echo htmlspecialchars($participante['email']); ?></em>
+                                        <form method="POST" action="clases_monitor.php" style="display:inline;">
+                                            <input type="hidden" name="accion" value="eliminar_participante">
+                                            <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
+                                            <input type="hidden" name="id_miembro" value="<?php echo $participante['id_miembro']; ?>">
+                                            <button type="submit" class="delete-button" onclick="return confirm('¿Estás seguro de eliminar a este participante?')">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>
