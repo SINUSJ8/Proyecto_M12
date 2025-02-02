@@ -526,9 +526,10 @@ table.styled-table.mis-clases tbody tr.fila-vacia td {
 
 /* NOTIFICACIONES */
 .notificacion-nueva {
-    background-color: #d4edda;
+    background-color: #d4edda !important;
     font-weight: bold;
 }
+
 
 .notificacion-leida {
     background-color: #f8f9fa;
