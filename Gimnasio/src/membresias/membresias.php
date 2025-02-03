@@ -145,7 +145,7 @@ include '../admin/admin_header.php';
                                     <?php echo $dato['estado'] === 'activa' ? 'Desactivar' : 'Activar'; ?>
                                 </button>
                                 <button type="button"
-                                    class="delete-button btn btn-danger"
+                                    class="delete-button"
                                     data-id="<?php echo htmlspecialchars($dato['id']); ?>"
                                     title="Eliminar este registro de membresía. Esto NO elimina la membresía ni afecta al usuario, solo borra el registro de su historial.">
                                     Eliminar

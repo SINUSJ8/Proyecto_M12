@@ -17,6 +17,12 @@ $clase = obtenerDetallesClase($conn, $id_clase);
 
 // Obtener los miembros inscritos
 $miembros = obtenerMiembrosInscritos($conn, $id_clase);
+// Recuperar los filtros para volver a la búsqueda
+$filtrosBusqueda = $_GET;
+unset($filtrosBusqueda['id_clase']); // Eliminar el id_clase para evitar problemas en la URL
+
+$queryString = http_build_query($filtrosBusqueda);
+
 
 $title = "Detalle de la Clase";
 include '../admin/admin_header.php';
@@ -54,7 +60,8 @@ include '../admin/admin_header.php';
             <p>No hay miembros inscritos en esta clase.</p>
         <?php endif; ?>
 
-        <a href="clases.php" class="button">Listado de clases</a>
-        <a href="buscar_clase.php" class="button">Buscar Clase</a>
+        <div class="button-container">
+            <a href="buscar_clase.php?<?= htmlspecialchars($queryString); ?>" class="btn-general btn-secondary">Volver</a>
+        </div>
     </main>
 </body>

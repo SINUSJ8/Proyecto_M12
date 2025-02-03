@@ -203,8 +203,14 @@ include '../admin/admin_header.php';
                 </select>
 
                 <label for="id_monitor">Monitor:</label>
-                <select id="id_monitor" name="id_monitor" required>
-                    <option value="" selected disabled>Seleccionar monitor</option>
+                <select id="id_monitor" name="id_monitor" data-selected-monitor="<?= htmlspecialchars($clase['id_monitor']) ?>">
+                    <option value="" disabled>Seleccionar monitor</option>
+                    <?php while ($monitor = $monitores->fetch_assoc()): ?>
+                        <option value="<?= htmlspecialchars($monitor['id_monitor']) ?>"
+                            <?= ($clase['id_monitor'] == $monitor['id_monitor']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($monitor['monitor_nombre']) ?>
+                        </option>
+                    <?php endwhile; ?>
                 </select>
 
                 <label for="fecha">Fecha:</label>
@@ -225,7 +231,7 @@ include '../admin/admin_header.php';
 
                 <div class="button-container">
                     <button type="submit" class="btn-general">Actualizar Clase</button>
-                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Cancelar</a>
+                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Volver</a>
 
                 </div>
 

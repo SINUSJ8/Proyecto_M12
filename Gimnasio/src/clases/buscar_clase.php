@@ -152,7 +152,7 @@ include '../admin/admin_header.php';
                             <td><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
                             <td class="acciones">
                                 <div class="button-container">
-                                    <a href="detalle_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general">Ver Detalle</a>
+                                    <a href="detalle_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']) . '&' . http_build_query($filtros); ?>" class="btn-general">Ver Detalle</a>
                                     <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general edit-button">Editar</a>
                                     <form method="POST" action="buscar_clase.php">
                                         <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">

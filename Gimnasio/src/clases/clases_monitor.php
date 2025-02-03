@@ -126,7 +126,7 @@ include '../monitores/monitores_header.php';
                                             <input type="hidden" name="accion" value="eliminar_participante">
                                             <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
                                             <input type="hidden" name="id_miembro" value="<?php echo $participante['id_miembro']; ?>">
-                                            <button type="button" class="delete-button">X</button>
+                                            <button type="button" class="delete-button2">X</button>
                                         </form>
 
                                     </li>
