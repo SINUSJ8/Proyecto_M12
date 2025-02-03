@@ -103,19 +103,23 @@ include '../monitores/monitores_header.php';
     <?php else: ?>
         <div class="clases-grid">
             <?php foreach ($clases as $clase): ?>
+                <?php
+                $participantes = obtenerParticipantesClase($conn, $clase['id_clase']);
+                $num_inscritos = count($participantes); // Contamos los inscritos
+                $capacidad_maxima = obtenerCapacidadClase($conn, $clase['id_clase']); // Obtener la capacidad de la clase
+                ?>
                 <div class="clase-card">
                     <h3 class="clase-titulo"><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
                     <p><strong>Especialidad:</strong> <?php echo htmlspecialchars($clase['especialidad']); ?></p>
                     <p><strong>Fecha:</strong> <?php echo htmlspecialchars($clase['fecha']); ?></p>
                     <p><strong>Hora:</strong> <?php echo htmlspecialchars($clase['horario']); ?></p>
                     <p><strong>Duración:</strong> <?php echo htmlspecialchars($clase['duracion']); ?> minutos</p>
+                    <p><strong>Participantes:</strong> <?= $num_inscritos; ?> / <?= $capacidad_maxima; ?></p> <!-- MOSTRAR INSCRITOS / CAPACIDAD -->
 
                     <!-- Lista de participantes con scroll -->
                     <h4 class="participantes-titulo">Participantes:</h4>
                     <div class="participantes-container">
-                        <?php
-                        $participantes = obtenerParticipantesClase($conn, $clase['id_clase']);
-                        if (empty($participantes)): ?>
+                        <?php if (empty($participantes)): ?>
                             <p class="mensaje-info">No hay participantes inscritos en esta clase.</p>
                         <?php else: ?>
                             <ul class="participantes-lista">
@@ -128,17 +132,15 @@ include '../monitores/monitores_header.php';
                                             <input type="hidden" name="id_miembro" value="<?php echo $participante['id_miembro']; ?>">
                                             <button type="button" class="delete-button2">X</button>
                                         </form>
-
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
-
                         <?php endif; ?>
                     </div>
-
                 </div>
             <?php endforeach; ?>
         </div>
+
 
         <!-- Paginación -->
         <div class="pagination">

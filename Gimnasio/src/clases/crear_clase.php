@@ -147,17 +147,24 @@ include '../admin/admin_header.php';
             </div>
         <?php endif; ?>
 
-
-        <!-- Formulario para crear clase -->
+        <!-- Formulario para crear una nueva clase -->
         <section class="form_container">
             <form id="form_clase" method="POST">
                 <input type="hidden" name="accion" value="crear_clase">
+
+                <!-- Información básica de la clase -->
+                <h2>Información General de la Clase</h2>
+
                 <label for="nombre">Nombre de la Clase:</label>
                 <input type="text" id="nombre" name="nombre"
-                    value="<?= htmlspecialchars($clase['nombre'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($clase['nombre'] ?? '') ?>"
+                    required title="Introduce un nombre claro y descriptivo para la clase.">
 
+                <!-- Selección de especialidad -->
+                <h2>Especialidad de la Clase</h2>
                 <label for="id_especialidad">Especialidad:</label>
-                <select id="id_especialidad" name="id_especialidad" required>
+                <select id="id_especialidad" name="id_especialidad" required
+                    title="Selecciona la especialidad a la que pertenece esta clase.">
                     <option value="" selected disabled>Seleccionar especialidad</option>
                     <?php while ($especialidad = $especialidades->fetch_assoc()): ?>
                         <option value="<?= htmlspecialchars($especialidad['id_especialidad']) ?>"
@@ -168,41 +175,58 @@ include '../admin/admin_header.php';
                     <?php endwhile; ?>
                 </select>
 
-                <label for="id_monitor">Monitor:</label>
+                <!-- Asignación de monitor -->
+                <h2>Asignación del Monitor</h2>
+                <label for="id_monitor">Monitor Responsable:</label>
                 <select id="id_monitor" name="id_monitor"
                     <?= isset($clase['id_monitor']) ? "data-selected-monitor='" . htmlspecialchars($clase['id_monitor']) . "'" : ''; ?>
-                    required>
+                    required title="Selecciona el monitor que dirigirá esta clase.">
                     <option value="" selected disabled>Seleccionar monitor</option>
                 </select>
 
-                <label for="fecha">Fecha:</label>
+                <!-- Programación de la clase -->
+                <h2>Horario y Fecha de la Clase</h2>
+                <label for="fecha">Fecha de la Clase:</label>
                 <input type="date" id="fecha" name="fecha"
-                    value="<?= htmlspecialchars($clase['fecha'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($clase['fecha'] ?? '') ?>"
+                    required title="Selecciona la fecha en la que se impartirá la clase.">
 
-                <label for="horario">Horario:</label>
+                <label for="horario">Horario de Inicio:</label>
                 <input type="time" id="horario" name="horario"
-                    value="<?= htmlspecialchars($clase['horario'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($clase['horario'] ?? '') ?>"
+                    required title="Indica la hora en la que comenzará la clase.">
 
-                <label for="duracion">Duración (min):</label>
+                <!-- Duración y capacidad -->
+                <h2>Duración y Capacidad de la Clase</h2>
+                <label for="duracion">Duración (minutos):</label>
                 <input type="number" id="duracion" name="duracion"
-                    value="<?= htmlspecialchars($clase['duracion'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($clase['duracion'] ?? '') ?>"
+                    required title="Especifica la duración de la clase en minutos.">
 
-                <label for="capacidad">Capacidad Máxima:</label>
+                <label for="capacidad">Capacidad Máxima de Alumnos:</label>
                 <input type="number" id="capacidad" name="capacidad"
-                    value="<?= htmlspecialchars($clase['capacidad_maxima'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($clase['capacidad_maxima'] ?? '') ?>"
+                    required title="Indica el número máximo de alumnos que pueden inscribirse en esta clase.">
 
-                <button type="submit" class="btn-general"><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?></button>
-                <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Cancelar</a>
-
+                <!-- Botones de acción -->
+                <div class="button-container">
+                    <button type="submit" class="btn-general"
+                        title="Guarda la clase y agrégala al sistema."><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?>
+                    </button>
+                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()"
+                        title="Regresa a la página anterior sin guardar cambios.">Cancelar</a>
+                </div>
             </form>
-
         </section>
     </main>
+
+    <!-- Archivos JavaScript -->
     <script src="../../assets/js/dinamica_especialidades.js"></script>
     <script src="../../assets/js/validacion.js"></script>
     <script>
         configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
         configurarRestriccionesFechaHora('fecha', 'horario');
     </script>
+
     <?php include '../includes/footer.php'; ?>
 </body>

@@ -381,3 +381,23 @@ function obtenerClasesAsignadasMonitor($conn, $id_monitor)
     $stmt->close();
     return $clases;
 }
+function obtenerNumeroInscritos($conn, $id_clase)
+{
+    $stmt = $conn->prepare("SELECT COUNT(*) AS total FROM asistencia WHERE id_clase = ?");
+    $stmt->bind_param('i', $id_clase);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $total = $result->fetch_assoc()['total'];
+    $stmt->close();
+    return $total;
+}
+function obtenerCapacidadClase($conn, $id_clase)
+{
+    $stmt = $conn->prepare("SELECT capacidad_maxima FROM clase WHERE id_clase = ?");
+    $stmt->bind_param('i', $id_clase);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $capacidad = $result->fetch_assoc()['capacidad_maxima'] ?? 0;
+    $stmt->close();
+    return $capacidad;
+}

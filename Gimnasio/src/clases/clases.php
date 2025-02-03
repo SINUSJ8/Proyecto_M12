@@ -85,56 +85,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
         <?php endif; ?>
 
         <!-- Tabla para mostrar clases -->
-            <table id="tabla-clases" class="styled-table">
-                <thead>
-                    <tr>
-                        <th onclick="ordenarTabla(0, 'tabla-clases')" class="sortable">Nombre</th>
-                        <th onclick="ordenarTabla(1, 'tabla-clases')" class="sortable">Especialidad</th>
-                        <th onclick="ordenarTabla(2, 'tabla-clases')" class="sortable">Monitor</th>
-                        <th onclick="ordenarTabla(3, 'tabla-clases')" class="sortable">Fecha</th>
-                        <th onclick="ordenarTabla(4, 'tabla-clases')" class="sortable">Horario</th>
-                        <th onclick="ordenarTabla(5, 'tabla-clases')" class="sortable">Duración</th>
-                        <th onclick="ordenarTabla(6, 'tabla-clases')" class="sortable">Capacidad</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($clases as $clase): ?>
-                        <?php
-                        $sinMonitor = empty($clase['monitor']) || $clase['monitor_disponible'] === 'no disponible';
-                        ?>
-                        <tr class="<?= $sinMonitor ? 'clase-sin-monitor' : ''; ?>">
-                            <td><?= htmlspecialchars($clase['nombre']); ?></td>
-                            <td><?= htmlspecialchars($clase['especialidad']); ?></td>
-                            <td>
-                                <?= htmlspecialchars($clase['monitor'] ?: 'No asignado'); ?>
-                                <?php if ($clase['monitor_disponible'] === 'no disponible'): ?>
-                                    <span class="texto-advertencia">(No disponible)</span>
+        <table id="tabla-clases" class="styled-table">
+            <thead>
+                <tr>
+                    <th onclick="ordenarTabla(0, 'tabla-clases')" class="sortable">Nombre</th>
+                    <th onclick="ordenarTabla(1, 'tabla-clases')" class="sortable">Especialidad</th>
+                    <th onclick="ordenarTabla(2, 'tabla-clases')" class="sortable">Monitor</th>
+                    <th onclick="ordenarTabla(3, 'tabla-clases')" class="sortable">Fecha</th>
+                    <th onclick="ordenarTabla(4, 'tabla-clases')" class="sortable">Horario</th>
+                    <th onclick="ordenarTabla(5, 'tabla-clases')" class="sortable">Duración</th>
+                    <th onclick="ordenarTabla(6, 'tabla-clases')" class="sortable">Capacidad</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($clases as $clase): ?>
+                    <?php
+                    $sinMonitor = empty($clase['monitor']) || $clase['monitor_disponible'] === 'no disponible';
+                    $num_inscritos = obtenerNumeroInscritos($conn, $clase['id_clase']); // Función para contar inscritos
+                    ?>
+                    <tr class="<?= $sinMonitor ? 'clase-sin-monitor' : ''; ?>">
+                        <td><?= htmlspecialchars($clase['nombre']); ?></td>
+                        <td><?= htmlspecialchars($clase['especialidad']); ?></td>
+                        <td>
+                            <?= htmlspecialchars($clase['monitor'] ?: 'No asignado'); ?>
+                            <?php if ($clase['monitor_disponible'] === 'no disponible'): ?>
+                                <span class="texto-advertencia">(No disponible)</span>
+                            <?php endif; ?>
+                        </td>
+                        <td><?= date('d-m-Y', strtotime($clase['fecha'])); ?></td>
+                        <td><?= htmlspecialchars($clase['horario']); ?></td>
+                        <td><?= htmlspecialchars($clase['duracion']); ?> min</td>
+                        <td><?= $num_inscritos; ?> / <?= htmlspecialchars($clase['capacidad_maxima']); ?></td> <!-- Muestra inscritos / capacidad -->
+                        <td class="acciones">
+                            <div class="button-container">
+                                <a href="detalle_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general">Ver Detalle</a>
+                                <?php if ($tipo === 'actuales'): ?>
+                                    <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general edit-button">Editar</a>
+                                    <form method="POST" action="clases.php">
+                                        <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
+                                        <button type="submit" class="delete-button">Eliminar</button>
+                                    </form>
+                                <?php else: ?>
+                                    <span class="btn-disabled">Editar no disponible</span>
+                                    <span class="btn-disabled">Eliminar no disponible</span>
                                 <?php endif; ?>
-                            </td>
-                            <td><?= date('d-m-Y', strtotime($clase['fecha'])); ?></td>
-                            <td><?= htmlspecialchars($clase['horario']); ?></td>
-                            <td><?= htmlspecialchars($clase['duracion']); ?> min</td>
-                            <td><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
-                            <td class="acciones">
-                                <div class="button-container">
-                                    <a href="detalle_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general">Ver Detalle</a>
-                                    <?php if ($tipo === 'actuales'): ?>
-                                        <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general edit-button">Editar</a>
-                                        <form method="POST" action="clases.php">
-                                            <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
-                                            <button type="submit" class="delete-button">Eliminar</button>
-                                        </form>
-                                    <?php else: ?>
-                                        <span class="btn-disabled">Editar no disponible</span>
-                                        <span class="btn-disabled">Eliminar no disponible</span>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                            </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+
+        </table>
 
         <!-- Paginación -->
         <div class="pagination">
@@ -161,4 +163,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
     </main>
     <?php include_once __DIR__ . '/../includes/footer.php'; ?>
 </body>
+
 </html>

@@ -176,22 +176,33 @@ include '../admin/admin_header.php';
     <main>
         <h1>Editar Clase</h1>
 
-        <!-- Mensajes de error o éxito -->
+        <!-- Mensajes de confirmación o error -->
         <?php if (isset($success)): ?>
-            <p class="mensaje-confirmacion"><?php echo htmlspecialchars($success); ?></p>
+            <div id="mensaje-flotante" class="mensaje-confirmacion">
+                <?php echo htmlspecialchars($success); ?>
+            </div>
         <?php elseif (isset($error)): ?>
-            <p class="mensaje-error"><?php echo htmlspecialchars($error); ?></p>
+            <div id="mensaje-flotante" class="mensaje-error">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
         <?php endif; ?>
 
-        <!-- Formulario para editar clase -->
+
+        <!-- Formulario para editar los detalles de la clase -->
         <section class="form_container">
             <form method="POST">
+                <!-- Información básica de la clase -->
+                <h2>Información de la Clase</h2>
+
                 <label for="nombre">Nombre de la Clase:</label>
                 <input type="text" id="nombre" name="nombre"
-                    value="<?= htmlspecialchars($_POST['nombre'] ?? $clase['nombre'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($_POST['nombre'] ?? $clase['nombre'] ?? '') ?>"
+                    required title="Introduce un nombre descriptivo para la clase.">
 
+                <!-- Selección de especialidad -->
+                <h2>Especialidad de la Clase</h2>
                 <label for="id_especialidad">Especialidad:</label>
-                <select id="id_especialidad" name="id_especialidad" required>
+                <select id="id_especialidad" name="id_especialidad" required title="Selecciona la especialidad a la que pertenece la clase.">
                     <option value="" selected disabled>Seleccionar especialidad</option>
                     <?php while ($especialidad = $especialidades->fetch_assoc()): ?>
                         <option value="<?= htmlspecialchars($especialidad['id_especialidad']) ?>"
@@ -202,8 +213,11 @@ include '../admin/admin_header.php';
                     <?php endwhile; ?>
                 </select>
 
-                <label for="id_monitor">Monitor:</label>
-                <select id="id_monitor" name="id_monitor" data-selected-monitor="<?= htmlspecialchars($clase['id_monitor']) ?>">
+                <!-- Selección de monitor -->
+                <h2>Asignación de Monitor</h2>
+                <label for="id_monitor">Monitor Responsable:</label>
+                <select id="id_monitor" name="id_monitor" data-selected-monitor="<?= htmlspecialchars($clase['id_monitor']) ?>"
+                    title="Selecciona el monitor que estará a cargo de la clase.">
                     <option value="" disabled>Seleccionar monitor</option>
                     <?php while ($monitor = $monitores->fetch_assoc()): ?>
                         <option value="<?= htmlspecialchars($monitor['id_monitor']) ?>"
@@ -213,32 +227,41 @@ include '../admin/admin_header.php';
                     <?php endwhile; ?>
                 </select>
 
-                <label for="fecha">Fecha:</label>
+                <!-- Fecha y horario de la clase -->
+                <h2>Programación de la Clase</h2>
+                <label for="fecha">Fecha de la Clase:</label>
                 <input type="date" id="fecha" name="fecha"
-                    value="<?= htmlspecialchars($_POST['fecha'] ?? $clase['fecha'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($_POST['fecha'] ?? $clase['fecha'] ?? '') ?>"
+                    required title="Selecciona la fecha en la que se impartirá la clase.">
 
-                <label for="horario">Horario:</label>
+                <label for="horario">Horario de Inicio:</label>
                 <input type="time" id="horario" name="horario"
-                    value="<?= htmlspecialchars($_POST['horario'] ?? $clase['horario'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($_POST['horario'] ?? $clase['horario'] ?? '') ?>"
+                    required title="Selecciona la hora de inicio de la clase.">
 
-                <label for="duracion">Duración (min):</label>
+                <!-- Duración y capacidad -->
+                <h2>Duración y Capacidad</h2>
+                <label for="duracion">Duración (minutos):</label>
                 <input type="number" id="duracion" name="duracion"
-                    value="<?= htmlspecialchars($_POST['duracion'] ?? $clase['duracion'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($_POST['duracion'] ?? $clase['duracion'] ?? '') ?>"
+                    required title="Introduce la duración total de la clase en minutos.">
 
-                <label for="capacidad">Capacidad Máxima:</label>
+                <label for="capacidad">Capacidad Máxima de Alumnos:</label>
                 <input type="number" id="capacidad" name="capacidad"
-                    value="<?= htmlspecialchars($_POST['capacidad'] ?? $clase['capacidad_maxima'] ?? '') ?>" required>
+                    value="<?= htmlspecialchars($_POST['capacidad'] ?? $clase['capacidad_maxima'] ?? '') ?>"
+                    required title="Introduce el número máximo de alumnos que pueden inscribirse en la clase.">
 
+                <!-- Botones de acción -->
                 <div class="button-container">
-                    <button type="submit" class="btn-general">Actualizar Clase</button>
-                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Volver</a>
-
+                    <button type="submit" class="btn-general" title="Guarda los cambios realizados en la clase.">Actualizar Clase</button>
+                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()"
+                        title="Regresa a la página anterior sin guardar cambios.">Volver</a>
                 </div>
-
             </form>
         </section>
     </main>
 
+    <!-- Archivos JavaScript -->
     <script src="../../assets/js/dinamica_especialidades.js"></script>
     <script src="../../assets/js/validacion_clase.js"></script>
     <script src="../assets/js/validacion.js"></script>
@@ -246,5 +269,6 @@ include '../admin/admin_header.php';
         configurarMonitoresPorEspecialidad('id_especialidad', 'id_monitor');
         configurarRestriccionesFechaHora('fecha', 'horario');
     </script>
+
     <?php include '../includes/footer.php'; ?>
 </body>

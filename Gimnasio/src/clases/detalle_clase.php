@@ -17,12 +17,9 @@ $clase = obtenerDetallesClase($conn, $id_clase);
 
 // Obtener los miembros inscritos
 $miembros = obtenerMiembrosInscritos($conn, $id_clase);
-// Recuperar los filtros para volver a la búsqueda
-$filtrosBusqueda = $_GET;
-unset($filtrosBusqueda['id_clase']); // Eliminar el id_clase para evitar problemas en la URL
 
-$queryString = http_build_query($filtrosBusqueda);
-
+// Recuperar la URL de referencia o asignar una por defecto
+$referer = $_SERVER['HTTP_REFERER'] ?? 'buscar_clase.php';
 
 $title = "Detalle de la Clase";
 include '../admin/admin_header.php';
@@ -37,6 +34,7 @@ include '../admin/admin_header.php';
         <p><strong>Horario:</strong> <?= htmlspecialchars($clase['horario']); ?></p>
         <p><strong>Duración:</strong> <?= htmlspecialchars($clase['duracion']); ?> min</p>
         <p><strong>Capacidad Máxima:</strong> <?= htmlspecialchars($clase['capacidad_maxima']); ?></p>
+        <p><strong>Miembros Inscritos:</strong> <?= count($miembros); ?> / <?= htmlspecialchars($clase['capacidad_maxima']); ?></p>
 
         <h3>Miembros Apuntados</h3>
         <?php if (!empty($miembros)): ?>
@@ -61,7 +59,7 @@ include '../admin/admin_header.php';
         <?php endif; ?>
 
         <div class="button-container">
-            <a href="buscar_clase.php?<?= htmlspecialchars($queryString); ?>" class="btn-general btn-secondary">Volver</a>
+            <a href="<?= htmlspecialchars($referer); ?>" class="btn-general btn-secondary">Volver</a>
         </div>
     </main>
 </body>
