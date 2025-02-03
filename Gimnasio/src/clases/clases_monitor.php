@@ -95,11 +95,13 @@ include '../monitores/monitores_header.php';
     <h2 class="section-title">Clases Asignadas</h2>
 
     <?php if (isset($_GET['mensaje'])): ?>
-        <div class="mensaje-confirmacion"><?php echo htmlspecialchars($_GET['mensaje']); ?></div>
+        <div class="mensaje-confirmacion" title="Mensaje de confirmación sobre la acción realizada.">
+            <?php echo htmlspecialchars($_GET['mensaje']); ?>
+        </div>
     <?php endif; ?>
 
     <?php if (empty($clases)): ?>
-        <p class="mensaje-info">No tienes clases asignadas.</p>
+        <p class="mensaje-info" title="No tienes ninguna clase asignada en este momento.">No tienes clases asignadas.</p>
     <?php else: ?>
         <div class="clases-grid">
             <?php foreach ($clases as $clase): ?>
@@ -108,29 +110,33 @@ include '../monitores/monitores_header.php';
                 $num_inscritos = count($participantes); // Contamos los inscritos
                 $capacidad_maxima = obtenerCapacidadClase($conn, $clase['id_clase']); // Obtener la capacidad de la clase
                 ?>
-                <div class="clase-card">
-                    <h3 class="clase-titulo"><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
-                    <p><strong>Especialidad:</strong> <?php echo htmlspecialchars($clase['especialidad']); ?></p>
-                    <p><strong>Fecha:</strong> <?php echo htmlspecialchars($clase['fecha']); ?></p>
-                    <p><strong>Hora:</strong> <?php echo htmlspecialchars($clase['horario']); ?></p>
-                    <p><strong>Duración:</strong> <?php echo htmlspecialchars($clase['duracion']); ?> minutos</p>
-                    <p><strong>Participantes:</strong> <?= $num_inscritos; ?> / <?= $capacidad_maxima; ?></p> <!-- MOSTRAR INSCRITOS / CAPACIDAD -->
+                <div class="clase-card" title="Información detallada de la clase asignada.">
+                    <h3 class="clase-titulo" title="Nombre de la clase."><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
+                    <p title="Especialidad a la que pertenece la clase."><strong>Especialidad:</strong> <?php echo htmlspecialchars($clase['especialidad']); ?></p>
+                    <p title="Fecha en la que se impartirá la clase."><strong>Fecha:</strong> <?php echo htmlspecialchars($clase['fecha']); ?></p>
+                    <p title="Hora de inicio de la clase."><strong>Hora:</strong> <?php echo htmlspecialchars($clase['horario']); ?></p>
+                    <p title="Duración total de la clase en minutos."><strong>Duración:</strong> <?php echo htmlspecialchars($clase['duracion']); ?> minutos</p>
+                    <p title="Número de participantes inscritos en la clase y la capacidad máxima permitida.">
+                        <strong>Participantes:</strong> <?= $num_inscritos; ?> / <?= $capacidad_maxima; ?>
+                    </p>
 
                     <!-- Lista de participantes con scroll -->
-                    <h4 class="participantes-titulo">Participantes:</h4>
+                    <h4 class="participantes-titulo" title="Lista de miembros inscritos en la clase.">Participantes:</h4>
                     <div class="participantes-container">
                         <?php if (empty($participantes)): ?>
-                            <p class="mensaje-info">No hay participantes inscritos en esta clase.</p>
+                            <p class="mensaje-info" title="Ningún miembro se ha inscrito en esta clase aún.">
+                                No hay participantes inscritos en esta clase.
+                            </p>
                         <?php else: ?>
                             <ul class="participantes-lista">
                                 <?php foreach ($participantes as $participante): ?>
-                                    <li class="participante-item">
+                                    <li class="participante-item" title="Información del participante inscrito en la clase.">
                                         <span><?php echo htmlspecialchars($participante['nombre']); ?> - <em><?php echo htmlspecialchars($participante['email']); ?></em></span>
                                         <form method="POST" action="clases_monitor.php">
                                             <input type="hidden" name="accion" value="eliminar_participante">
                                             <input type="hidden" name="id_clase" value="<?php echo $clase['id_clase']; ?>">
                                             <input type="hidden" name="id_miembro" value="<?php echo $participante['id_miembro']; ?>">
-                                            <button type="button" class="delete-button2">X</button>
+                                            <button type="button" class="delete-button2" title="Eliminar este participante de la clase.">X</button>
                                         </form>
                                     </li>
                                 <?php endforeach; ?>
@@ -141,25 +147,25 @@ include '../monitores/monitores_header.php';
             <?php endforeach; ?>
         </div>
 
-
         <!-- Paginación -->
-        <div class="pagination">
+        <div class="pagination" title="Navega entre las páginas de clases asignadas.">
             <?php if ($page > 1): ?>
-                <a href="clases_monitor.php?page=<?= $page - 1; ?>" class="btn-general">Anterior</a>
+                <a href="clases_monitor.php?page=<?= $page - 1; ?>" class="btn-general" title="Ver página anterior de clases.">Anterior</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="clases_monitor.php?page=<?= $i; ?>" class="btn-general <?= $i === $page ? 'active' : ''; ?>">
+                <a href="clases_monitor.php?page=<?= $i; ?>" class="btn-general <?= $i === $page ? 'active' : ''; ?>" title="Ir a la página <?= $i; ?>">
                     <?= $i; ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($page < $total_pages): ?>
-                <a href="clases_monitor.php?page=<?= $page + 1; ?>" class="btn-general">Siguiente</a>
+                <a href="clases_monitor.php?page=<?= $page + 1; ?>" class="btn-general" title="Ver página siguiente de clases.">Siguiente</a>
             <?php endif; ?>
         </div>
     <?php endif; ?>
 </main>
+
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
