@@ -23,23 +23,6 @@ function obtenerConteoMonitores($conn)
     return $query ? $query->fetch_assoc()['total'] : 0;
 }
 
-// Función para obtener las notificaciones
-function obtenerNotificaciones($conn, $id_usuario, $limit = 5, $soloNoLeidas = true)
-{
-    $sql = "SELECT * FROM notificacion WHERE id_usuario = ?";
-    if ($soloNoLeidas) {
-        $sql .= " AND leida = 0";
-    }
-    $sql .= " ORDER BY fecha DESC LIMIT ?";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $id_usuario, $limit);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $notificaciones = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
-    return $notificaciones;
-}
 
 
 

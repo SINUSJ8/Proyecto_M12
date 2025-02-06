@@ -1,6 +1,6 @@
 <?php
 require_once('../includes/general.php');
-require_once('../miembros/member_functions.php');
+require_once('../includes/notificaciones_functions.php');
 
 // Verificar que el usuario es monitor
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {

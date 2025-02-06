@@ -1,6 +1,7 @@
 <?php
 require_once '../clases/class_functions.php';
 require_once('../admin/admin_functions.php');
+require_once('../includes/notificaciones_functions.php');
 verificarAdmin();
 
 $conn = obtenerConexion();

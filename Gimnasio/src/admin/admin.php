@@ -1,6 +1,6 @@
 <?php
 require_once('admin_functions.php');
-require_once('../miembros/member_functions.php'); // Para usar la función marcarNotificacionesComoLeidas
+require_once('../includes/notificaciones_functions.php');
 verificarAdmin();
 
 $conn = obtenerConexion();

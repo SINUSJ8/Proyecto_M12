@@ -288,13 +288,7 @@ function obtenerMonitorDeClase($conn, $id_clase)
     $stmt->close();
     return $monitor;
 }
-function enviarNotificacion($conn, $id_usuario, $mensaje)
-{
-    $stmt = $conn->prepare("INSERT INTO notificacion (id_usuario, mensaje) VALUES (?, ?)");
-    $stmt->bind_param("is", $id_usuario, $mensaje);
-    $stmt->execute();
-    $stmt->close();
-}
+
 function eliminarParticipanteDeClase($conn, $id_clase, $id_miembro, $id_monitor)
 {
     // Verificar si el monitor tiene asignada la clase

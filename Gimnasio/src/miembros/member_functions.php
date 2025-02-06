@@ -665,33 +665,7 @@ function obtenerUsuariosPorRol($conn, $rol)
 
     return $usuarios;
 }
-function obtenerNotificacionesPorUsuario($conn, $id_usuario)
-{
-    $sql = "SELECT mensaje, fecha, leida 
-            FROM notificacion 
-            WHERE id_usuario = ? 
-            ORDER BY fecha DESC";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id_usuario);
-    $stmt->execute();
-    $result = $stmt->get_result();
 
-    $notificaciones = [];
-    if ($result) {
-        $notificaciones = $result->fetch_all(MYSQLI_ASSOC);
-    }
-    $stmt->close();
-
-    return $notificaciones;
-}
-function marcarNotificacionesComoLeidas($conn, $id_usuario)
-{
-    $sql = "UPDATE notificacion SET leida = 1 WHERE id_usuario = ? AND leida = 0";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id_usuario);
-    $stmt->execute();
-    $stmt->close();
-}
 function actualizarPreferenciasMembresia($id_usuario, $renovacion_automatica)
 {
     $conn = obtenerConexion();

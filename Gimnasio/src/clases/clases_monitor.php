@@ -2,6 +2,7 @@
 require_once('../includes/general.php');
 require_once('../miembros/member_functions.php');
 require_once('class_functions.php');
+require_once('../includes/notificaciones_functions.php');
 
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {
     header("Location: ../index.php?error=Acceso+denegado");
@@ -171,7 +172,7 @@ include '../monitores/monitores_header.php';
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const deleteButtons = document.querySelectorAll(".delete-button");
+        const deleteButtons = document.querySelectorAll(".delete-button2");
 
         deleteButtons.forEach(button => {
             button.addEventListener("click", function() {
