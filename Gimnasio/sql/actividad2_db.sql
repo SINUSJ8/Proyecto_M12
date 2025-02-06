@@ -144,6 +144,15 @@ CREATE TABLE IF NOT EXISTS notificacion (
     leida BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS notificacion_oculta (
+    id_oculta INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_notificacion INT NOT NULL,
+    fecha_oculta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_notificacion) REFERENCES notificacion(id_notificacion) ON DELETE CASCADE,
+    UNIQUE (id_usuario, id_notificacion)
+);
 
 -- Tabla de roles y permisos
 CREATE TABLE IF NOT EXISTS rol_permiso (
