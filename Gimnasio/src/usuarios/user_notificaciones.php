@@ -68,7 +68,7 @@ include 'user_header.php';
     <?php if ($total_notificaciones > 0): ?>
         <!-- Botón para ocultar todas las notificaciones -->
         <form method="POST" style="margin-bottom: 10px;">
-            <button type="submit" name="accion" value="ocultar_todas" class="btn-general btn-danger">Eliminar Todas</button>
+            <button type="submit" name="accion" value="ocultar_todas" class="delete-button">Eliminar Todas</button>
         </form>
     <?php endif; ?>
 
@@ -94,7 +94,7 @@ include 'user_header.php';
                             <!-- Formulario para ocultar individualmente -->
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="id_notificacion" value="<?php echo $notificacion['id_notificacion']; ?>">
-                                <button type="submit" name="accion" value="ocultar" class="btn-general">Eliminar</button>
+                                <button type="submit" name="accion" value="ocultar" class="delete-button">Eliminar</button>
                             </form>
                         </td>
                     </tr>

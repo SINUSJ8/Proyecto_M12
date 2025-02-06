@@ -66,7 +66,7 @@ include 'monitores_header.php';
     <h2 class="section-title">Mis Notificaciones</h2>
 
     <form method="POST">
-        <button type="submit" name="accion" value="ocultar_todas" class="btn-general btn-danger">Eliminar Todas</button>
+        <button type="submit" name="accion" value="ocultar_todas" class="delete-button">Eliminar Todas</button>
     </form>
 
     <?php if (empty($notificaciones)): ?>
@@ -90,7 +90,7 @@ include 'monitores_header.php';
                         <td>
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="id_notificacion" value="<?php echo $notificacion['id_notificacion']; ?>">
-                                <button type="submit" name="accion" value="ocultar" class="btn-general">Eliminar</button>
+                                <button type="submit" name="accion" value="ocultar" class="delete-button">Eliminar</button>
                             </form>
                         </td>
                     </tr>

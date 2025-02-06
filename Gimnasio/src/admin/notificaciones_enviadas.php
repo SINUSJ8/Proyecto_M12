@@ -135,7 +135,7 @@ include 'admin_header.php';
                                 <button type="submit" name="accion" value="restaurar" class="btn-general">Restaurar</button>
                             <?php endif; ?>
 
-                            <button type="submit" name="accion" value="eliminar" class="btn-general btn-danger">Eliminar</button>
+                            <button type="submit" name="accion" value="eliminar" class="delete-button">Eliminar</button>
                         </form>
                     </td>
 
