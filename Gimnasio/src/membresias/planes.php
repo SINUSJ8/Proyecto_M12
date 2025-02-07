@@ -120,5 +120,6 @@ include '../admin/admin_header.php';
         </ul>
     </main>
 </body>
+<?php include '../includes/footer.php'; ?>
 
 </html>

@@ -18,37 +18,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['accion']) && $_POST['
     $id_clase = intval($_POST['id_clase']);
     $id_miembro = intval($_POST['id_miembro']);
 
-    // Obtener nombre de la clase
-    $sqlClase = "SELECT nombre FROM clase WHERE id_clase = ?";
-    $stmtClase = $conn->prepare($sqlClase);
-    $stmtClase->bind_param("i", $id_clase);
-    $stmtClase->execute();
-    $nombreClase = $stmtClase->get_result()->fetch_assoc()['nombre'] ?? 'Clase desconocida';
-    $stmtClase->close();
+    // Obtener detalles de la clase y el usuario antes de la eliminación
+    $detalles_clase = obtenerDetallesClase($conn, $id_clase);
+    $nombreClase = $detalles_clase['nombre'] ?? 'Clase desconocida';
 
-    // Obtener ID del usuario del miembro eliminado
-    $sqlUsuario = "SELECT id_usuario FROM miembro WHERE id_miembro = ?";
-    $stmtUsuario = $conn->prepare($sqlUsuario);
+    $stmtUsuario = $conn->prepare("SELECT id_usuario FROM miembro WHERE id_miembro = ?");
     $stmtUsuario->bind_param("i", $id_miembro);
     $stmtUsuario->execute();
     $resultUsuario = $stmtUsuario->get_result();
     $id_usuario_miembro = $resultUsuario->fetch_assoc()['id_usuario'] ?? null;
     $stmtUsuario->close();
 
-    // Eliminar al participante de la clase
+    // Eliminar participante y enviar notificación si procede
     $stmt = $conn->prepare("DELETE FROM asistencia WHERE id_clase = ? AND id_miembro = ?");
     $stmt->bind_param("ii", $id_clase, $id_miembro);
     $stmt->execute();
     $eliminado = $stmt->affected_rows > 0;
     $stmt->close();
 
-    // Enviar notificación al usuario del miembro eliminado
     if ($eliminado && $id_usuario_miembro) {
         $mensaje = "Has sido eliminado de la clase '{$nombreClase}'. Si crees que esto es un error, por favor, contacta al gimnasio.";
         enviarNotificacion($conn, $id_usuario_miembro, $mensaje);
     }
 
-    // Redirigir con mensaje
     $mensaje = $eliminado ? "Participante eliminado correctamente." : "No se pudo eliminar el participante.";
     header("Location: clases_monitor.php?mensaje=" . urlencode($mensaje));
     exit();
@@ -59,38 +51,16 @@ $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $limit = 6;
 $offset = ($page - 1) * $limit;
 
-// Contar total de clases asignadas al monitor
-$sqlTotal = "
-    SELECT COUNT(*) AS total
-    FROM clase c
-    INNER JOIN monitor m ON c.id_monitor = m.id_monitor
-    WHERE m.id_usuario = ?
-";
-$stmtTotal = $conn->prepare($sqlTotal);
-$stmtTotal->bind_param("i", $id_monitor);
-$stmtTotal->execute();
-$resultTotal = $stmtTotal->get_result()->fetch_assoc();
-$total_clases = $resultTotal['total'];
+// Obtener el total de clases y calcular páginas
+$total_clases = obtenerTotalClasesMonitor($conn, $id_monitor);
 $total_pages = ceil($total_clases / $limit);
 
-// Obtener clases asignadas con paginación
-$sqlClases = "
-    SELECT c.id_clase, c.nombre AS clase_nombre, e.nombre AS especialidad, c.fecha, c.horario, c.duracion
-    FROM clase c
-    INNER JOIN monitor m ON c.id_monitor = m.id_monitor
-    INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
-    WHERE m.id_usuario = ?
-    ORDER BY c.fecha, c.horario
-    LIMIT ? OFFSET ?
-";
-$stmt = $conn->prepare($sqlClases);
-$stmt->bind_param("iii", $id_monitor, $limit, $offset);
-$stmt->execute();
-$resultClases = $stmt->get_result();
-$clases = $resultClases->fetch_all(MYSQLI_ASSOC);
+// Obtener clases asignadas al monitor con paginación
+$clases = obtenerClasesPaginadasMonitor($conn, $id_monitor, $limit, $offset);
 
 include '../monitores/monitores_header.php';
 ?>
+
 
 <main>
     <h2 class="section-title">Clases Asignadas</h2>

@@ -92,7 +92,8 @@ include '../admin/admin_header.php';
         <?php endif; ?>
     </main>
 
-    <?php include '../includes/footer.php'; ?>
+
 </body>
+<?php include '../includes/footer.php'; ?>
 
 </html>

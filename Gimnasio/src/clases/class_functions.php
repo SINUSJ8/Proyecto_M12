@@ -395,3 +395,43 @@ function obtenerCapacidadClase($conn, $id_clase)
     $stmt->close();
     return $capacidad;
 }
+function obtenerTotalClasesMonitor($conn, $id_monitor)
+{
+    $sql = "
+        SELECT COUNT(*) AS total
+        FROM clase c
+        INNER JOIN monitor m ON c.id_monitor = m.id_monitor
+        WHERE m.id_usuario = ?
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_monitor);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $total = $result->fetch_assoc()['total'];
+    $stmt->close();
+
+    return $total;
+}
+
+function obtenerClasesPaginadasMonitor($conn, $id_monitor, $limit, $offset)
+{
+    $sql = "
+        SELECT c.id_clase, c.nombre AS clase_nombre, e.nombre AS especialidad, c.fecha, c.horario, c.duracion
+        FROM clase c
+        INNER JOIN monitor m ON c.id_monitor = m.id_monitor
+        INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
+        WHERE m.id_usuario = ?
+        ORDER BY c.fecha, c.horario
+        LIMIT ? OFFSET ?
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iii", $id_monitor, $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $clases = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    return $clases;
+}

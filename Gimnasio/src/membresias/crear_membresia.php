@@ -185,6 +185,8 @@ include '../admin/admin_header.php';
             <?php endforeach; ?>
         </ul>
     </main>
+
 </body>
+<?php include '../includes/footer.php'; ?>
 
 </html>

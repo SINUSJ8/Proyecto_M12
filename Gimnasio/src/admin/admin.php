@@ -109,5 +109,5 @@ $conn->close();
         </section>
     </main>
 
-    <?php include '../includes/footer.php'; ?>
 </body>
+<?php include '../includes/footer.php'; ?>

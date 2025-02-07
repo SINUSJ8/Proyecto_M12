@@ -80,7 +80,7 @@ include '../admin/admin_header.php';
             <?php endforeach; ?>
         </div>
     </main>
-    <?php include '../includes/footer.php'; ?>
+
     <script>
         // Esperar 5 segundos y ocultar el mensaje
         setTimeout(function() {
@@ -94,5 +94,6 @@ include '../admin/admin_header.php';
     </script>
 
 </body>
+<?php include '../includes/footer.php'; ?>
 
 </html>
