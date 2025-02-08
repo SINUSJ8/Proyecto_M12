@@ -118,7 +118,7 @@ try {
                             <form method="POST">
                                 <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
                                 <input type="hidden" name="accion" value="borrarse">
-                                <button type="submit" class="btn-general delete-button">Borrarme</button>
+                                <button type="submit" class="delete-button">Borrarme</button>
                             </form>
                         </td>
                     </tr>

@@ -254,13 +254,15 @@ function obtenerClasesInscritas($conn, $id_miembro)
 function obtenerClasesInscritas($conn, $id_miembro, $limit, $offset)
 {
     $sql = "
-        SELECT c.*, e.nombre AS especialidad
-        FROM asistencia a
-        JOIN clase c ON a.id_clase = c.id_clase
-        JOIN especialidad e ON c.id_especialidad = e.id_especialidad
-        WHERE a.id_miembro = ?
-        LIMIT ? OFFSET ?
-    ";
+            SELECT c.*, e.nombre AS especialidad
+            FROM asistencia a
+            JOIN clase c ON a.id_clase = c.id_clase
+            JOIN especialidad e ON c.id_especialidad = e.id_especialidad
+            WHERE a.id_miembro = ?
+              AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
+            ORDER BY c.fecha ASC, c.horario ASC
+            LIMIT ? OFFSET ?
+        ";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("iii", $id_miembro, $limit, $offset);
@@ -268,6 +270,7 @@ function obtenerClasesInscritas($conn, $id_miembro, $limit, $offset)
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
+
 function contarClasesInscritas($conn, $id_miembro)
 {
     $sql = "

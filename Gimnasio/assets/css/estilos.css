@@ -469,6 +469,11 @@ table.styled-table.mis-clases tbody tr.fila-vacia td {
     background-color: #7e2323;
 }
 
+.delete-button:disabled {
+    background-color: #7e2323 !important;
+    color: white;
+}
+
 .edit-button {
     background-color: #3aafa9;
     color: white;
@@ -740,6 +745,11 @@ textarea {
     margin: 0 0 10px;
     font-size: 1em;
     color: #333;
+}
+
+.membresia-card button {
+    width: 100%;
+    margin-top: auto;
 }
 
 ul {

@@ -1,6 +1,7 @@
 <?php
 require_once('../admin/admin_functions.php');
-require_once('../clases/class_functions.php'); // Aquí están las funciones necesarias
+require_once('../clases/class_functions.php');
+require_once('../includes/notificaciones_functions.php');
 verificarAdmin();
 
 $conn = obtenerConexion();
@@ -12,12 +13,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         // Añadir nueva especialidad
         $nombre_especialidad = trim($_POST['nueva_especialidad']);
         $mensaje = agregarEspecialidad($conn, $nombre_especialidad);
-    } elseif (isset($_POST['editar_especialidad'])) {
+    } elseif (isset($_POST['editar_especialidad']) && isset($_POST['id_especialidad'])) {
         // Editar especialidad existente
         $id_especialidad = $_POST['id_especialidad'];
         $nombre_especialidad = trim($_POST['nombre_especialidad']);
         $mensaje = editarEspecialidadConNotificaciones($conn, $id_especialidad, $nombre_especialidad);
-    } elseif (isset($_POST['eliminar_especialidad'])) {
+    } elseif (isset($_POST['eliminar_especialidad']) && isset($_POST['id_especialidad'])) {
         // Eliminar especialidad con notificaciones
         $id_especialidad = $_POST['id_especialidad'];
         $mensaje = eliminarEspecialidadConNotificaciones($conn, $id_especialidad);
@@ -32,8 +33,6 @@ if ($result) {
         $especialidades[] = $row;
     }
 }
-
-
 
 $title = "Administración de Especialidades";
 include '../admin/admin_header.php';
@@ -73,7 +72,7 @@ include '../admin/admin_header.php';
                         <input type="text" name="nombre_especialidad" value="<?php echo htmlspecialchars($especialidad['nombre']); ?>" class="input-general" required>
                         <div class="button-group">
                             <button type="submit" name="editar_especialidad" class="btn-general edit-button">Editar</button>
-                            <button type="submit" name="eliminar_especialidad" class="delete-button" onclick="return confirm('¿Estás seguro de que deseas eliminar esta especialidad?')">Eliminar</button>
+                            <button type="button" class="delete-button" onclick="confirmarEliminacion(<?php echo $especialidad['id_especialidad']; ?>)">Eliminar</button>
                         </div>
                     </form>
                 </div>
@@ -81,17 +80,14 @@ include '../admin/admin_header.php';
         </div>
     </main>
 
-    <script>
-        // Esperar 5 segundos y ocultar el mensaje
-        setTimeout(function() {
-            let mensaje = document.querySelector('.mensaje-confirmacion, .mensaje-error');
-            if (mensaje) {
-                mensaje.style.transition = "opacity 0.5s ease-out";
-                mensaje.style.opacity = "0";
-                setTimeout(() => mensaje.remove(), 500); // Eliminar el mensaje después de la animación
-            }
-        }, 5000);
-    </script>
+    <!-- Formulario oculto para eliminar -->
+    <form id="form-eliminar" method="POST" action="especialidades.php" style="display: none;">
+        <input type="hidden" name="id_especialidad" id="id_especialidad">
+        <input type="hidden" name="eliminar_especialidad" value="1">
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/alertas.js"></script>
 
 </body>
 <?php include '../includes/footer.php'; ?>
