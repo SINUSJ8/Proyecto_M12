@@ -100,7 +100,7 @@ include '../admin/admin_header.php';
                     title="Introduce el nombre del usuario o el tipo de membresía para buscar">
                 <button type="submit" class="btn-general" title="Buscar membresías o usuarios que coincidan con el término ingresado">Buscar</button>
                 <a href="membresias.php" class="btn-general limpiar-busqueda" title="Restablecer la búsqueda y mostrar todos los registros">Limpiar</a>
-                <a href="crear_membresia.php" class="btn-general limpiar-busqueda" title="Crear una nueva membresía">Crear Membresía</a>
+                <a href="crear_membresia.php" class="btn-general limpiar-busqueda" title="Crear una nueva membresía">Crear o Editar Membresías</a>
             </form>
         </div>
 

@@ -402,17 +402,23 @@ function obtenerTotalClasesMonitor($conn, $id_monitor)
         FROM clase c
         INNER JOIN monitor m ON c.id_monitor = m.id_monitor
         WHERE m.id_usuario = ?
+        AND (c.fecha > CURDATE() OR (c.fecha = CURDATE() AND c.horario >= CURTIME())) 
     ";
 
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error en la preparación de la consulta: " . $conn->error);
+    }
+
     $stmt->bind_param("i", $id_monitor);
     $stmt->execute();
     $result = $stmt->get_result();
-    $total = $result->fetch_assoc()['total'];
+    $total = $result->fetch_assoc()['total'] ?? 0;
     $stmt->close();
 
     return $total;
 }
+
 
 function obtenerClasesPaginadasMonitor($conn, $id_monitor, $limit, $offset)
 {
@@ -422,11 +428,16 @@ function obtenerClasesPaginadasMonitor($conn, $id_monitor, $limit, $offset)
         INNER JOIN monitor m ON c.id_monitor = m.id_monitor
         INNER JOIN especialidad e ON c.id_especialidad = e.id_especialidad
         WHERE m.id_usuario = ?
-        ORDER BY c.fecha, c.horario
+        AND (c.fecha > CURDATE() OR (c.fecha = CURDATE() AND c.horario >= CURTIME())) 
+        ORDER BY c.fecha ASC, c.horario ASC
         LIMIT ? OFFSET ?
     ";
 
     $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Error en la preparación de la consulta: " . $conn->error);
+    }
+
     $stmt->bind_param("iii", $id_monitor, $limit, $offset);
     $stmt->execute();
     $result = $stmt->get_result();

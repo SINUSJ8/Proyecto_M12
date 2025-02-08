@@ -181,7 +181,7 @@ $total_rows = $result_count->fetch_assoc()['total'];
 $total_pages = ceil($total_rows / $limit);
 
 
-$total_pages = ceil($total_rows / $limit); // Calcula el total de páginas
+$total_pages = ceil($total_rows / $limit);
 
 $title = "Gestión de Usuarios";
 include '../admin/admin_header.php';
@@ -254,11 +254,8 @@ include '../admin/admin_header.php';
                                         <?php else: ?>
                                             <!-- Botones activos para superadmin -->
                                             <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Editar</a>
-                                            <form method="POST" action="usuarios.php" style="display:inline;">
-                                                <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
-                                                <button type="submit" name="eliminar_usuario" class="delete-button"
-                                                    onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</button>
-                                            </form>
+                                            <button type="button" class="delete-button" onclick="confirmarEliminacion(<?php echo $usuario['id_usuario']; ?>)">Eliminar</button>
+
                                         <?php endif; ?>
                                         <?php
                                     // Caso 2: Otros administradores
@@ -274,11 +271,8 @@ include '../admin/admin_header.php';
                                     // Caso 3: Usuarios no administradores
                                     else: ?>
                                         <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Editar</a>
-                                        <form method="POST" action="usuarios.php" style="display:inline;">
-                                            <input type="hidden" name="id_usuario" value="<?php echo $usuario['id_usuario']; ?>">
-                                            <button type="submit" name="eliminar_usuario" class="delete-button"
-                                                onclick="return confirm('¿Estás seguro de eliminar este usuario?')">Eliminar</button>
-                                        </form>
+                                        <button type="button" class="delete-button" onclick="confirmarEliminacion(<?php echo $usuario['id_usuario']; ?>)">Eliminar</button>
+
                                     <?php endif; ?>
                                 </div>
                             </td>
@@ -294,6 +288,12 @@ include '../admin/admin_header.php';
 
 
         </table>
+        <!-- Formulario oculto para eliminar usuarios -->
+        <form id="form-eliminar" method="POST" action="usuarios.php" style="display: none;">
+            <input type="hidden" name="id_usuario" id="id_usuario">
+            <input type="hidden" name="eliminar_usuario" value="1">
+        </form>
+
 
         <!-- Paginación -->
         <div class="pagination">
@@ -315,6 +315,9 @@ include '../admin/admin_header.php';
 
     <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/clases.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/alertas.js"></script>
+
 </body>
 
 

@@ -20,6 +20,28 @@ function confirmarEliminacion(idEspecialidad) {
         }
     });
 }
+function confirmarEliminacion(idUsuario) {
+    Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción no se puede deshacer.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            console.log("Usuario a eliminar:", idUsuario);
+
+            // Asignar el ID al input hidden del formulario oculto
+            document.getElementById("id_usuario").value = idUsuario;
+
+            // Enviar el formulario
+            document.getElementById("form-eliminar").submit();
+        }
+    });
+}
 
 
 function ocultarMensaje() {

@@ -41,7 +41,7 @@
                     <li>
                         <a href="../membresias/membresias.php">Membresías</a>
                         <ul class="menu-vertical">
-                            <li><a href="../membresias/crear_membresia.php">Crear Membresía</a></li>
+                            <li><a href="../membresias/crear_membresia.php">Crear o Editar Membresía</a></li>
                             <li><a href="../membresias/planes.php">Planes</a></li>
                         </ul>
                     </li>

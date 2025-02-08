@@ -1,5 +1,6 @@
 <?php
 require_once('../miembros/member_functions.php');
+require_once('../includes/notificaciones_functions.php');
 
 verificarAdmin();
 
@@ -39,12 +40,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Actualizar membresía
         $resultadoMembresia = actualizarMembresia($conn, $miembro['id_miembro'], $id_membresia_nueva, $fecha_inicio_nueva, $fecha_fin_nueva);
 
+        // Obtener el nombre de la nueva membresía después de actualizar
+        $stmt = $conn->prepare("SELECT tipo FROM membresia WHERE id_membresia = ?");
+        $stmt->bind_param("i", $id_membresia_nueva);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $nombreMembresia = $result->fetch_assoc()['tipo'] ?? 'Desconocida';
+        $stmt->close();
+
         // Actualizar entrenamientos
         try {
             actualizarEntrenamientosMiembro($conn, $miembro['id_miembro'], $entrenamientos_seleccionados);
-            $mensaje = $resultadoMembresia['success']
-                ? "Membresía y entrenamientos actualizados correctamente."
-                : $resultadoMembresia['message'];
+            $mensaje = "Membresía y entrenamientos actualizados correctamente.";
+
+            // Enviar notificación
+            $mensajeNotificacion = "Tu membresía ha sido actualizada a '{$nombreMembresia}' con fecha de inicio {$fecha_inicio_nueva} y fin {$fecha_fin_nueva}.";
+            enviarNotificacion($conn, $id_usuario, $mensajeNotificacion);
+
+            // Redirigir para recargar los datos actualizados sin duplicar envíos de formulario
+            header("Location: edit_miembro.php?id_usuario=" . $id_usuario . "&mensaje=" . urlencode($mensaje));
+            exit();
         } catch (Exception $e) {
             $mensaje = "Error al actualizar los entrenamientos: " . $e->getMessage();
         }
@@ -54,6 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fechas_membresia = $miembro['fechas_membresia'] ?? ['inicio' => '', 'fin' => ''];
     }
 }
+
+
 
 include '../admin/admin_header.php';
 ?>
@@ -174,4 +191,6 @@ include '../admin/admin_header.php';
             selectMembresia.addEventListener('change', actualizarEntrenamientos);
         });
     </script>
+
+    <script src="../../assets/js/alertas.js"></script>
 </body>
