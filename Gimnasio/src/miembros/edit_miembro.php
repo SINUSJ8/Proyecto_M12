@@ -38,14 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$id_membresia_nueva || !$fecha_inicio_nueva || !$fecha_fin_nueva) {
         $mensaje = "Error: Todos los campos son obligatorios.";
     } else {
-        // Verificar si el miembro ya tiene una membresía activa
-        $stmt = $conn->prepare("SELECT id FROM miembro_membresia WHERE id_miembro = ? AND estado = 'activa'");
-        $stmt->bind_param("i", $miembro['id_miembro']);
-        $stmt->execute();
-        $stmt->store_result();
-        $tieneMembresiaActiva = $stmt->num_rows > 0;
-        $stmt->close();
-
         // Determinar el estado de la membresía según las fechas
         $fecha_actual = date('Y-m-d');
         if ($fecha_inicio_nueva > $fecha_actual) {
@@ -56,14 +48,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nuevo_estado = 'activa'; // Dentro del rango de fechas
         }
 
+        // Verificar si el miembro ya tiene una membresía activa
+        $stmt = $conn->prepare("SELECT id FROM miembro_membresia WHERE id_miembro = ? AND estado = 'activa'");
+        $stmt->bind_param("i", $miembro['id_miembro']);
+        $stmt->execute();
+        $stmt->store_result();
+        $tieneMembresiaActiva = $stmt->num_rows > 0;
+        $stmt->close();
+
         if ($tieneMembresiaActiva) {
-            // **Actualizar membresía existente**
-            $stmt = $conn->prepare("UPDATE miembro_membresia SET id_membresia = ?, fecha_inicio = ?, fecha_fin = ?, estado = ? WHERE id_miembro = ?");
+            // **Actualizar la membresía activa**
+            $stmt = $conn->prepare("UPDATE miembro_membresia 
+                                    SET id_membresia = ?, fecha_inicio = ?, fecha_fin = ?, estado = ? 
+                                    WHERE id_miembro = ? AND estado = 'activa'");
             $stmt->bind_param("isssi", $id_membresia_nueva, $fecha_inicio_nueva, $fecha_fin_nueva, $nuevo_estado, $miembro['id_miembro']);
             $stmt->execute();
             $stmt->close();
         } else {
-            // **Crear nueva membresía con valores predeterminados**
+            // **Crear una nueva membresía con valores predeterminados**
             $monto_pagado = 0;
             $metodo_pago = 'tarjeta';
             $renovacion_automatica = false;
@@ -112,8 +114,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fechas_membresia = $miembro['fechas_membresia'] ?? ['inicio' => '', 'fin' => ''];
     }
 }
+
 include '../admin/admin_header.php';
 ?>
+
 
 
 

@@ -1,6 +1,4 @@
 <?php
-file_put_contents("debuglog.txt", print_r($_POST, true));
-
 require_once('../admin/admin_functions.php');
 require_once('../includes/notificaciones_functions.php');
 verificarAdmin();
