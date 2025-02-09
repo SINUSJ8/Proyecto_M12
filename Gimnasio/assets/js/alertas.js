@@ -43,6 +43,56 @@ function confirmarEliminacion(idUsuario) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const selectMembresia = document.getElementById('tipo_membresia');
+    const form = document.querySelector('.form_general');
+    const fechaInicioInput = document.getElementById('fecha_inicio');
+    const fechaFinInput = document.getElementById('fecha_fin');
+
+    function validarFechas() {
+        const fechaInicio = new Date(fechaInicioInput.value);
+        const fechaFin = new Date(fechaFinInput.value);
+
+        if (fechaInicio > fechaFin) {
+            alert("⚠️ La fecha de inicio no puede ser posterior a la fecha de fin.");
+            return false; // Evita el envío del formulario
+        }
+        return true; // Permite el envío si las fechas son correctas
+    }
+
+    function actualizarEntrenamientos() {
+        const entrenamientosCheckboxes = document.querySelectorAll('.entrenamientos-checkboxes input[type="checkbox"]');
+
+        // Obtener entrenamientos asociados con la membresía seleccionada
+        const entrenamientosSeleccionados = selectMembresia.options[selectMembresia.selectedIndex].dataset.entrenamientos.split(',');
+        entrenamientosCheckboxes.forEach(checkbox => {
+            checkbox.checked = entrenamientosSeleccionados.includes(checkbox.value);
+        });
+
+        // Actualizar la fecha de fin según la duración de la membresía
+        const duracion = parseInt(selectMembresia.options[selectMembresia.selectedIndex].dataset.duracion, 10);
+        const fechaInicio = new Date(fechaInicioInput.value);
+
+        if (!isNaN(duracion) && duracion > 0) {
+            fechaInicio.setMonth(fechaInicio.getMonth() + duracion);
+            fechaFinInput.value = fechaInicio.toISOString().split('T')[0]; // Formatear como YYYY-MM-DD
+        }
+    }
+
+    if (selectMembresia && form) {
+        actualizarEntrenamientos();
+        selectMembresia.addEventListener('change', actualizarEntrenamientos);
+
+        // Validar fechas antes de enviar el formulario
+        form.addEventListener('submit', function (event) {
+            if (!validarFechas()) {
+                event.preventDefault(); // Detener el envío si las fechas son incorrectas
+            }
+        });
+    }
+});
+
+
 
 function ocultarMensaje() {
     setTimeout(function () {

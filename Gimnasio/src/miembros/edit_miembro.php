@@ -3,7 +3,6 @@ require_once('../miembros/member_functions.php');
 require_once('../includes/notificaciones_functions.php');
 
 verificarAdmin();
-
 $conn = obtenerConexion();
 $title = "Editar Miembro";
 
@@ -18,8 +17,10 @@ $miembro = obtenerDetalleCompletoMiembro($conn, $id_usuario);
 if (!$miembro) {
     die("Miembro no encontrado.");
 }
+
 $ids_entrenamientos = $miembro['entrenamientos'];
 $nombres_entrenamientos = obtenerNombresEntrenamientos($conn, $ids_entrenamientos);
+
 // Obtener entrenamientos y membresías
 $entrenamientos = obtenerEntrenamientos($conn);
 $membresias = obtenerMembresias($conn);
@@ -37,8 +38,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$id_membresia_nueva || !$fecha_inicio_nueva || !$fecha_fin_nueva) {
         $mensaje = "Error: Todos los campos son obligatorios.";
     } else {
-        // Actualizar membresía
-        $resultadoMembresia = actualizarMembresia($conn, $miembro['id_miembro'], $id_membresia_nueva, $fecha_inicio_nueva, $fecha_fin_nueva);
+        // Verificar si el miembro ya tiene una membresía activa
+        $stmt = $conn->prepare("SELECT id FROM miembro_membresia WHERE id_miembro = ? AND estado = 'activa'");
+        $stmt->bind_param("i", $miembro['id_miembro']);
+        $stmt->execute();
+        $stmt->store_result();
+        $tieneMembresiaActiva = $stmt->num_rows > 0;
+        $stmt->close();
+
+        // Determinar el estado de la membresía según las fechas
+        $fecha_actual = date('Y-m-d');
+        if ($fecha_inicio_nueva > $fecha_actual) {
+            $nuevo_estado = 'inactiva'; // Aún no empieza
+        } elseif ($fecha_fin_nueva < $fecha_actual) {
+            $nuevo_estado = 'expirada'; // Ya venció
+        } else {
+            $nuevo_estado = 'activa'; // Dentro del rango de fechas
+        }
+
+        if ($tieneMembresiaActiva) {
+            // **Actualizar membresía existente**
+            $stmt = $conn->prepare("UPDATE miembro_membresia SET id_membresia = ?, fecha_inicio = ?, fecha_fin = ?, estado = ? WHERE id_miembro = ?");
+            $stmt->bind_param("isssi", $id_membresia_nueva, $fecha_inicio_nueva, $fecha_fin_nueva, $nuevo_estado, $miembro['id_miembro']);
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            // **Crear nueva membresía con valores predeterminados**
+            $monto_pagado = 0;
+            $metodo_pago = 'tarjeta';
+            $renovacion_automatica = false;
+
+            $stmt = $conn->prepare("INSERT INTO miembro_membresia (id_miembro, id_membresia, monto_pagado, fecha_inicio, fecha_fin, estado, id_metodo_pago, renovacion_automatica) 
+                                    VALUES (?, ?, ?, ?, ?, ?, NULL, ?)");
+            $stmt->bind_param("iissssi", $miembro['id_miembro'], $id_membresia_nueva, $monto_pagado, $fecha_inicio_nueva, $fecha_fin_nueva, $nuevo_estado, $renovacion_automatica);
+            $stmt->execute();
+            $stmt->close();
+        }
 
         // Obtener el nombre de la nueva membresía después de actualizar
         $stmt = $conn->prepare("SELECT tipo FROM membresia WHERE id_membresia = ?");
@@ -48,32 +83,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nombreMembresia = $result->fetch_assoc()['tipo'] ?? 'Desconocida';
         $stmt->close();
 
-        // Actualizar entrenamientos
-        try {
-            actualizarEntrenamientosMiembro($conn, $miembro['id_miembro'], $entrenamientos_seleccionados);
-            $mensaje = "Membresía y entrenamientos actualizados correctamente.";
-
-            // Enviar notificación
-            $mensajeNotificacion = "Tu membresía ha sido actualizada a '{$nombreMembresia}' con fecha de inicio {$fecha_inicio_nueva} y fin {$fecha_fin_nueva}.";
-            enviarNotificacion($conn, $id_usuario, $mensajeNotificacion);
-
-            // Redirigir para recargar los datos actualizados sin duplicar envíos de formulario
-            header("Location: edit_miembro.php?id_usuario=" . $id_usuario . "&mensaje=" . urlencode($mensaje));
-            exit();
-        } catch (Exception $e) {
-            $mensaje = "Error al actualizar los entrenamientos: " . $e->getMessage();
+        // **Actualizar entrenamientos solo si la membresía está activa, eliminarlos si no lo está**
+        if ($nuevo_estado === 'activa') {
+            try {
+                actualizarEntrenamientosMiembro($conn, $miembro['id_miembro'], $entrenamientos_seleccionados);
+                $mensaje = "Membresía y entrenamientos actualizados correctamente.";
+            } catch (Exception $e) {
+                $mensaje = "Error al actualizar los entrenamientos: " . $e->getMessage();
+            }
+        } else {
+            // **Eliminar entrenamientos si la membresía es inactiva o expirada**
+            $stmt = $conn->prepare("DELETE FROM miembro_entrenamiento WHERE id_miembro = ?");
+            $stmt->bind_param("i", $miembro['id_miembro']);
+            $stmt->execute();
+            $stmt->close();
+            $mensaje = "Membresía actualizada y entrenamientos eliminados porque la membresía está fuera de rango de fechas.";
         }
 
+        // **Enviar notificación**
+        $mensajeNotificacion = "Tu membresía ha sido actualizada a '{$nombreMembresia}' con fecha de inicio {$fecha_inicio_nueva} y fin {$fecha_fin_nueva}. Estado actual: {$nuevo_estado}.";
+        enviarNotificacion($conn, $id_usuario, $mensajeNotificacion);
+
+        // **Redirigir para evitar duplicación de envíos de formulario**
+        header("Location: edit_miembro.php?id_usuario=" . $id_usuario . "&mensaje=" . urlencode($mensaje));
+        exit();
         // Recargar datos del miembro
         $miembro = obtenerDetalleCompletoMiembro($conn, $id_usuario);
         $fechas_membresia = $miembro['fechas_membresia'] ?? ['inicio' => '', 'fin' => ''];
     }
 }
-
-
-
 include '../admin/admin_header.php';
 ?>
+
+
 
 <body>
     <main>
@@ -171,14 +213,14 @@ include '../admin/admin_header.php';
 
             // Actualizar la fecha de fin según la duración de la membresía
             const duracion = parseInt(selectMembresia.options[selectMembresia.selectedIndex].dataset.duracion, 10);
-            const fechaInicio = new Date(); // Siempre usar la fecha actual como inicio
+            const fechaInicio = new Date();
 
             if (!isNaN(duracion) && duracion > 0) {
                 fechaInicio.setMonth(fechaInicio.getMonth() + duracion);
-                const fechaFinFormateada = fechaInicio.toISOString().split('T')[0]; // Formatear como YYYY-MM-DD
+                const fechaFinFormateada = fechaInicio.toISOString().split('T')[0];
                 fechaFinInput.value = fechaFinFormateada;
             } else {
-                fechaFinInput.value = ''; // Limpiar si la duración no es válida
+                fechaFinInput.value = '';
                 console.warn('Duración de la membresía no válida.');
             }
         }

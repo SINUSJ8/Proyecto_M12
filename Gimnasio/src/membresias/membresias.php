@@ -124,6 +124,12 @@ include '../admin/admin_header.php';
                 </thead>
                 <tbody>
                     <?php foreach ($membresias_miembros as $dato): ?>
+                        <?php
+                        $fecha_inicio = strtotime($dato['fecha_inicio']);
+                        $fecha_fin = strtotime($dato['fecha_fin']);
+                        $fecha_actual = strtotime(date('Y-m-d'));
+                        $mostrarBoton = ($fecha_inicio <= $fecha_actual && $fecha_fin >= $fecha_actual);
+                        ?>
                         <tr data-usuario="<?php echo htmlspecialchars($dato['id_usuario']); ?>">
                             <td><?php echo htmlspecialchars($dato['nombre_usuario']); ?></td>
                             <td><?php echo htmlspecialchars($dato['email']); ?></td>
@@ -131,19 +137,23 @@ include '../admin/admin_header.php';
                             <td><?php echo htmlspecialchars($dato['tipo_membresia']); ?></td>
                             <td><?php echo htmlspecialchars($dato['precio']); ?> €</td>
                             <td><?php echo htmlspecialchars($dato['duracion']); ?> meses</td>
-                            <td><?php echo htmlspecialchars($dato['fecha_inicio']); ?></td>
-                            <td><?php echo htmlspecialchars($dato['fecha_fin']); ?></td>
+                            <td><?php echo date('d-m-Y', strtotime($dato['fecha_inicio'])); ?></td>
+                            <td><?php echo date('d-m-Y', strtotime($dato['fecha_fin'])); ?></td>
                             <td><?php echo htmlspecialchars($dato['estado']); ?></td>
                             <td><?php echo $dato['renovacion_automatica'] ? 'Sí' : 'No'; ?></td>
                             <td>
-                                <button type="button"
-                                    class="estado-button btn btn-general <?php echo $dato['estado'] === 'activa' ? 'btn-warning btn-desactivar' : 'btn-success btn-activar'; ?>"
-                                    data-id="<?php echo htmlspecialchars($dato['id']); ?>"
-                                    data-accion="<?php echo $dato['estado'] === 'activa' ? 'desactivar' : 'activar'; ?>"
-                                    data-busqueda="<?php echo htmlspecialchars($busqueda); ?>"
-                                    title="<?php echo $dato['estado'] === 'activa' ? 'Desactivar esta membresía. El usuario no podrá usarla hasta que se active nuevamente.' : 'Activar esta membresía. El usuario podrá usarla de inmediato.'; ?>">
-                                    <?php echo $dato['estado'] === 'activa' ? 'Desactivar' : 'Activar'; ?>
-                                </button>
+                                <?php if ($mostrarBoton):
+                                ?>
+                                    <button type="button"
+                                        class="estado-button btn btn-general <?php echo $dato['estado'] === 'activa' ? 'btn-warning btn-desactivar' : 'btn-success btn-activar'; ?>"
+                                        data-id="<?php echo htmlspecialchars($dato['id']); ?>"
+                                        data-accion="<?php echo $dato['estado'] === 'activa' ? 'desactivar' : 'activar'; ?>"
+                                        data-busqueda="<?php echo htmlspecialchars($busqueda); ?>"
+                                        title="<?php echo $dato['estado'] === 'activa' ? 'Desactivar esta membresía. El usuario no podrá usarla hasta que se active nuevamente.' : 'Activar esta membresía. El usuario podrá usarla de inmediato.'; ?>">
+                                        <?php echo $dato['estado'] === 'activa' ? 'Desactivar' : 'Activar'; ?>
+                                    </button>
+                                <?php endif; ?>
+
                                 <button type="button"
                                     class="delete-button"
                                     data-id="<?php echo htmlspecialchars($dato['id']); ?>"
@@ -154,6 +164,7 @@ include '../admin/admin_header.php';
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
+
             </table>
         <?php else: ?>
             <p title="Mensaje cuando no hay registros disponibles">No hay membresías registradas para mostrar.</p>
