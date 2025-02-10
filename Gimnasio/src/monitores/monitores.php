@@ -117,10 +117,11 @@ include '../admin/admin_header.php';
                         <td><?php echo htmlspecialchars($monitor['experiencia']); ?> años</td>
                         <td><?php echo htmlspecialchars($monitor['disponibilidad']); ?></td>
                         <td class="acciones">
-                            <form method="POST" action="monitores.php" onsubmit="return confirmarEliminacion();" style="margin-bottom: 5px;">
+                            <form method="POST" action="monitores.php" class="form-eliminar">
                                 <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($monitor['id_usuario']); ?>">
-                                <button type="submit" class="delete-button" name="eliminar_usuario">Eliminar</button>
+                                <button type="button" class="delete-button eliminar-btn">Eliminar</button>
                             </form>
+
                             <a href="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($monitor['id_usuario']); ?>" class="btn-general edit-button">Editar</a>
                         </td>
                     </tr>
@@ -132,6 +133,7 @@ include '../admin/admin_header.php';
     include '../includes/footer.php';
     $conn->close();
     ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/clases.js"></script>
 </body>
 

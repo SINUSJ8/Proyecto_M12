@@ -208,13 +208,11 @@ function ordenarTablaMe(columna, idTabla = 'tabla-membresias') {
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
 
-function confirmarEliminacion() {
-    return confirm("¿Estás seguro de que deseas eliminar esta clase? Esta acción no se puede deshacer.");
-}
+
 function limpiarFormulario() {
-    const form = document.querySelector('.search-form'); // Selecciona el formulario
-    form.reset(); // Limpia los valores de los campos
-    window.location.href = 'clases.php'; // Opcional: Redirige a la página sin parámetros
+    const form = document.querySelector('.search-form');
+    form.reset();
+    window.location.href = 'clases.php';
 }
 function ordenarTablaC(columna, idTabla = 'tabla-clases') {
     const tabla = document.getElementById(idTabla);
@@ -257,3 +255,45 @@ function ordenarTablaC(columna, idTabla = 'tabla-clases') {
 function confirmarRestauracion() {
     return confirm("¿Estás seguro de que deseas restaurar este usuario a un rol básico?");
 }
+// Script para monitores.php (botón eliminar) ->Espera a que el DOM esté completamente cargado antes de ejecutar el script.
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Selecciona todos los botones de eliminación con la clase "eliminar-btn".
+    document.querySelectorAll(".eliminar-btn").forEach(button => {
+
+        // Agrega un evento de clic a cada botón de eliminación.
+        button.addEventListener("click", function (event) {
+
+            // Encuentra el formulario más cercano al botón que fue presionado.
+            let form = this.closest("form");
+            if (!form) {
+                return; // Si no encuentra un formulario, termina la función.
+            }
+
+            // Muestra un cuadro de confirmación con SweetAlert2.
+            Swal.fire({
+                title: "¿Estás seguro?", // Título de la alerta.
+                text: "No podrás revertir esta acción.", // Mensaje de advertencia.
+                icon: "warning", // Icono de advertencia.
+                showCancelButton: true, // Agrega un botón para cancelar la acción.
+                confirmButtonColor: "#d33", // Color del botón de confirmación.
+                cancelButtonColor: "#3085d6", // Color del botón de cancelación.
+                confirmButtonText: "Sí, eliminar", // Texto del botón de confirmación.
+                cancelButtonText: "Cancelar" // Texto del botón de cancelación.
+            }).then((result) => {
+                // Si el usuario confirma la eliminación.
+                if (result.isConfirmed) {
+
+                    // Crear un input oculto para asegurarse de que se envía el valor correcto.
+                    let input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "eliminar_usuario"; // Nombre del campo que se enviará en el formulario.
+                    input.value = "1"; // Valor que se enviará al servidor.
+                    form.appendChild(input); // Agrega el input oculto al formulario.
+
+                    form.submit(); // Envía el formulario manualmente.
+                }
+            });
+        });
+    });
+});
