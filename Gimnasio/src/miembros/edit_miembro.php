@@ -125,11 +125,19 @@ include '../admin/admin_header.php';
     <main>
         <h2 class="section-title">Editar Miembro</h2>
 
-        <?php if (isset($mensaje)): ?>
-            <div class="<?php echo strpos($mensaje, 'Error') === false ? 'mensaje-confirmacion' : 'mensaje-error'; ?>">
-                <p><?php echo htmlspecialchars($mensaje); ?></p>
-            </div>
+        <?php if (isset($_GET['mensaje'])): ?>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    Swal.fire({
+                        title: "<?php echo (strpos($_GET['mensaje'], 'Error') === false) ? '¡Éxito!' : '¡Error!'; ?>",
+                        text: "<?php echo htmlspecialchars($_GET['mensaje']); ?>",
+                        icon: "<?php echo (strpos($_GET['mensaje'], 'Error') === false) ? 'success' : 'error'; ?>",
+                        confirmButtonText: "Aceptar"
+                    });
+                });
+            </script>
         <?php endif; ?>
+
 
         <div class="form_container">
             <?php if ($miembro): ?>
@@ -145,8 +153,9 @@ include '../admin/admin_header.php';
                 </section>
 
 
-                <form method="POST" action="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>"
-                    class="form_general" onsubmit="confirmarEdicion(event);">
+                <form method="POST" action="edit_miembro.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>"
+                    class="form_general" onsubmit="confirmarEdicionMiembro(event);">
+
 
 
 
@@ -240,6 +249,6 @@ include '../admin/admin_header.php';
             selectMembresia.addEventListener('change', actualizarEntrenamientos);
         });
     </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/alertas.js"></script>
 </body>

@@ -133,3 +133,55 @@ function confirmarEdicion(event) {
         }
     });
 }
+function validarFechas() {
+    const fechaInicioInput = document.getElementById('fecha_inicio');
+    const fechaFinInput = document.getElementById('fecha_fin');
+
+    const fechaInicio = new Date(fechaInicioInput.value);
+    const fechaFin = new Date(fechaFinInput.value);
+
+    if (fechaInicio > fechaFin) {
+        Swal.fire({
+            title: "⚠️ Fecha Inválida",
+            text: "La fecha de inicio no puede ser posterior a la fecha de fin.",
+            icon: "error",
+            confirmButtonText: "Aceptar"
+        });
+        return false;
+    }
+    return true;
+}
+
+
+function confirmarEdicionMiembro(event) {
+    event.preventDefault();
+
+    if (!validarFechas()) {
+        return;
+    }
+
+    Swal.fire({
+        title: "Confirmar Edición",
+        html: "<b>¿Estás seguro de que quieres actualizar los datos del miembro?</b>",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#007BFF",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: '<i class="fas fa-check"></i> Sí, actualizar',
+        cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
+        showCloseButton: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        customClass: {
+            popup: "custom-popup",
+            title: "custom-title"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+}
+
+
+
