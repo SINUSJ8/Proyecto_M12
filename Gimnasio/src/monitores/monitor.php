@@ -122,4 +122,5 @@ include 'monitores_header.php';
 </main>
 
 <?php include '../includes/footer.php'; ?>
+<script src="../../assets/js/alertas.js"></script>
 <script src="../assets/js/validacion.js"></script>

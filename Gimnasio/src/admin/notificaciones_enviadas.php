@@ -167,5 +167,5 @@ include 'admin_header.php';
         <a href="notificaciones.php" class="btn-general" style="margin-top: 10px">Volver a Notificaciones</a>
     </div>
 </main>
-
+<script src="../../assets/js/alertas.js"></script>
 <?php include '../includes/footer.php'; ?>

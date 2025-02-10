@@ -159,5 +159,5 @@ if (isset($_GET['mensaje'])) {
     </div>
 
 </main>
-
+<script src="../../assets/js/alertas.js"></script>
 <?php include '../includes/footer.php'; ?>

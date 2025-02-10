@@ -233,5 +233,5 @@ include 'admin_header.php';
         <?php endif; ?>
     </section>
 </main>
-
+<script src="../../assets/js/alertas.js"></script>
 <?php include '../includes/footer.php'; ?>
