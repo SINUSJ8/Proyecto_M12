@@ -152,7 +152,6 @@ function validarFormularioEdicion(tipoFormulario) {
         }
     }
 
-    return confirm(`¿Actualizar los datos del ${tipoFormulario}?`);
 }
 
 

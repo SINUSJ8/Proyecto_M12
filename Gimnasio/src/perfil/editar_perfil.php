@@ -1,14 +1,12 @@
 <?php
 session_start();
-require_once('perfil_functions.php');
 require_once('../includes/general.php');
+require_once('perfil_functions.php');
 
-// Verificar que el usuario está autenticado
 verificarSesion();
 $conn = obtenerConexion();
-$title = "Editar Perfil";
+$title = "Perfil del Usuario";
 
-// Obtener los datos del usuario autenticado
 $id_usuario = $_SESSION['id_usuario'];
 $usuario = obtenerDetalleUsuario($conn, $id_usuario);
 
@@ -17,94 +15,121 @@ if (!$usuario) {
 }
 
 // Manejo del formulario
-$mensaje = '';
-$mensaje_tipo = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = trim($_POST['nombre'] ?? '');
-    $email = trim($_POST['email'] ?? '');
+    $nombre = trim($_POST['nombre']);
+    $email = trim($_POST['email']);
     $telefono = trim($_POST['telefono'] ?? '');
-    $password = $_POST['contrasenya'] ?? '';
-    $confirmarPassword = $_POST['confirmar_contrasenya'] ?? '';
+    $contrasena_actual = $_POST['contrasena_actual'] ?? '';
+    $nueva_contrasena = $_POST['nueva_contrasena'] ?? '';
+    $confirmar_contrasena = $_POST['confirmar_contrasena'] ?? '';
 
-    // Validaciones en el servidor
-    $errores = [];
-    if (empty($nombre) || !preg_match('/[a-zA-Z]/', $nombre)) {
-        $errores[] = "El nombre es obligatorio y debe contener al menos una letra.";
-    }
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errores[] = "Por favor, introduce un correo electrónico válido.";
-    }
-    if (!empty($telefono) && !preg_match('/^\d{9}$/', $telefono)) {
-        $errores[] = "El teléfono debe tener exactamente 9 dígitos.";
-    }
-    if (!empty($password) && strlen($password) < 6) {
-        $errores[] = "La contraseña debe tener al menos 6 caracteres.";
-    }
-    if (!empty($password) && $password !== $confirmarPassword) {
-        $errores[] = "Las contraseñas no coinciden.";
+    if (!preg_match('/[a-zA-Z]/', $nombre)) {
+        $error = "Por favor, ingresa un nombre válido con al menos una letra.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Por favor, introduce un correo electrónico válido.";
+    } elseif (!empty($telefono) && !preg_match('/^\d{9}$/', $telefono)) {
+        $error = "El teléfono debe tener exactamente 9 dígitos.";
     }
 
-    if (empty($errores)) {
-        $actualizado = actualizarUsuario($conn, $id_usuario, $nombre, $email, $telefono, $password);
-        if ($actualizado) {
-            $mensaje = "Perfil actualizado correctamente.";
-            $mensaje_tipo = "success";
-
-            // Recargar los datos del usuario después de la actualización
-            $usuario = obtenerDetalleUsuario($conn, $id_usuario);
-        } else {
-            $mensaje = "Error al actualizar el perfil. Verifica los datos.";
-            $mensaje_tipo = "error";
+    // Validación de cambio de contraseña
+    if (!empty($contrasena_actual) || !empty($nueva_contrasena) || !empty($confirmar_contrasena)) {
+        if (empty($contrasena_actual) || empty($nueva_contrasena) || empty($confirmar_contrasena)) {
+            $error = "Para cambiar la contraseña, debes completar todos los campos.";
+        } elseif (empty($usuario['contrasenya']) || !password_verify($contrasena_actual, $usuario['contrasenya'])) {
+            $error = "La contraseña actual es incorrecta o no está establecida.";
+        } elseif ($nueva_contrasena !== $confirmar_contrasena) {
+            $error = "Las nuevas contraseñas no coinciden.";
+        } elseif (strlen($nueva_contrasena) < 6) {
+            $error = "La nueva contraseña debe tener al menos 6 caracteres.";
         }
-    } else {
-        $mensaje = implode("<br>", $errores);
-        $mensaje_tipo = "error";
+    }
+
+    if (!isset($error)) {
+        $sql = "UPDATE usuario SET nombre = ?, email = ?, telefono = ? WHERE id_usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssi", $nombre, $email, $telefono, $id_usuario);
+        $stmt->execute();
+
+        // Si se va a cambiar la contraseña, actualizarla
+        if (!empty($nueva_contrasena)) {
+            $nueva_contrasena_hash = password_hash($nueva_contrasena, PASSWORD_DEFAULT);
+            $sql = "UPDATE usuario SET contrasenya = ? WHERE id_usuario = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("si", $nueva_contrasena_hash, $id_usuario);
+            $stmt->execute();
+        }
+
+        header("Location: editar_perfil.php?success=Perfil+actualizado+correctamente");
+        exit();
     }
 }
 
 include '../miembros/miembro_header.php';
 ?>
 
-<body>
-    <main>
-        <h2 class="section-title">Editar Perfil</h2>
+<main class="form_container">
+    <h1 class="section-title">Perfil del Usuario</h1>
 
-        <!-- Mostrar mensajes -->
-        <?php if (!empty($mensaje)): ?>
-            <div class="<?php echo $mensaje_tipo === 'error' ? 'mensaje-error' : 'mensaje-confirmacion'; ?>">
-                <p><?php echo $mensaje; ?></p>
-            </div>
-        <?php endif; ?>
+    <?php if (isset($_GET['success'])): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "¡Éxito!",
+                    text: "<?php echo htmlspecialchars($_GET['success']); ?>",
+                    icon: "success",
+                    confirmButtonText: "Aceptar"
+                });
+            });
+        </script>
+    <?php endif; ?>
 
-        <!-- Formulario de edición -->
-        <div class="form_container">
-            <form method="POST" action="editar_perfil.php" class="form_general" onsubmit="return valFormUsuario();">
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" class="input-general"
-                    value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
+    <?php if (isset($error)): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: "¡Error!",
+                    text: "<?php echo htmlspecialchars($error); ?>",
+                    icon: "error",
+                    confirmButtonText: "Aceptar"
+                });
+            });
+        </script>
+    <?php endif; ?>
 
-                <label for="email">Correo electrónico:</label>
-                <input type="email" id="email" name="email" class="input-general"
-                    value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
-
-                <label for="telefono">Teléfono (opcional):</label>
-                <input type="text" id="telefono" name="telefono" class="input-general"
-                    value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>">
-
-                <label for="contrasenya">Nueva Contraseña:</label>
-                <input type="password" id="contrasenya" name="contrasenya" class="input-general">
-
-                <label for="confirmar_contrasenya">Confirmar Contraseña:</label>
-                <input type="password" id="confirmar_contrasenya" name="confirmar_contrasenya" class="input-general">
-
-                <button type="submit" class="btn-general">Guardar Cambios</button>
-                <a href="../miembros/miembro.php" class="btn-general">Cancelar</a>
-            </form>
+    <section class="perfil-info">
+        <h2>Información del Usuario</h2>
+        <div class="info-box">
+            <p><strong>Nombre:</strong> <?php echo htmlspecialchars($usuario['nombre']); ?></p>
+            <p><strong>Correo Electrónico:</strong> <?php echo htmlspecialchars($usuario['email']); ?></p>
+            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($usuario['telefono'] ?? 'No disponible'); ?></p>
         </div>
-    </main>
+    </section>
 
-    <?php include '../includes/footer.php'; ?>
+    <section class="perfil-edicion">
+        <h2>Editar Información</h2>
+        <form method="POST" action="editar_perfil.php">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
 
-    <script src="../../assets/js/validacion.js"></script>
-    <script src="../../assets/js/alertas.js"></script>
-</body>
+            <label for="email">Correo Electrónico:</label>
+            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
+
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>" maxlength="9" pattern="\d{9}" title="Debe contener exactamente 9 dígitos numéricos">
+
+            <h2>Cambiar Contraseña</h2>
+            <label for="contrasena_actual">Contraseña Actual:</label>
+            <input type="password" id="contrasena_actual" name="contrasena_actual">
+
+            <label for="nueva_contrasena">Nueva Contraseña:</label>
+            <input type="password" id="nueva_contrasena" name="nueva_contrasena">
+
+            <label for="confirmar_contrasena">Confirmar Nueva Contraseña:</label>
+            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena">
+
+            <button type="submit" class="btn-general">Guardar Cambios</button>
+        </form>
+    </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

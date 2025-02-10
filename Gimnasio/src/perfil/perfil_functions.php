@@ -24,15 +24,15 @@ function actualizarUsuario($conn, $id_usuario, $nombre, $email, $telefono, $pass
 }
 function obtenerDetalleUsuario($conn, $id_usuario)
 {
-    $stmt = $conn->prepare("SELECT nombre, email, telefono FROM usuario WHERE id_usuario = ?");
+    $stmt = $conn->prepare("SELECT nombre, email, telefono, contrasenya FROM usuario WHERE id_usuario = ?");
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();
     $result = $stmt->get_result();
-    $usuario = $result->fetch_assoc(); // Devuelve un array asociativo o null
-    $stmt->close();
+    $usuario = $result->fetch_assoc();
 
     return $usuario;
 }
+
 
 function verificarSesion()
 {
