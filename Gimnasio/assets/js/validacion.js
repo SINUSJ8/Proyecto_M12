@@ -59,26 +59,23 @@ function mostrarMensajeError(mensaje) {
         mensajeError.remove();
     }, 5000);
 }
+
+
 // Función para ocultar y eliminar mensajes después de 5 segundos
-function manejarMensajeServidor() {
+document.addEventListener('DOMContentLoaded', () => {
     const mensaje = document.getElementById('mensaje-flotante');
-    if (mensaje) {
-        console.log("Mensaje encontrado:", mensaje.textContent); // Depuración
+    if (!mensaje) return;
 
+    setTimeout(() => {
+        mensaje.style.opacity = '0';
         setTimeout(() => {
-            mensaje.style.opacity = '0';
-            setTimeout(() => {
-                mensaje.style.display = 'none'; // Oculta el mensaje antes de removerlo
-                console.log("Mensaje eliminado."); // Confirmación en consola
-            }, 500);
-        }, 5000);
-    } else {
-        console.log("No se encontró el mensaje flotante.");
-    }
-}
+            mensaje.style.display = 'none';
+        }, 500);
+    }, 3000);
+});
 
-// Ejecutar al cargar la página
-document.addEventListener('DOMContentLoaded', manejarMensajeServidor);
+
+
 
 
 // Función para validar el formulario de actualización de usuario en la página de perfil
@@ -123,55 +120,41 @@ function valFormUsuario() {
 }
 
 function validarFormularioEdicion(tipoFormulario) {
-    const nombre = document.getElementById('nombre').value;
-    const email = document.getElementById('email').value;
-    const telefono = document.getElementById('telefono') ? document.getElementById('telefono').value : null;
-    const experiencia = document.getElementById('experiencia') ? document.getElementById('experiencia').value : null;
-    const disponibilidad = document.getElementById('disponibilidad') ? document.getElementById('disponibilidad').value : null;
+    const nombre = document.getElementById('nombre')?.value?.trim();
+    const email = document.getElementById('email')?.value?.trim();
+    const telefono = document.getElementById('telefono')?.value?.trim();
+    const experiencia = document.getElementById('experiencia')?.value?.trim();
+    const disponibilidad = document.getElementById('disponibilidad')?.value?.trim();
 
-    // Validación del nombre
-    const nombreRegex = /[a-zA-Z]/;
-    if (!nombreRegex.test(nombre)) {
-        alert("Por favor, ingresa un nombre válido con al menos una letra.");
+    if (!nombre || !/[a-zA-Z]/.test(nombre)) {
+        mostrarMensajeError("Por favor, ingresa un nombre válido.");
         return false;
     }
 
-    // Validación del correo electrónico
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        alert("Por favor, ingresa un correo electrónico válido.");
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        mostrarMensajeError("Por favor, ingresa un correo válido.");
         return false;
     }
 
-    // Validación del teléfono si está presente
-    if (telefono) {
-        const telefonoRegex = /^\d{9}$/;
-        if (!telefonoRegex.test(telefono)) {
-            alert("El teléfono debe tener exactamente 9 dígitos.");
-            return false;
-        }
+    if (telefono && !/^\d{9}$/.test(telefono)) {
+        mostrarMensajeError("El teléfono debe tener exactamente 9 dígitos.");
+        return false;
     }
 
-    // Validaciones específicas para monitores
     if (tipoFormulario === 'monitor') {
-        if (experiencia === null || isNaN(experiencia) || experiencia < 0) {
-            alert("Por favor, ingresa un número válido para la experiencia (años). Puede ser cero o mayor.");
+        if (!experiencia || isNaN(experiencia) || experiencia < 0) {
+            mostrarMensajeError("La experiencia debe ser un número válido.");
             return false;
         }
         if (!disponibilidad) {
-            alert("Por favor, selecciona una disponibilidad.");
+            mostrarMensajeError("Selecciona una disponibilidad.");
             return false;
         }
     }
 
-    // Validaciones específicas para otros formularios
-    // Otras validaciones específicas para otros tipos de formularios se pueden añadir.
-
-    // Confirmación final para asegurarse
-    const mensajeConfirmacion = "Estás a punto de actualizar los datos del " + tipoFormulario + ".\n\n" +
-        " ¿Deseas continuar con la actualización de los datos?";
-    return confirm(mensajeConfirmacion);
+    return confirm(`¿Actualizar los datos del ${tipoFormulario}?`);
 }
+
 
 function actualizarFechasMembresia() {
     const selectMembresia = document.getElementById('tipo_membresia');
@@ -325,33 +308,37 @@ function unsetReferer() {
     fetch('../admin/unset_referer.php', { method: 'POST' });
 }
 
-document.getElementById('form_clase').addEventListener('submit', function (e) {
-    e.preventDefault(); // Prevenir el envío del formulario por defecto
+document.addEventListener('DOMContentLoaded', () => {
+    const formClase = document.getElementById('form_clase');
+    if (formClase) {
+        formClase.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-    const nombre = document.getElementById('nombre').value.trim();
-    const idMonitor = document.getElementById('id_monitor').value;
-    const idEspecialidad = document.getElementById('id_especialidad').value;
-    const fecha = document.getElementById('fecha').value;
-    const horario = document.getElementById('horario').value;
-    const duracion = parseInt(document.getElementById('duracion').value, 10);
-    const capacidad = parseInt(document.getElementById('capacidad').value, 10);
+            const nombre = document.getElementById('nombre')?.value.trim();
+            const idMonitor = document.getElementById('id_monitor')?.value;
+            const idEspecialidad = document.getElementById('id_especialidad')?.value;
+            const fecha = document.getElementById('fecha')?.value;
+            const horario = document.getElementById('horario')?.value;
+            const duracion = parseInt(document.getElementById('duracion')?.value, 10);
+            const capacidad = parseInt(document.getElementById('capacidad')?.value, 10);
 
-    // Validar que todos los campos estén llenos
-    if (!nombre || !idMonitor || !idEspecialidad || !fecha || !horario || isNaN(duracion) || duracion <= 0 || isNaN(capacidad) || capacidad <= 0) {
-        mostrarMensajeError("Todos los campos son obligatorios y deben contener valores válidos.");
-        return false;
+            if (!nombre || !idMonitor || !idEspecialidad || !fecha || !horario || isNaN(duracion) || duracion <= 0 || isNaN(capacidad) || capacidad <= 0) {
+                mostrarMensajeError("Todos los campos son obligatorios y deben contener valores válidos.");
+                return false;
+            }
+
+            // Validar que la fecha y hora sean futuras
+            const ahora = new Date();
+            const fechaSeleccionada = new Date(`${fecha}T${horario}`);
+            if (fechaSeleccionada < ahora) {
+                mostrarMensajeError("La fecha y hora deben ser futuras.");
+                return false;
+            }
+
+            this.submit();
+        });
     }
-
-    // Validar que la fecha y hora sean futuras
-    const ahora = new Date();
-    const fechaSeleccionada = new Date(`${fecha}T${horario}`);
-    if (fechaSeleccionada < ahora) {
-        mostrarMensajeError("La fecha y hora deben ser futuras.");
-        return false;
-    }
-
-    // Si pasa las validaciones, enviar el formulario
-    this.submit();
 });
+
 
 

@@ -56,17 +56,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         ADDTIME(horario, SEC_TO_TIME(duracion * 60 + 900)) <= ? 
                         OR ADDTIME(?, SEC_TO_TIME(? * 60 + 900)) <= horario
                     )
-                    AND id_clase != ?
+                    AND id_clase != ? AND id_monitor = ?
+
                 ");
-                $id_clase_param = $id_clase ?? 0;
                 $stmt->bind_param(
-                    'isssii',
+                    'isssiii',
                     $id_monitor,
                     $fecha,
                     $horario,
                     $horario,
                     $duracion,
-                    $id_clase_param
+                    $id_clase_param,
+                    $id_monitor
                 );
 
                 $stmt->execute();
@@ -118,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt->close();
 
                     if ($nuevoMonitorUsuario) {
-                        $mensajeNuevo = "Se te ha asignado la clase '{$nombre}'. Verifica los detalles.";
+                        $mensajeNuevo = "Estás asignado la clase '{$nombre}'. Verifica los detalles.";
                         enviarNotificacion($conn, $nuevoMonitorUsuario, $mensajeNuevo);
                     }
 

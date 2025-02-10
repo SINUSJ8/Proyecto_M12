@@ -1,4 +1,4 @@
-function confirmarEliminacion(idEspecialidad) {
+function confirmarEliminacionEspecialidad(idEspecialidad) {
     Swal.fire({
         title: "¿Estás seguro?",
         text: "Esta acción no se puede deshacer.",
@@ -20,7 +20,7 @@ function confirmarEliminacion(idEspecialidad) {
         }
     });
 }
-function confirmarEliminacion(idUsuario) {
+function confirmarEliminacionUsuario(idUsuario) {
     Swal.fire({
         title: "¿Estás seguro?",
         text: "Esta acción no se puede deshacer.",
@@ -107,3 +107,29 @@ function ocultarMensaje() {
 
 // Ejecutar al cargar la página
 document.addEventListener("DOMContentLoaded", ocultarMensaje);
+
+function confirmarEdicion(event) {
+    event.preventDefault();
+
+    Swal.fire({
+        title: "Confirmar Edición",
+        html: "<b>¿Estás seguro de que quieres actualizar los datos del monitor?</b>",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#007BFF",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: '<i class="fas fa-check"></i> Sí, actualizar',
+        cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
+        showCloseButton: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        customClass: {
+            popup: "custom-popup",
+            title: "custom-title"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+}

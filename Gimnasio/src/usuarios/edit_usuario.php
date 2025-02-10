@@ -95,7 +95,7 @@ $conn->close();
 
                 <div class="button-container">
                     <button type="submit" class="btn-general">Actualizar Datos</button>
-                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Cancelar</a>
+                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Volver</a>
 
                 </div>
             </form>
@@ -104,4 +104,5 @@ $conn->close();
 
     <?php include '../includes/footer.php'; ?>
     <script src="../assets/js/validacion.js"></script>
+
 </body>

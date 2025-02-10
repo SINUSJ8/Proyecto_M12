@@ -242,7 +242,7 @@ include '../admin/admin_header.php';
                             <td><?php echo htmlspecialchars($usuario['email']); ?></td>
                             <td><?php echo htmlspecialchars($usuario['rol']); ?></td>
                             <td><?php echo htmlspecialchars($usuario['telefono'] ?? 'N/A'); ?></td>
-                            <td><?php echo htmlspecialchars($usuario['fecha_creacion']); ?></td>
+                            <td><?php echo date("d/m/Y", strtotime($usuario['fecha_creacion'])); ?></td>
                             <td>
                                 <div class="button-container">
                                     <?php
@@ -254,7 +254,7 @@ include '../admin/admin_header.php';
                                         <?php else: ?>
                                             <!-- Botones activos para superadmin -->
                                             <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Editar</a>
-                                            <button type="button" class="delete-button" onclick="confirmarEliminacion(<?php echo $usuario['id_usuario']; ?>)">Eliminar</button>
+                                            <button type="button" class="delete-button" onclick="confirmarEliminacionUsuario(<?php echo $usuario['id_usuario']; ?>)">Eliminar</button>
 
                                         <?php endif; ?>
                                         <?php
@@ -271,7 +271,7 @@ include '../admin/admin_header.php';
                                     // Caso 3: Usuarios no administradores
                                     else: ?>
                                         <a href="edit_usuario.php?id_usuario=<?php echo $usuario['id_usuario']; ?>" class="btn-general">Editar</a>
-                                        <button type="button" class="delete-button" onclick="confirmarEliminacion(<?php echo $usuario['id_usuario']; ?>)">Eliminar</button>
+                                        <button type="button" class="delete-button" onclick="confirmarEliminacionUsuario(<?php echo $usuario['id_usuario']; ?>)">Eliminar</button>
 
                                     <?php endif; ?>
                                 </div>

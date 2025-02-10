@@ -188,5 +188,6 @@ include '../admin/admin_header.php';
 
 </body>
 <?php include '../includes/footer.php'; ?>
+<script src="../../assets/js/alertas.js"></script>
 
 </html>

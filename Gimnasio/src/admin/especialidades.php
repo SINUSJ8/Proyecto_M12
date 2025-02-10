@@ -72,7 +72,7 @@ include '../admin/admin_header.php';
                         <input type="text" name="nombre_especialidad" value="<?php echo htmlspecialchars($especialidad['nombre']); ?>" class="input-general" required>
                         <div class="button-group">
                             <button type="submit" name="editar_especialidad" class="btn-general edit-button">Editar</button>
-                            <button type="button" class="delete-button" onclick="confirmarEliminacion(<?php echo $especialidad['id_especialidad']; ?>)">Eliminar</button>
+                            <button type="button" class="delete-button" onclick="confirmarEliminacionEspecialidad(<?php echo $especialidad['id_especialidad']; ?>)">Eliminar</button>
                         </div>
                     </form>
                 </div>

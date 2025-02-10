@@ -145,7 +145,10 @@ include '../admin/admin_header.php';
                 </section>
 
 
-                <form method="POST" action="edit_miembro.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>" class="form_general">
+                <form method="POST" action="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>"
+                    class="form_general" onsubmit="confirmarEdicion(event);">
+
+
 
                     <!-- Campo para editar el tipo de membresía -->
                     <label for="tipo_membresia">Tipo de Membresía:</label>

@@ -65,14 +65,24 @@ include '../admin/admin_header.php';
         <h2 class="section-title">Editar Monitor</h2>
 
         <?php if (isset($mensaje)): ?>
-            <div class="<?php echo strpos($mensaje, 'Error') === false ? 'mensaje-confirmacion' : 'mensaje-error'; ?>">
-                <p><?php echo htmlspecialchars($mensaje); ?></p>
-            </div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    Swal.fire({
+                        title: "<?php echo strpos($mensaje, 'Error') === false ? '¡Éxito!' : '¡Error!'; ?>",
+                        text: "<?php echo htmlspecialchars($mensaje); ?>",
+                        icon: "<?php echo strpos($mensaje, 'Error') === false ? 'success' : 'error'; ?>",
+                        confirmButtonText: "Aceptar"
+                    });
+                });
+            </script>
         <?php endif; ?>
+
 
         <div class="form_container">
             <?php if ($monitor): ?>
-                <form method="POST" action="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>" class="form_general" onsubmit="return validarFormularioEdicion('monitor');">
+                <form method="POST" action="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>"
+                    class="form_general" onsubmit="confirmarEdicion(event);">
+
 
                     <!-- Campo para editar el nombre -->
                     <label for="nombre" class="form-label">Nombre:</label>
@@ -126,7 +136,7 @@ include '../admin/admin_header.php';
                     </div>
                     <div class="button-container">
                         <button type="submit" class="btn-general">Actualizar Cambios</button>
-                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Cancelar</a>
+                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Volver</a>
                     </div>
 
                 </form>
@@ -138,6 +148,9 @@ include '../admin/admin_header.php';
 
     <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/validacion.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/alertas.js"></script>
+
 </body>
 
 

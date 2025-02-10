@@ -227,3 +227,4 @@ try {
 
 <?php include '../includes/footer.php'; ?>
 <script src="../../assets/js/clases.js"></script>
+<script src="../../assets/js/alertas.js"></script>

@@ -380,18 +380,36 @@ function modUsuario($conn, $id_usuario, $nuevo_nombre, $nuevo_email, $nuevo_tele
     if ($resultado) {
         // Si el nuevo rol es "miembro", eliminarlo de "monitor" y asignar una membresía
         if ($nuevo_rol === 'miembro') {
+            // Eliminar si estaba en monitor
             $stmt = $conn->prepare("DELETE FROM monitor WHERE id_usuario = ?");
             $stmt->bind_param("i", $id_usuario);
             $stmt->execute();
             $stmt->close();
 
-            // Agregar a la tabla miembro si no existe
-            $id_membresia = 1; // ID de membresía por defecto
-            $stmt = $conn->prepare("INSERT IGNORE INTO miembro (id_usuario, fecha_registro, id_membresia) VALUES (?, NOW(), ?)");
-            $stmt->bind_param("ii", $id_usuario, $id_membresia);
+            // Verificar si el usuario ya es miembro
+            $stmt = $conn->prepare("SELECT id_usuario FROM miembro WHERE id_usuario = ?");
+            $stmt->bind_param("i", $id_usuario);
             $stmt->execute();
-            $stmt->close();
+            $stmt->store_result();
+
+            if ($stmt->num_rows > 0) {
+                // Si ya es miembro, actualizar datos en vez de insertar
+                $stmt->close();
+                $stmt = $conn->prepare("UPDATE miembro SET fecha_registro = NOW() WHERE id_usuario = ?");
+                $stmt->bind_param("i", $id_usuario);
+                $stmt->execute();
+                $stmt->close();
+            } else {
+                // Si no es miembro, insertarlo
+                $stmt->close();
+                $id_membresia = 1; // ID de membresía por defecto
+                $stmt = $conn->prepare("INSERT INTO miembro (id_usuario, fecha_registro, id_membresia) VALUES (?, NOW(), ?)");
+                $stmt->bind_param("ii", $id_usuario, $id_membresia);
+                $stmt->execute();
+                $stmt->close();
+            }
         }
+
         // Si el nuevo rol es "monitor", eliminarlo de "miembro"
         elseif ($nuevo_rol === 'monitor') {
             $stmt = $conn->prepare("DELETE FROM miembro WHERE id_usuario = ?");

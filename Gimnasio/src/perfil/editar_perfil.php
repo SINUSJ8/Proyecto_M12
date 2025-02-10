@@ -106,4 +106,5 @@ include '../miembros/miembro_header.php';
     <?php include '../includes/footer.php'; ?>
 
     <script src="../../assets/js/validacion.js"></script>
+    <script src="../../assets/js/alertas.js"></script>
 </body>
