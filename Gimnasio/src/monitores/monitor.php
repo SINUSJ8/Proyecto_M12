@@ -1,7 +1,7 @@
 <?php
 require_once('../includes/general.php');
 require_once('../miembros/member_functions.php');
-
+require_once('../includes/notificaciones_functions.php');
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'monitor') {
     header("Location: ../index.php?error=Acceso+denegado");
     exit();
@@ -64,15 +64,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!isset($error)) {
+        // Verificamos si la disponibilidad ha cambiado
+        $cambio_de_disponibilidad = ($monitor['disponibilidad'] !== $disponibilidad);
+
+        // Actualizar datos del usuario
         $sql = "UPDATE usuario SET nombre = ?, email = ?, telefono = ? WHERE id_usuario = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssi", $nombre, $email, $telefono, $id_usuario);
         $stmt->execute();
 
+        // Actualizar disponibilidad del monitor
         $sql = "UPDATE monitor SET disponibilidad = ? WHERE id_usuario = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("si", $disponibilidad, $id_usuario);
         $stmt->execute();
+
+        // Si el monitor cambió su disponibilidad, notificar a los administradores
+        if ($cambio_de_disponibilidad) {
+
+            $sqlAdmins = "SELECT id_usuario FROM usuario WHERE rol = 'admin'";
+            $resultAdmins = $conn->query($sqlAdmins);
+
+            // Determinar el mensaje según el nuevo estado
+            $estado_nuevo = ($disponibilidad === 'disponible') ? "Disponible" : "No Disponible";
+            $mensaje = "El monitor " . htmlspecialchars($monitor['nombre']) . " ha cambiado su disponibilidad a '" . $estado_nuevo . "'.";
+
+            while ($admin = $resultAdmins->fetch_assoc()) {
+                enviarNotificacion($conn, $admin['id_usuario'], $mensaje);
+            }
+        }
 
         // Si se va a cambiar la contraseña, actualizarla
         if (!empty($nueva_contrasena)) {
