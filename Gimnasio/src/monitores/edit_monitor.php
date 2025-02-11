@@ -1,11 +1,13 @@
 <?php
 require_once('../monitores/monitor_functions.php');
 require_once('../usuarios/user_functions.php');
+require_once('../includes/notificaciones_functions.php');
 
 verificarAdmin();
 
 $conn = obtenerConexion();
 $title = "Editar Monitor";
+
 if (!isset($_SESSION['referer']) && isset($_SERVER['HTTP_REFERER'])) {
     $_SESSION['referer'] = $_SERVER['HTTP_REFERER'];
 }
@@ -17,7 +19,7 @@ if (!isset($_GET['id_usuario'])) {
 $id_usuario = $_GET['id_usuario'];
 $monitor = obtenerMonitorPorID($conn, $id_usuario);
 
-// Asegurarse de que el array 'entrenamientos' esté definido aunque esté vacío
+// Asegurar que 'entrenamientos' esté definido aunque esté vacío
 $monitor['entrenamientos'] = isset($monitor['entrenamientos']) ? $monitor['entrenamientos'] : [];
 
 // Obtener entrenamientos y especialidades disponibles para los desplegables
@@ -28,17 +30,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre'] ?? null;
     $email = $_POST['email'] ?? null;
     $experiencia = $_POST['experiencia'] ?? null;
-    $disponibilidad = $_POST['disponibilidad'] ?? null;
+    $disponibilidad_nueva = $_POST['disponibilidad'] ?? null;
     $entrenamientos_seleccionados = $_POST['entrenamiento'] ?? [];
 
-    if (!$nombre || !$email || $experiencia === null || $disponibilidad === null) {
+    if (!$nombre || !$email || $experiencia === null || $disponibilidad_nueva === null) {
         $mensaje = "Error: Todos los campos son obligatorios.";
         header("Location: edit_monitor.php?id_usuario=$id_usuario&mensaje=" . urlencode($mensaje));
         exit();
     }
 
+    // Verificar si la disponibilidad cambió
+    $disponibilidad_anterior = $monitor['disponibilidad'];
+    $cambio_de_disponibilidad = ($disponibilidad_anterior !== $disponibilidad_nueva);
+
     // Actualizar el monitor en la base de datos
-    $resultado = actualizarMonitor($conn, $id_usuario, $nombre, $email, $monitor['especialidad'], $experiencia, $disponibilidad);
+    $resultado = actualizarMonitor($conn, $id_usuario, $nombre, $email, $monitor['especialidad'], $experiencia, $disponibilidad_nueva);
 
     if ($resultado['success']) {
         $id_monitor = $monitor['id_monitor'];
@@ -46,6 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($id_monitor) {
             actualizarEntrenamientosMonitor($conn, $id_monitor, $entrenamientos_seleccionados);
             $mensaje = "Monitor actualizado correctamente.";
+
+            // Si hubo un cambio en la disponibilidad, enviar notificación al monitor
+            if ($cambio_de_disponibilidad) {
+                $mensajeNotificacion = "Tu disponibilidad ha cambiado a '$disponibilidad_nueva'.";
+                enviarNotificacion($conn, $id_usuario, $mensajeNotificacion);
+            }
         } else {
             $mensaje = "Error: Monitor no encontrado.";
         }
@@ -59,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 include '../admin/admin_header.php';
 ?>
+
 
 <body>
     <main>
