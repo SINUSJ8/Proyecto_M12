@@ -103,7 +103,15 @@ $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $limit = 10;
 $offset = ($page - 1) * $limit;
 
-$total_query = $conn->query("SELECT COUNT(*) AS total FROM notificacion");
+$total_query = $conn->query("
+    SELECT COUNT(*) AS total 
+    FROM notificacion n
+    LEFT JOIN notificacion_oculta no ON n.id_notificacion = no.id_notificacion 
+    AND no.id_usuario = {$_SESSION['id_usuario']}
+    WHERE n.id_usuario = {$_SESSION['id_usuario']} 
+    AND no.id_notificacion IS NULL
+");
+
 $total_result = $total_query->fetch_assoc();
 $total_notificaciones = $total_result['total'];
 $total_pages = ceil($total_notificaciones / $limit);
