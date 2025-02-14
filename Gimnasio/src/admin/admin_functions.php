@@ -590,7 +590,7 @@ function eliminarEspecialidadConNotificaciones($conn, $id_especialidad)
         enviarNotificacion($conn, $miembro['id_usuario'], "La especialidad '{$miembro['especialidad']}' ha sido eliminada");
     }
     foreach ($monitores as $monitor) {
-        enviarNotificacion($conn, $monitor['id_usuario'], "La especialidad '{$monitor['especialidad']}' que impartías ha sido eliminada");
+        enviarNotificacion($conn, $monitor['id_usuario'], "La especialidad '{$monitor['especialidad']}' que impartías ha sido eliminada y todas sus clases");
     }
 
     // Notificar y eliminar clases asociadas
