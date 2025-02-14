@@ -48,7 +48,7 @@ $conn->close();
 </head>
 
 <body>
-    <main class="form_container">
+    <main>
         <h1 class="section-title">Explora Nuestras Membresías</h1>
         <p class="intro-text">Consulta nuestras opciones y beneficios. Regístrate para seleccionar una membresía.</p>
 
@@ -80,4 +80,5 @@ $conn->close();
     </main>
 </body>
 <?php include_once __DIR__ . '/../includes/footer.php'; ?>
+
 </html>
