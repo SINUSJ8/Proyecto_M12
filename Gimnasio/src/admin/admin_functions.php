@@ -253,11 +253,11 @@ function activarMembresia($conn, $idMembresia)
     $stmtFecha->close();
 
     if (!$idMembresiaReal) {
-        return false; //  No se encontró la membresía
+        return false; // No se encontró la membresía
     }
 
     if (!$fechaFin || strtotime($fechaFin) <= strtotime(date("Y-m-d"))) {
-        return false; //  La membresía ha expirado
+        return false; // La membresía ha expirado
     }
 
     // Desactivar otras membresías activas del mismo miembro
@@ -275,7 +275,14 @@ function activarMembresia($conn, $idMembresia)
     $stmtActivar->close();
 
     if ($resultado) {
-        // Agregar los entrenamientos de la membresía al miembro
+        // **1 Eliminar los entrenamientos previos del miembro**
+        $sqlEliminarEntrenamientos = "DELETE FROM miembro_entrenamiento WHERE id_miembro = ?";
+        $stmtEliminar = $conn->prepare($sqlEliminarEntrenamientos);
+        $stmtEliminar->bind_param("i", $idMiembro);
+        $stmtEliminar->execute();
+        $stmtEliminar->close();
+
+        // ** Insertar los entrenamientos de la nueva membresía**
         $sqlEntrenamientos = "
             INSERT INTO miembro_entrenamiento (id_miembro, id_especialidad)
             SELECT ?, me.id_entrenamiento

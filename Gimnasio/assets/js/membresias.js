@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 if (accion === "activar") {
                                     let filaAnterior = document.querySelector(`tr[data-usuario='${idUsuario}'] .estado-button[data-accion='desactivar']`);
                                     if (filaAnterior && filaAnterior !== this) {
-                                        console.log("🔄 Cambiando estado de la membresía anterior a 'expirada':", filaAnterior);
+                                        console.log(" Cambiando estado de la membresía anterior a 'expirada':", filaAnterior);
 
                                         // Actualizar la celda de estado
                                         let estadoCeldaAnterior = filaAnterior.closest("tr").querySelector("td:nth-child(9)");
