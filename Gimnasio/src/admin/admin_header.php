@@ -56,6 +56,7 @@
                     </li>
 
                     <li><a href="../admin/historial_pagos.php">Historial de pagos</a></li>
+                    <li><a href="../help/Manual.html">Manual</a></li>
                     <li>
                         <form action="../includes/general.php" method="post" style="display: inline;">
                             <input type="hidden" name="accion" value="logout">
