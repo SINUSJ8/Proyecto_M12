@@ -92,7 +92,7 @@ include '../admin/admin_header.php';
                         <tr>
                             <td><?php echo htmlspecialchars($miembro['nombre']); ?></td>
                             <td><?php echo htmlspecialchars($miembro['email']); ?></td>
-                            <td><?php echo htmlspecialchars($miembro['fecha_registro']); ?></td>
+                            <td><?php echo date("d/m/Y", strtotime($miembro['fecha_registro'])); ?></td>
                             <td><?php echo htmlspecialchars($miembro['tipo_membresia'] ?? 'N/A'); ?></td>
                             <td>
                                 <?php echo htmlspecialchars($miembro['entrenamientos'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?>

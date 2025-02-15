@@ -91,39 +91,38 @@ try {
 
 
 <main>
-    <h1 class="section-title">Mis Clases</h1>
+    <h1 class="section-title" title="Listado de clases en las que estás inscrito y disponibles.">Mis Clases</h1>
 
     <?php if (!empty($mensaje)): ?>
-        <p class="mensaje-confirmacion"><?= htmlspecialchars($mensaje); ?></p>
+        <p class="mensaje-confirmacion" title="Mensaje de confirmación."><?= htmlspecialchars($mensaje); ?></p>
     <?php endif; ?>
 
-    <h2 class="intro-text">Clases Inscritas</h2>
+    <h2 class="intro-text" title="Clases en las que estás inscrito actualmente.">Clases Inscritas</h2>
     <?php if (!empty($clasesInscritas)): ?>
         <table class="styled-table mis-clases">
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Fecha</th>
-                    <th>Horario</th>
-                    <th>Acciones</th>
+                    <th title="Nombre de la clase.">Nombre</th>
+                    <th title="Fecha de la clase en formato dd/mm/aaaa.">Fecha</th>
+                    <th title="Horario de inicio de la clase.">Horario</th>
+                    <th title="Opciones disponibles para la clase.">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($clasesInscritas as $clase): ?>
                     <tr>
-                        <td><?= htmlspecialchars($clase['nombre']); ?></td>
-                        <td><?= htmlspecialchars($clase['fecha']); ?></td>
-                        <td><?= htmlspecialchars($clase['horario']); ?></td>
+                        <td title="Clase: <?= htmlspecialchars($clase['nombre']); ?>"><?= htmlspecialchars($clase['nombre']); ?></td>
+                        <td title="Fecha: <?= date('d/m/Y', strtotime($clase['fecha'])); ?>"><?= date('d/m/Y', strtotime($clase['fecha'])); ?></td>
+                        <td title="Horario: <?= htmlspecialchars($clase['horario']); ?>"><?= htmlspecialchars($clase['horario']); ?></td>
                         <td>
                             <form method="POST">
                                 <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
                                 <input type="hidden" name="accion" value="borrarse">
-                                <button type="submit" class="delete-button">Borrarme</button>
+                                <button type="submit" class="delete-button" title="Darse de baja de la clase.">Borrarme</button>
                             </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
-
                 <!-- Añadir filas vacías para mantener el tamaño -->
                 <?php for ($i = count($clasesInscritas); $i < $per_page; $i++): ?>
                     <tr class="fila-vacia">
@@ -135,59 +134,59 @@ try {
 
         <div class="pagination">
             <?php if ($page_inscritas > 1): ?>
-                <a href="?page_inscritas=<?= $page_inscritas - 1; ?>&page_disponibles=<?= $page_disponibles; ?>" class="btn-general">Anterior</a>
+                <a href="?page_inscritas=<?= $page_inscritas - 1; ?>&page_disponibles=<?= $page_disponibles; ?>" class="btn-general" title="Ir a la página anterior de clases inscritas.">Anterior</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages_inscritas; $i++): ?>
-                <a href="?page_inscritas=<?= $i; ?>&page_disponibles=<?= $page_disponibles; ?>" class="btn-general <?= $i === $page_inscritas ? 'active' : ''; ?>">
+                <a href="?page_inscritas=<?= $i; ?>&page_disponibles=<?= $page_disponibles; ?>" class="btn-general <?= $i === $page_inscritas ? 'active' : ''; ?>" title="Ir a la página <?= $i; ?> de clases inscritas.">
                     <?= $i; ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($page_inscritas < $total_pages_inscritas): ?>
-                <a href="?page_inscritas=<?= $page_inscritas + 1; ?>&page_disponibles=<?= $page_disponibles; ?>" class="btn-general">Siguiente</a>
+                <a href="?page_inscritas=<?= $page_inscritas + 1; ?>&page_disponibles=<?= $page_disponibles; ?>" class="btn-general" title="Ir a la siguiente página de clases inscritas.">Siguiente</a>
             <?php endif; ?>
         </div>
     <?php else: ?>
-        <p class="mensaje-info">No estás inscrito en ninguna clase.</p>
+        <p class="mensaje-info" title="Actualmente no estás inscrito en ninguna clase.">No estás inscrito en ninguna clase.</p>
     <?php endif; ?>
 
 
-    <h2 class="intro-text">Clases Disponibles</h2>
+    <h2 class="intro-text" title="Lista de clases disponibles para inscribirse.">Clases Disponibles</h2>
     <?php if (!empty($clasesDisponibles)): ?>
         <table class="styled-table mis-clases">
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Especialidad</th>
-                    <th>Fecha</th>
-                    <th>Horario</th>
-                    <th>Duración</th>
-                    <th>Capacidad</th>
-                    <th>Monitor</th>
-                    <th>Estado</th>
+                    <th title="Nombre de la clase.">Nombre</th>
+                    <th title="Especialidad asociada a la clase.">Especialidad</th>
+                    <th title="Fecha en formato dd/mm/aaaa.">Fecha</th>
+                    <th title="Horario de inicio de la clase.">Horario</th>
+                    <th title="Duración total en minutos.">Duración</th>
+                    <th title="Capacidad máxima de la clase.">Capacidad</th>
+                    <th title="Monitor asignado a la clase.">Monitor</th>
+                    <th title="Estado de disponibilidad de la clase.">Estado</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($clasesDisponibles as $clase): ?>
                     <tr>
-                        <td><?= htmlspecialchars($clase['nombre']); ?></td>
-                        <td><?= htmlspecialchars($clase['especialidad']); ?></td>
-                        <td><?= date('d/m/Y', strtotime($clase['fecha'])); ?></td>
-                        <td><?= htmlspecialchars($clase['horario']); ?></td>
-                        <td><?= htmlspecialchars($clase['duracion']); ?> minutos</td>
-                        <td><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
-                        <td><?= htmlspecialchars($clase['monitor'] ?? ''); ?></td>
+                        <td title="Clase: <?= htmlspecialchars($clase['nombre']); ?>"><?= htmlspecialchars($clase['nombre']); ?></td>
+                        <td title="Especialidad: <?= htmlspecialchars($clase['especialidad']); ?>"><?= htmlspecialchars($clase['especialidad']); ?></td>
+                        <td title="Fecha: <?= date('d/m/Y', strtotime($clase['fecha'])); ?>"><?= date('d/m/Y', strtotime($clase['fecha'])); ?></td>
+                        <td title="Horario: <?= htmlspecialchars($clase['horario']); ?>"><?= htmlspecialchars($clase['horario']); ?></td>
+                        <td title="Duración: <?= htmlspecialchars($clase['duracion']); ?> minutos"><?= htmlspecialchars($clase['duracion']); ?> minutos</td>
+                        <td title="Capacidad máxima: <?= htmlspecialchars($clase['capacidad_maxima']); ?>"><?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
+                        <td title="Monitor: <?= htmlspecialchars($clase['monitor'] ?? ''); ?>"><?= htmlspecialchars($clase['monitor'] ?? ''); ?></td>
                         <td>
                             <?php if ($clase['estado'] === 'inscrito'): ?>
-                                <span class="mensaje-inscrito">Ya inscrito</span>
+                                <span class="mensaje-inscrito" title="Ya estás inscrito en esta clase.">Ya inscrito</span>
                             <?php elseif ($clase['estado'] === 'completa'): ?>
-                                <span class="mensaje-completa">Completa</span>
+                                <span class="mensaje-completa" title="Esta clase ya ha alcanzado el límite de participantes.">Completa</span>
                             <?php else: ?>
                                 <form method="POST">
                                     <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
                                     <input type="hidden" name="accion" value="apuntarse">
-                                    <button type="submit" class="btn-general">Apuntarme</button>
+                                    <button type="submit" class="btn-general" title="Inscribirse en esta clase.">Apuntarme</button>
                                 </form>
                             <?php endif; ?>
                         </td>
@@ -202,28 +201,26 @@ try {
             </tbody>
         </table>
 
-        <!-- Paginación -->
         <div class="pagination">
             <?php if ($page_disponibles > 1): ?>
-                <a href="?page_disponibles=<?= $page_disponibles - 1; ?>" class="btn-general">Anterior</a>
+                <a href="?page_disponibles=<?= $page_disponibles - 1; ?>" class="btn-general" title="Ir a la página anterior de clases disponibles.">Anterior</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages_disponibles; $i++): ?>
-                <a href="?page_disponibles=<?= $i; ?>" class="btn-general <?= $i === $page_disponibles ? 'active' : ''; ?>">
+                <a href="?page_disponibles=<?= $i; ?>" class="btn-general <?= $i === $page_disponibles ? 'active' : ''; ?>" title="Ir a la página <?= $i; ?> de clases disponibles.">
                     <?= $i; ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($page_disponibles < $total_pages_disponibles): ?>
-                <a href="?page_disponibles=<?= $page_disponibles + 1; ?>" class="btn-general">Siguiente</a>
+                <a href="?page_disponibles=<?= $page_disponibles + 1; ?>" class="btn-general" title="Ir a la siguiente página de clases disponibles.">Siguiente</a>
             <?php endif; ?>
         </div>
     <?php else: ?>
-        <p class="mensaje-info">No hay clases disponibles para tus especialidades.</p>
+        <p class="mensaje-info" title="No hay clases disponibles actualmente para tus especialidades.">No hay clases disponibles para tus especialidades.</p>
     <?php endif; ?>
-
-
 </main>
+
 
 <?php include '../includes/footer.php'; ?>
 <script src="../../assets/js/clases.js"></script>

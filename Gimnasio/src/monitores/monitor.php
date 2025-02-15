@@ -112,7 +112,7 @@ include 'monitores_header.php';
 ?>
 
 <main class="form_container">
-    <h1 class="section-title">Perfil del Monitor</h1>
+    <h1 class="section-title" title="Información del perfil del monitor">Perfil del Monitor</h1>
 
     <?php if (isset($_GET['success'])): ?>
         <script>
@@ -141,50 +141,51 @@ include 'monitores_header.php';
     <?php endif; ?>
 
     <section class="perfil-info">
-        <h2>Información del Monitor</h2>
+        <h2 title="Detalles de tu perfil como monitor">Información del Monitor</h2>
         <div class="info-box">
-            <p><strong>Nombre:</strong> <?php echo htmlspecialchars($monitor['nombre']); ?></p>
-            <p><strong>Correo Electrónico:</strong> <?php echo htmlspecialchars($monitor['email']); ?></p>
-            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($monitor['telefono'] ?? 'No disponible'); ?></p>
-            <p><strong>Experiencia:</strong> <?php echo htmlspecialchars($monitor['experiencia']); ?> años</p>
-            <p><strong>Disponibilidad:</strong> <?php echo ucfirst(htmlspecialchars($monitor['disponibilidad'])); ?></p>
-            <p><strong>Especialidades:</strong>
+            <p title="Tu nombre completo."><strong>Nombre:</strong> <?php echo htmlspecialchars($monitor['nombre']); ?></p>
+            <p title="Tu dirección de correo electrónico registrada."><strong>Correo Electrónico:</strong> <?php echo htmlspecialchars($monitor['email']); ?></p>
+            <p title="Número de teléfono registrado."><strong>Teléfono:</strong> <?php echo htmlspecialchars($monitor['telefono'] ?? 'No disponible'); ?></p>
+            <p title="Años de experiencia en la especialidad."><strong>Experiencia:</strong> <?php echo htmlspecialchars($monitor['experiencia']); ?> años</p>
+            <p title="Estado actual de tu disponibilidad."><strong>Disponibilidad:</strong> <?php echo ucfirst(htmlspecialchars($monitor['disponibilidad'])); ?></p>
+            <p title="Especialidades en las que estás registrado."><strong>Especialidades:</strong>
                 <?php echo !empty($especialidades) ? implode(', ', array_column($especialidades, 'especialidad')) : 'No asignadas'; ?>
             </p>
         </div>
     </section>
 
     <section class="perfil-edicion">
-        <h2>Editar Información</h2>
+        <h2 title="Modificar los datos de tu perfil">Editar Información</h2>
         <form method="POST" action="monitor.php">
             <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($monitor['nombre']); ?>" required>
+            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($monitor['nombre']); ?>" required title="Introduce tu nombre completo">
 
             <label for="email">Correo Electrónico:</label>
-            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($monitor['email']); ?>" required>
+            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($monitor['email']); ?>" required title="Introduce tu correo electrónico de contacto">
 
             <label for="telefono">Teléfono:</label>
             <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($monitor['telefono']); ?>" maxlength="9" pattern="\d{9}" title="Debe contener exactamente 9 dígitos numéricos">
 
             <label for="disponibilidad">Disponibilidad:</label>
-            <select id="disponibilidad" name="disponibilidad">
+            <select id="disponibilidad" name="disponibilidad" title="Selecciona tu estado de disponibilidad">
                 <option value="disponible" <?php echo $monitor['disponibilidad'] === 'disponible' ? 'selected' : ''; ?>>Disponible</option>
                 <option value="no disponible" <?php echo $monitor['disponibilidad'] === 'no disponible' ? 'selected' : ''; ?>>No Disponible</option>
             </select>
 
-            <h2>Cambiar Contraseña</h2>
+            <h2 title="Modificar tu contraseña">Cambiar Contraseña</h2>
             <label for="contrasena_actual">Contraseña Actual:</label>
-            <input type="password" id="contrasena_actual" name="contrasena_actual">
+            <input type="password" id="contrasena_actual" name="contrasena_actual" title="Introduce tu contraseña actual para hacer cambios.">
 
             <label for="nueva_contrasena">Nueva Contraseña:</label>
-            <input type="password" id="nueva_contrasena" name="nueva_contrasena">
+            <input type="password" id="nueva_contrasena" name="nueva_contrasena" title="Introduce una nueva contraseña segura.">
 
             <label for="confirmar_contrasena">Confirmar Nueva Contraseña:</label>
-            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena">
+            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" title="Repite tu nueva contraseña para confirmarla.">
 
-            <button type="submit" class="btn-general">Guardar Cambios</button>
+            <button type="submit" class="btn-general" title="Guardar los cambios realizados en tu perfil">Guardar Cambios</button>
         </form>
     </section>
 </main>
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

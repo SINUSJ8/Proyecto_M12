@@ -62,34 +62,40 @@ include 'miembro_header.php';
 ?>
 
 <main class="form_container">
-    <h2 class="section-title">Mis Notificaciones</h2>
+    <h2 class="section-title" title="Lista de tus notificaciones recientes.">Mis Notificaciones</h2>
 
     <form method="POST">
-        <button type="submit" name="accion" value="ocultar_todas" class="delete-button">Eliminar Todas</button>
+        <button type="submit" name="accion" value="ocultar_todas" class="delete-button" title="Eliminar todas las notificaciones.">Eliminar Todas</button>
     </form>
 
     <?php if (empty($notificaciones)): ?>
-        <p class="mensaje-info">No tienes notificaciones.</p>
+        <p class="mensaje-info" title="No tienes nuevas notificaciones.">No tienes notificaciones.</p>
     <?php else: ?>
         <table class="styled-table">
             <thead>
                 <tr>
-                    <th>Mensaje</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
+                    <th title="Mensaje completo de la notificación.">Mensaje</th>
+                    <th title="Fecha en la que se recibió la notificación.">Fecha</th>
+                    <th title="Estado de la notificación (leída o nueva).">Estado</th>
+                    <th title="Opciones para gestionar la notificación.">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($notificaciones as $notificacion): ?>
                     <tr class="<?php echo $notificacion['leida'] ? 'notificacion-leida' : 'notificacion-nueva'; ?>">
-                        <td><?php echo htmlspecialchars($notificacion['mensaje']); ?></td>
-                        <td><?php echo date("d-m-Y", strtotime($notificacion['fecha'])); ?></td>
-                        <td><?php echo $notificacion['leida'] ? 'Leída' : 'Nueva'; ?></td>
+                        <td title="Mensaje: <?php echo htmlspecialchars($notificacion['mensaje']); ?>">
+                            <?php echo htmlspecialchars($notificacion['mensaje']); ?>
+                        </td>
+                        <td title="Fecha recibida: <?php echo date("d/m/Y", strtotime($notificacion['fecha'])); ?>">
+                            <?php echo date("d/m/Y", strtotime($notificacion['fecha'])); ?>
+                        </td>
+                        <td title="Estado actual de la notificación.">
+                            <?php echo $notificacion['leida'] ? 'Leída' : 'Nueva'; ?>
+                        </td>
                         <td>
                             <form method="POST" style="display:inline;">
                                 <input type="hidden" name="id_notificacion" value="<?php echo $notificacion['id_notificacion']; ?>">
-                                <button type="submit" name="accion" value="ocultar" class="delete-button">Eliminar</button>
+                                <button type="submit" name="accion" value="ocultar" class="delete-button" title="Eliminar esta notificación.">Eliminar</button>
                             </form>
                         </td>
                     </tr>
@@ -100,20 +106,21 @@ include 'miembro_header.php';
         <!-- Paginación -->
         <div class="pagination">
             <?php if ($page > 1): ?>
-                <a href="mis_notificaciones.php?page=<?php echo $page - 1; ?>" class="btn-general">Anterior</a>
+                <a href="mis_notificaciones.php?page=<?php echo $page - 1; ?>" class="btn-general" title="Ir a la página anterior.">Anterior</a>
             <?php endif; ?>
 
             <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                <a href="mis_notificaciones.php?page=<?php echo $i; ?>" class="btn-general <?php echo $i === $page ? 'active' : ''; ?>">
+                <a href="mis_notificaciones.php?page=<?php echo $i; ?>" class="btn-general <?php echo $i === $page ? 'active' : ''; ?>" title="Ver página <?php echo $i; ?>">
                     <?php echo $i; ?>
                 </a>
             <?php endfor; ?>
 
             <?php if ($page < $total_pages): ?>
-                <a href="mis_notificaciones.php?page=<?php echo $page + 1; ?>" class="btn-general">Siguiente</a>
+                <a href="mis_notificaciones.php?page=<?php echo $page + 1; ?>" class="btn-general" title="Ir a la siguiente página.">Siguiente</a>
             <?php endif; ?>
         </div>
     <?php endif; ?>
 </main>
+
 
 <?php include '../includes/footer.php'; ?>

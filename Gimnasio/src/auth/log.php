@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once('../includes/general.php');
+require_once('../includes/header.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
@@ -17,9 +18,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gimnasio - Registro e Inicio de Sesión</title>
     <link rel="stylesheet" href="../../assets/css/estilos.css">
+
 </head>
 
 <body>
+
     <main>
         <!-- Mostrar mensaje de confirmación o error almacenado en la sesión -->
         <?php if (isset($_SESSION['mensaje'])): ?>
@@ -60,5 +63,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script src="../../assets/js/validacion.js"></script>
 </body>
+<?php include '../includes/footer.php'; ?>
 
 </html>

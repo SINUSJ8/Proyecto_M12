@@ -84,7 +84,7 @@ include '../monitores/monitores_header.php';
                 <div class="clase-card" title="Información detallada de la clase asignada.">
                     <h3 class="clase-titulo" title="Nombre de la clase."><?php echo htmlspecialchars($clase['clase_nombre']); ?></h3>
                     <p title="Especialidad a la que pertenece la clase."><strong>Especialidad:</strong> <?php echo htmlspecialchars($clase['especialidad']); ?></p>
-                    <p title="Fecha en la que se impartirá la clase."><strong>Fecha:</strong> <?php echo htmlspecialchars($clase['fecha']); ?></p>
+                    <p title="Fecha en la que se impartirá la clase."><strong>Fecha:</strong> <?php echo date("d/m/Y", strtotime($clase['fecha'])); ?></p>
                     <p title="Hora de inicio de la clase."><strong>Hora:</strong> <?php echo htmlspecialchars($clase['horario']); ?></p>
                     <p title="Duración total de la clase en minutos."><strong>Duración:</strong> <?php echo htmlspecialchars($clase['duracion']); ?> minutos</p>
                     <p title="Número de participantes inscritos en la clase y la capacidad máxima permitida.">

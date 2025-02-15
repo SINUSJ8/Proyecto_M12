@@ -68,7 +68,7 @@ include '../miembros/miembro_header.php';
 ?>
 
 <main class="form_container">
-    <h1 class="section-title">Perfil del Usuario</h1>
+    <h1 class="section-title" title="Información y configuración de tu perfil.">Perfil del Usuario</h1>
 
     <?php if (isset($_GET['success'])): ?>
         <script>
@@ -97,39 +97,40 @@ include '../miembros/miembro_header.php';
     <?php endif; ?>
 
     <section class="perfil-info">
-        <h2>Información del Usuario</h2>
+        <h2 title="Datos personales asociados a tu cuenta.">Información del Usuario</h2>
         <div class="info-box">
-            <p><strong>Nombre:</strong> <?php echo htmlspecialchars($usuario['nombre']); ?></p>
-            <p><strong>Correo Electrónico:</strong> <?php echo htmlspecialchars($usuario['email']); ?></p>
-            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($usuario['telefono'] ?? 'No disponible'); ?></p>
+            <p title="Tu nombre registrado en el sistema."><strong>Nombre:</strong> <?php echo htmlspecialchars($usuario['nombre']); ?></p>
+            <p title="Tu dirección de correo electrónico."><strong>Correo Electrónico:</strong> <?php echo htmlspecialchars($usuario['email']); ?></p>
+            <p title="Tu número de teléfono registrado."><strong>Teléfono:</strong> <?php echo htmlspecialchars($usuario['telefono'] ?? 'No disponible'); ?></p>
         </div>
     </section>
 
     <section class="perfil-edicion">
-        <h2>Editar Información</h2>
+        <h2 title="Modificar los datos de tu cuenta.">Editar Información</h2>
         <form method="POST" action="editar_perfil.php">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
+            <label for="nombre" title="Escribe tu nombre completo.">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required title="Introduce tu nombre completo.">
 
-            <label for="email">Correo Electrónico:</label>
-            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
+            <label for="email" title="Introduce tu correo electrónico.">Correo Electrónico:</label>
+            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($usuario['email']); ?>" required title="Introduce tu dirección de correo electrónico válida.">
 
-            <label for="telefono">Teléfono:</label>
-            <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>" maxlength="9" pattern="\d{9}" title="Debe contener exactamente 9 dígitos numéricos">
+            <label for="telefono" title="Introduce tu número de teléfono de 9 dígitos.">Teléfono:</label>
+            <input type="text" id="telefono" name="telefono" value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>" maxlength="9" pattern="\d{9}" title="Debe contener exactamente 9 dígitos numéricos.">
 
-            <h2>Cambiar Contraseña</h2>
-            <label for="contrasena_actual">Contraseña Actual:</label>
-            <input type="password" id="contrasena_actual" name="contrasena_actual">
+            <h2 title="Opciones para cambiar tu contraseña.">Cambiar Contraseña</h2>
+            <label for="contrasena_actual" title="Introduce tu contraseña actual.">Contraseña Actual:</label>
+            <input type="password" id="contrasena_actual" name="contrasena_actual" title="Introduce tu contraseña actual para poder cambiarla.">
 
-            <label for="nueva_contrasena">Nueva Contraseña:</label>
-            <input type="password" id="nueva_contrasena" name="nueva_contrasena">
+            <label for="nueva_contrasena" title="Introduce una nueva contraseña segura.">Nueva Contraseña:</label>
+            <input type="password" id="nueva_contrasena" name="nueva_contrasena" title="La nueva contraseña debe tener al menos 6 caracteres.">
 
-            <label for="confirmar_contrasena">Confirmar Nueva Contraseña:</label>
-            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena">
+            <label for="confirmar_contrasena" title="Confirma la nueva contraseña escribiéndola nuevamente.">Confirmar Nueva Contraseña:</label>
+            <input type="password" id="confirmar_contrasena" name="confirmar_contrasena" title="Repite la nueva contraseña para confirmar que es correcta.">
 
-            <button type="submit" class="btn-general">Guardar Cambios</button>
+            <button type="submit" class="btn-general" title="Guardar los cambios realizados en tu perfil.">Guardar Cambios</button>
         </form>
     </section>
 </main>
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
