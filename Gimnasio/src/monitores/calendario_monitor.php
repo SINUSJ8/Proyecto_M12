@@ -59,6 +59,7 @@ foreach ($clases as $clase) {
                 initialView: 'dayGridMonth',
                 themeSystem: 'bootstrap',
                 locale: 'es',
+                firstDay: 1,
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
