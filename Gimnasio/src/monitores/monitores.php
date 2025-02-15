@@ -120,9 +120,10 @@ include '../admin/admin_header.php';
                             <form method="POST" action="monitores.php" class="form-eliminar">
                                 <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($monitor['id_usuario']); ?>">
                                 <button type="button" class="delete-button eliminar-btn">Eliminar</button>
+                                <a href="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($monitor['id_usuario']); ?>" class="btn-general edit-button">Editar</a>
                             </form>
 
-                            <a href="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($monitor['id_usuario']); ?>" class="btn-general edit-button">Editar</a>
+
                         </td>
                     </tr>
                 <?php endforeach; ?>
