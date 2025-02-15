@@ -145,20 +145,26 @@ include 'admin_header.php';
 ?>
 
 <main>
-    <h2 class="section-title">Gestión de Notificaciones</h2>
+    <h2 class="section-title" title="Gestión de notificaciones enviadas y recibidas">Gestión de Notificaciones</h2>
+
     <!-- Mostrar mensajes de éxito o error -->
     <?php if (isset($success)): ?>
-        <div class="mensaje-confirmacion"><?php echo htmlspecialchars($success); ?></div>
+        <div class="mensaje-confirmacion" title="Notificación enviada con éxito">
+            <?php echo htmlspecialchars($success); ?>
+        </div>
     <?php endif; ?>
     <?php if (isset($error)): ?>
-        <div class="mensaje-error"><?php echo htmlspecialchars($error); ?></div>
+        <div class="mensaje-error" title="Error al enviar la notificación">
+            <?php echo htmlspecialchars($error); ?>
+        </div>
     <?php endif; ?>
+
     <!-- Formulario para enviar notificaciones -->
     <section>
-        <h3>Enviar Notificación</h3>
-        <form method="POST" action="notificaciones.php" class="form_container">
-            <label for="destinatario">Seleccionar Destinatario:</label>
-            <select name="destinatario" id="destinatario" required class="select-general" onchange="toggleDestinatario()">
+        <h3 title="Enviar una nueva notificación">Enviar Notificación</h3>
+        <form method="POST" action="notificaciones.php" class="form_container" title="Formulario para enviar notificaciones">
+            <label for="destinatario" title="Selecciona quién recibirá la notificación">Seleccionar Destinatario:</label>
+            <select name="destinatario" id="destinatario" required class="select-general" title="Elige el tipo de destinatario" onchange="toggleDestinatario()">
                 <option value="">-- Selecciona un destinatario --</option>
                 <option value="todos">Todos los Usuarios</option>
                 <option value="grupo">Grupo Específico</option>
@@ -166,8 +172,8 @@ include 'admin_header.php';
             </select>
 
             <div id="grupo_destinatario" style="display: none;">
-                <label for="grupo">Seleccionar Grupo:</label>
-                <select name="grupo" id="grupo" class="select-general">
+                <label for="grupo" title="Selecciona un grupo de usuarios">Seleccionar Grupo:</label>
+                <select name="grupo" id="grupo" class="select-general" title="Elige un grupo de usuarios">
                     <option value="usuarios">Usuarios</option>
                     <option value="miembros">Miembros</option>
                     <option value="monitores">Monitores</option>
@@ -176,46 +182,55 @@ include 'admin_header.php';
             </div>
 
             <div id="usuario_destinatario" style="display: none;">
-                <label for="buscar_usuario">Buscar Usuario:</label>
-                <input type="text" id="buscar_usuario" placeholder="Escribe para buscar usuarios..." class="input-general" onkeyup="buscarUsuario(this.value)">
-                <label for="id_usuario">Seleccionar Usuario:</label>
-                <select name="id_usuario" id="id_usuario" class="select-general">
+                <label for="buscar_usuario" title="Escribe un nombre o email para buscar un usuario">Buscar Usuario:</label>
+                <input type="text" id="buscar_usuario" placeholder="Escribe para buscar usuarios..." class="input-general" title="Busca un usuario específico" onkeyup="buscarUsuario(this.value)">
+                <label for="id_usuario" title="Selecciona un usuario de la lista">Seleccionar Usuario:</label>
+                <select name="id_usuario" id="id_usuario" class="select-general" title="Elige un usuario de la lista">
                     <option value="">-- Selecciona un usuario --</option>
                 </select>
             </div>
+
             <div class="notificacion-mensaje">
-                <textarea name="mensaje" required class="input-general" placeholder="Tu mensaje"></textarea>
-                <button type="submit" class="btn-general">Enviar</button>
+                <textarea name="mensaje" required class="input-general" placeholder="Tu mensaje" title="Escribe el contenido de la notificación"></textarea>
+                <button type="submit" class="btn-general" title="Enviar la notificación">Enviar</button>
             </div>
         </form>
     </section>
-    <a href="notificaciones_enviadas.php" class="btn-general">Ver Notificaciones Enviadas</a>
+
+    <a href="notificaciones_enviadas.php" class="btn-general" title="Ver todas las notificaciones enviadas">Ver Notificaciones Enviadas</a>
+
     <!-- Mostrar notificaciones dirigidas al administrador -->
     <section>
-        <h3>Mis Notificaciones</h3>
+        <h3 title="Lista de notificaciones recibidas">Mis Notificaciones</h3>
         <?php if (empty($notificaciones)): ?>
-            <p class="mensaje-info">No tienes notificaciones.</p>
+            <p class="mensaje-info" title="No tienes notificaciones nuevas">No tienes notificaciones.</p>
         <?php else: ?>
-            <table class="styled-table">
+            <table class="styled-table" title="Tabla con las notificaciones recibidas">
                 <thead>
                     <tr>
-                        <th>Mensaje</th>
-                        <th>Fecha</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th title="Contenido de la notificación">Mensaje</th>
+                        <th title="Fecha en que se recibió la notificación">Fecha</th>
+                        <th title="Estado de la notificación">Estado</th>
+                        <th title="Opciones disponibles">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($notificaciones as $notificacion): ?>
                         <tr class="<?php echo $notificacion['leida'] ? 'notificacion-leida' : 'notificacion-nueva'; ?>">
-                            <td><?php echo htmlspecialchars($notificacion['mensaje']); ?></td>
-                            <td><?php echo htmlspecialchars($notificacion['fecha']); ?></td>
-                            <td><?php echo $notificacion['leida'] ? 'Leída' : 'Nueva'; ?></td>
-                            <td>
+                            <td title="<?php echo htmlspecialchars($notificacion['mensaje']); ?>">
+                                <?php echo htmlspecialchars(substr($notificacion['mensaje'], 0, 100)) . '...'; ?>
+                            </td>
+                            <td title="Fecha de la notificación">
+                                <?php echo date("d/m/Y", strtotime($notificacion['fecha'])); ?>
+                            </td>
+                            <td title="Estado de la notificación">
+                                <?php echo $notificacion['leida'] ? 'Leída' : 'Nueva'; ?>
+                            </td>
+                            <td title="Acciones disponibles para esta notificación">
                                 <form method="POST" style="display:inline;">
                                     <input type="hidden" name="id_notificacion" value="<?php echo $notificacion['id_notificacion']; ?>">
-                                    <button type="submit" name="accion" value="ocultar" class="btn-general">Ocultar</button>
-                                    <button type="submit" name="accion" value="eliminar" class="delete-button">Eliminar</button>
+                                    <button type="submit" name="accion" value="ocultar" class="btn-general" title="Ocultar esta notificación">Ocultar</button>
+                                    <button type="submit" name="accion" value="eliminar" class="delete-button" title="Eliminar esta notificación">Eliminar</button>
                                 </form>
                             </td>
                         </tr>
@@ -223,23 +238,24 @@ include 'admin_header.php';
                 </tbody>
             </table>
 
-            <div class="pagination">
+            <div class="pagination" title="Paginación de notificaciones">
                 <?php if ($page > 1): ?>
-                    <a href="notificaciones.php?page=<?php echo $page - 1; ?>" " class=" btn-general">Anterior</a>
+                    <a href="notificaciones.php?page=<?php echo $page - 1; ?>" class="btn-general" title="Ir a la página anterior">Anterior</a>
                 <?php endif; ?>
 
                 <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                    <a href="notificaciones.php?page=<?php echo $i; ?>" " class=" btn-general"<?php echo $i === $page ? 'active' : ''; ?>">
+                    <a href="notificaciones.php?page=<?php echo $i; ?>" class="btn-general" title="Ir a la página <?php echo $i; ?>">
                         <?php echo $i; ?>
                     </a>
                 <?php endfor; ?>
 
                 <?php if ($page < $total_pages): ?>
-                    <a href="notificaciones.php?page=<?php echo $page + 1; ?>"" class=" btn-general">Siguiente</a>
+                    <a href="notificaciones.php?page=<?php echo $page + 1; ?>" class="btn-general" title="Ir a la siguiente página">Siguiente</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>
     </section>
 </main>
+
 <script src="../../assets/js/alertas.js"></script>
 <?php include '../includes/footer.php'; ?>
