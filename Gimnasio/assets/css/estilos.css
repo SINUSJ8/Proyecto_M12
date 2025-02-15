@@ -434,6 +434,29 @@ table.styled-table.mis-clases tbody tr.fila-vacia td {
     border: none;
 }
 
+table.styled-table.clases-anteriores {
+    background-color: #f4ece2;
+    color: #5a4635;
+}
+
+table.styled-table.clases-anteriores thead tr {
+    background-color: #d2b48c;
+    color: #fff;
+}
+
+table.styled-table.clases-anteriores tbody tr:nth-child(even) {
+    background-color: #f0e6d2;
+}
+
+table.styled-table.clases-anteriores tbody tr:hover {
+    background-color: #e8ddc6;
+}
+
+table.styled-table.clases-anteriores tbody tr.clase-sin-monitor {
+    background-color: inherit !important;
+    color: inherit !important;
+}
+
 /* BOTONES */
 /* Contenedor de botones */
 .acciones .button-container {

@@ -252,9 +252,7 @@ function ordenarTablaC(columna, idTabla = 'tabla-clases') {
 
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
-function confirmarRestauracion() {
-    return confirm("¿Estás seguro de que deseas restaurar este usuario a un rol básico?");
-}
+
 // Script para monitores.php (botón eliminar) ->Espera a que el DOM esté completamente cargado antes de ejecutar el script.
 document.addEventListener("DOMContentLoaded", function () {
 

@@ -86,7 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
         <?php endif; ?>
 
         <!-- Tabla para mostrar clases -->
-        <table id="tabla-clases" class="styled-table">
+        <table id="tabla-clases" class="styled-table <?= $tipo === 'anteriores' ? 'clases-anteriores' : ''; ?>">
+
             <thead>
                 <tr>
                     <th onclick="ordenarTabla(0, 'tabla-clases')" class="sortable">Nombre</th>
