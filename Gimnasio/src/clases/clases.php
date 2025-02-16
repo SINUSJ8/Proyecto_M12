@@ -33,36 +33,48 @@ $clases_json = json_encode($clases);
 $title = $tipo === 'anteriores' ? "Clases Anteriores" : "Listado de Clases";
 include '../admin/admin_header.php';
 
-// Eliminar clase y notificar
+// Eliminar clase y evitar notificaciones si es una clase anterior
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
     $id_clase = intval($_POST['id_clase']);
+    $tipo = $_POST['tipo'] ?? 'actuales'; // Obtener el tipo de clase (actual o anterior)
 
-    // Obtener los datos para enviar notificaciones antes de eliminar
-    $miembros = obtenerMiembrosInscritos($conn, $id_clase);
-    $monitor = obtenerMonitorDeClase($conn, $id_clase);
+    // Obtener el nombre de la clase antes de eliminarla
+    $stmt = $conn->prepare("SELECT nombre FROM clase WHERE id_clase = ?");
+    $stmt->bind_param('i', $id_clase);
+    $stmt->execute();
+    $stmt->bind_result($nombre_clase);
+    $stmt->fetch();
+    $stmt->close();
 
-    // Enviar notificaciones a miembros
-    foreach ($miembros as $miembro) {
-        $mensaje = "La clase a la que estabas inscrito ha sido cancelada.";
-        enviarNotificacion($conn, $miembro['id_usuario'], $mensaje);
+    if ($tipo === 'actuales') {
+        // Obtener los datos para enviar notificaciones antes de eliminar
+        $miembros = obtenerMiembrosInscritos($conn, $id_clase);
+        $monitor = obtenerMonitorDeClase($conn, $id_clase);
+
+        // Enviar notificaciones a miembros
+        foreach ($miembros as $miembro) {
+            $mensaje = "La clase '$nombre_clase' a la que estabas inscrito ha sido cancelada.";
+            enviarNotificacion($conn, $miembro['id_usuario'], $mensaje);
+        }
+
+        // Enviar notificaciones al monitor
+        if ($monitor) {
+            $mensajeMonitor = "La clase '$nombre_clase' que impartías ha sido cancelada.";
+            enviarNotificacion($conn, $monitor['id_usuario'], $mensajeMonitor);
+        }
     }
 
-    // Enviar notificaciones al monitor
-    if ($monitor) {
-        $mensajeMonitor = "La clase que impartías ha sido cancelada.";
-        enviarNotificacion($conn, $monitor['id_usuario'], $mensajeMonitor);
-    }
-
-    // Eliminar la clase
+    // Eliminar la clase (sin importar si es anterior o actual)
     $stmt = $conn->prepare("DELETE FROM clase WHERE id_clase = ?");
     $stmt->bind_param('i', $id_clase);
     $stmt->execute();
     $stmt->close();
 
     // Redirigir con un mensaje de confirmación
-    header('Location: clases.php?mensaje=clase_eliminada');
+    header("Location: clases.php?tipo={$tipo}&mensaje=clase_eliminada");
     exit;
 }
+
 ?>
 
 <body>
@@ -118,20 +130,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_clase'])) {
                         <td><?= date('d-m-Y', strtotime($clase['fecha'])); ?></td>
                         <td><?= htmlspecialchars($clase['horario']); ?></td>
                         <td><?= htmlspecialchars($clase['duracion']); ?> min</td>
-                        <td><?= $num_inscritos; ?> / <?= htmlspecialchars($clase['capacidad_maxima']); ?></td> <!-- Muestra inscritos / capacidad -->
+                        <td><?= $num_inscritos; ?> / <?= htmlspecialchars($clase['capacidad_maxima']); ?></td>
                         <td class="acciones">
                             <div class="button-container">
                                 <a href="detalle_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general">Ver Detalle</a>
+
+
                                 <?php if ($tipo === 'actuales'): ?>
                                     <a href="editar_clase.php?id_clase=<?= htmlspecialchars($clase['id_clase']); ?>" class="btn-general edit-button">Editar</a>
-                                    <form method="POST" action="clases.php">
-                                        <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
-                                        <button type="submit" class="delete-button">Eliminar</button>
-                                    </form>
-                                <?php else: ?>
-                                    <span class="btn-disabled">Editar no disponible</span>
-                                    <span class="btn-disabled">Eliminar no disponible</span>
                                 <?php endif; ?>
+
+                                <form method="POST" action="clases.php">
+                                    <input type="hidden" name="id_clase" value="<?= htmlspecialchars($clase['id_clase']); ?>">
+                                    <input type="hidden" name="tipo" value="<?= htmlspecialchars($tipo); ?>"> <!-- Agregar tipo -->
+                                    <button type="submit" class="delete-button">Eliminar</button>
+                                </form>
+
                             </div>
                         </td>
                     </tr>
