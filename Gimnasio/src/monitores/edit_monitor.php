@@ -142,7 +142,7 @@ include '../admin/admin_header.php';
     <main>
         <h2 class="section-title">Editar Monitor</h2>
 
-        <?php if (isset($mensaje)): ?>
+        <?php if (!empty($mensaje)): ?>
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     Swal.fire({
@@ -154,6 +154,7 @@ include '../admin/admin_header.php';
                 });
             </script>
         <?php endif; ?>
+
 
         <div class="form_container">
             <?php if ($monitor): ?>
