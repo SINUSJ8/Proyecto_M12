@@ -95,8 +95,7 @@ $conn->close();
 
                 <div class="button-container">
                     <button type="submit" class="btn-general">Actualizar Datos</button>
-                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Volver</a>
-
+                    <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
                 </div>
             </form>
         </div>

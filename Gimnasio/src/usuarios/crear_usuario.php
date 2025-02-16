@@ -87,8 +87,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
 
                 <input type="hidden" name="rol" value="usuario">
 
-                <button type="submit" name="crear_usuario" class="btn-general">Crear Usuario</button>
-                <a href="usuarios.php" class="btn-general btn-secondary">Volver a Usuarios</a>
+
+                <div class="button-container">
+                    <button type="submit" name="crear_usuario" class="btn-general">Crear Usuario</button>
+                    <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+                </div>
             </form>
         </section>
     </main>

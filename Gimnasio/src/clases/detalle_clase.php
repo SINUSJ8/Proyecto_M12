@@ -114,12 +114,10 @@ include '../admin/admin_header.php';
             <p>No hay miembros inscritos en esta clase.</p>
         <?php endif; ?>
 
-        <?php
-        $referer = $_SERVER['HTTP_REFERER'] ?? 'buscar_clase.php'; // Si no hay referer, vuelve a buscar_clase.php
-        ?>
         <div class="button-container">
-            <a href="clases.php" class="btn-general btn-secondary">Volver a Clases</a>
+            <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
         </div>
+
 
 
     </main>

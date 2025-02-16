@@ -213,8 +213,7 @@ include '../admin/admin_header.php';
                     <button type="submit" class="btn-general"
                         title="Guarda la clase y agrégala al sistema."><?= $id_clase ? 'Actualizar Clase' : 'Crear Clase'; ?>
                     </button>
-                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()"
-                        title="Regresa a la página anterior sin guardar cambios.">Cancelar</a>
+                    <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
                 </div>
             </form>
         </section>

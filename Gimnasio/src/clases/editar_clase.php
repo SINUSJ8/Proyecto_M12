@@ -256,8 +256,7 @@ include '../admin/admin_header.php';
                 <!-- Botones de acción -->
                 <div class="button-container">
                     <button type="submit" class="btn-general" title="Guarda los cambios realizados en la clase.">Actualizar Clase</button>
-                    <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()"
-                        title="Regresa a la página anterior sin guardar cambios.">Volver</a>
+                    <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
                 </div>
             </form>
         </section>

@@ -203,7 +203,7 @@ include '../admin/admin_header.php';
 
                     <div class="button-container">
                         <button type="submit" class="btn-general">Guardar Cambios</button>
-                        <a href="<?= htmlspecialchars($_SESSION['referer'] ?? 'miembros.php') ?>" class="btn-general btn-secondary">Cancelar</a>
+                        <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
                     </div>
                 </form>
             <?php else: ?>

@@ -225,8 +225,7 @@ include '../admin/admin_header.php';
 
                     <div class="button-container">
                         <button type="submit" class="btn-general" title="Guarde los cambios realizados al monitor.">Actualizar Cambios</button>
-                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary"
-                            onclick="unsetReferer()" title="Regresar a la página anterior sin guardar cambios.">Volver</a>
+                        <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
                     </div>
 
                 </form>
