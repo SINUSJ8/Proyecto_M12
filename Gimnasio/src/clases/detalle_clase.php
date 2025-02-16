@@ -118,8 +118,9 @@ include '../admin/admin_header.php';
         $referer = $_SERVER['HTTP_REFERER'] ?? 'buscar_clase.php'; // Si no hay referer, vuelve a buscar_clase.php
         ?>
         <div class="button-container">
-            <a href="<?= htmlspecialchars($referer); ?>" class="btn-general btn-secondary">Volver</a>
+            <a href="clases.php" class="btn-general btn-secondary">Volver a Clases</a>
         </div>
+
 
     </main>
 </body>
