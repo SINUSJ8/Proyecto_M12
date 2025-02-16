@@ -19,53 +19,107 @@ if (!isset($_GET['id_usuario'])) {
 $id_usuario = $_GET['id_usuario'];
 $monitor = obtenerMonitorPorID($conn, $id_usuario);
 
-// Asegurar que 'entrenamientos' esté definido aunque esté vacío
-$monitor['entrenamientos'] = isset($monitor['entrenamientos']) ? $monitor['entrenamientos'] : [];
+if (!$monitor) {
+    die("Monitor no encontrado.");
+}
 
-// Obtener entrenamientos y especialidades disponibles para los desplegables
+$id_monitor = $monitor['id_monitor'];
+
+// **Obtener especialidades actuales del monitor**
+$especialidades_actuales = [];
+if (!empty($monitor['especialidades']) && is_array($monitor['especialidades'])) {
+    foreach ($monitor['especialidades'] as $especialidad) {
+        $especialidades_actuales[intval($especialidad['id_especialidad'])] = $especialidad['nombre'];
+    }
+}
+
+// **Obtener especialidades disponibles**
 $entrenamientos = obtenerEntrenamientos($conn);
-$especialidades = obtenerEspecialidades($conn);
+if (!is_array($entrenamientos)) {
+    $entrenamientos = [];
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = $_POST['nombre'] ?? null;
     $email = $_POST['email'] ?? null;
     $experiencia = $_POST['experiencia'] ?? null;
     $disponibilidad_nueva = $_POST['disponibilidad'] ?? null;
-    $entrenamientos_seleccionados = $_POST['entrenamiento'] ?? [];
+    $entrenamientos_seleccionados = isset($_POST['entrenamiento']) ? array_map('intval', (array)$_POST['entrenamiento']) : [];
 
-    if (!$nombre || !$email || $experiencia === null || $disponibilidad_nueva === null) {
-        $mensaje = "Error: Todos los campos son obligatorios.";
-        header("Location: edit_monitor.php?id_usuario=$id_usuario&mensaje=" . urlencode($mensaje));
-        exit();
+    $errores = [];
+
+    // **Validar que el nombre tenga al menos una letra**
+    $esError = false; // Por defecto, asumimos que no hay error
+
+    if (!preg_match('/[a-zA-Z]/', $nombre)) {
+        $errores[] = "El nombre debe contener al menos una letra.";
     }
 
-    // Verificar si la disponibilidad cambió
-    $disponibilidad_anterior = $monitor['disponibilidad'];
-    $cambio_de_disponibilidad = ($disponibilidad_anterior !== $disponibilidad_nueva);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errores[] = "El formato del correo electrónico no es válido.";
+    }
 
-    // Actualizar el monitor en la base de datos
-    $resultado = actualizarMonitor($conn, $id_usuario, $nombre, $email, $monitor['especialidad'], $experiencia, $disponibilidad_nueva);
+    if (!$nombre || !$email || $experiencia === null || $disponibilidad_nueva === null) {
+        $errores[] = "Todos los campos son obligatorios.";
+    }
 
-    if ($resultado['success']) {
-        $id_monitor = $monitor['id_monitor'];
+    // Si hay errores, cambiamos la variable de estado
+    if (!empty($errores)) {
+        $mensaje = implode("<br>", $errores);
+        $esError = true; // Indicamos que es un error
+    } else {
+        // **Verificar si la disponibilidad cambió**
+        $disponibilidad_anterior = $monitor['disponibilidad'];
+        $cambio_de_disponibilidad = ($disponibilidad_anterior !== $disponibilidad_nueva);
 
-        if ($id_monitor) {
-            actualizarEntrenamientosMonitor($conn, $id_monitor, $entrenamientos_seleccionados);
-            $mensaje = "Monitor actualizado correctamente.";
+        // **Detectar especialidades agregadas y eliminadas**
+        $especialidades_agregadas = [];
+        $especialidades_eliminadas = [];
 
-            // Si hubo un cambio en la disponibilidad, enviar notificación al monitor
-            if ($cambio_de_disponibilidad) {
-                $mensajeNotificacion = "Tu disponibilidad ha cambiado a '$disponibilidad_nueva'.";
-                enviarNotificacion($conn, $id_usuario, $mensajeNotificacion);
+        foreach ($entrenamientos_seleccionados as $id_especialidad) {
+            if (!array_key_exists($id_especialidad, $especialidades_actuales)) {
+                $nombre_especialidad = obtenerNombreEspecialidad($conn, $id_especialidad);
+                $especialidades_agregadas[$id_especialidad] = $nombre_especialidad;
             }
-        } else {
-            $mensaje = "Error: Monitor no encontrado.";
         }
 
-        // Volver a cargar los datos del monitor después de actualizar
-        $monitor = obtenerMonitorPorID($conn, $id_usuario);
-    } else {
-        $mensaje = $resultado['message'];
+        foreach ($especialidades_actuales as $id_especialidad => $nombre_especialidad) {
+            if (!in_array($id_especialidad, $entrenamientos_seleccionados, true)) {
+                $especialidades_eliminadas[$id_especialidad] = $nombre_especialidad;
+            }
+        }
+
+        // **Actualizar el monitor en la base de datos**
+        $resultado = actualizarMonitor($conn, $id_usuario, $nombre, $email, $monitor['especialidad'], $experiencia, $disponibilidad_nueva);
+
+        if ($resultado['success']) {
+            if ($id_monitor) {
+                actualizarEntrenamientosMonitor($conn, $id_monitor, $entrenamientos_seleccionados);
+                $mensaje = "Monitor actualizado correctamente.";
+
+                // **Notificar SOLO por especialidades realmente agregadas**
+                foreach ($especialidades_agregadas as $id_especialidad => $nombre_especialidad) {
+                    enviarNotificacion($conn, $id_usuario, "Se te ha asignado la especialidad: $nombre_especialidad.");
+                }
+
+                // **Notificar SOLO por especialidades realmente eliminadas**
+                foreach ($especialidades_eliminadas as $id_especialidad => $nombre_especialidad) {
+                    enviarNotificacion($conn, $id_usuario, "Se te ha removido la especialidad: $nombre_especialidad.");
+                }
+
+                // **Notificación por cambio de disponibilidad**
+                if ($cambio_de_disponibilidad) {
+                    enviarNotificacion($conn, $id_usuario, "Tu disponibilidad ha cambiado a '$disponibilidad_nueva'.");
+                }
+            } else {
+                $mensaje = "Error: Monitor no encontrado.";
+            }
+
+            // **Volver a cargar los datos del monitor después de actualizar**
+            $monitor = obtenerMonitorPorID($conn, $id_usuario);
+        } else {
+            $mensaje = $resultado['message'];
+        }
     }
 }
 
@@ -81,15 +135,14 @@ include '../admin/admin_header.php';
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     Swal.fire({
-                        title: "<?php echo strpos($mensaje, 'Error') === false ? '¡Éxito!' : '¡Error!'; ?>",
+                        title: "<?php echo $esError ? '¡Error!' : '¡Éxito!'; ?>",
                         text: "<?php echo htmlspecialchars($mensaje); ?>",
-                        icon: "<?php echo strpos($mensaje, 'Error') === false ? 'success' : 'error'; ?>",
+                        icon: "<?php echo $esError ? 'error' : 'success'; ?>",
                         confirmButtonText: "Aceptar"
                     });
                 });
             </script>
         <?php endif; ?>
-
 
         <div class="form_container">
             <?php if ($monitor): ?>

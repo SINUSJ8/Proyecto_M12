@@ -195,7 +195,7 @@ function obtenerEspecialidades($conn)
     $especialidades = [];
     while ($row = $result->fetch_assoc()) {
         $especialidades[] = [
-            'id_especialidad' => $row['id_especialidad'], // Asegúrate de que esta clave exista
+            'id_especialidad' => $row['id_especialidad'],
             'nombre' => $row['nombre']
         ];
     }
@@ -243,4 +243,15 @@ function obtenerIdMonitor($conn, $id_usuario)
         error_log("Error en obtenerIdMonitor: " . $e->getMessage());
         return null;
     }
+}
+function obtenerNombreEspecialidad($conn, $id_especialidad)
+{
+    $sql = "SELECT nombre FROM especialidad WHERE id_especialidad = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_especialidad);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $especialidad = $result->fetch_assoc();
+
+    return $especialidad ? $especialidad['nombre'] : "Especialidad desconocida";
 }
