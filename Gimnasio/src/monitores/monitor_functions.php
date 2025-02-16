@@ -255,3 +255,15 @@ function obtenerNombreEspecialidad($conn, $id_especialidad)
 
     return $especialidad ? $especialidad['nombre'] : "Especialidad desconocida";
 }
+function tieneClasesFuturas($conn, $id_monitor, $id_especialidad)
+{
+    $sql = "SELECT COUNT(*) as total FROM clase 
+            WHERE id_monitor = ? AND id_especialidad = ? AND fecha >= CURDATE()";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $id_monitor, $id_especialidad);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $stmt->close();
+    return $row['total'] > 0;
+}

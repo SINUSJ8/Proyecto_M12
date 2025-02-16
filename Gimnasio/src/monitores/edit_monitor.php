@@ -39,34 +39,37 @@ if (!is_array($entrenamientos)) {
     $entrenamientos = [];
 }
 
+$mensaje = "";
+$esError = false;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'] ?? null;
-    $email = $_POST['email'] ?? null;
+    $nombre = trim($_POST['nombre'] ?? "");
+    $email = trim($_POST['email'] ?? "");
     $experiencia = $_POST['experiencia'] ?? null;
     $disponibilidad_nueva = $_POST['disponibilidad'] ?? null;
     $entrenamientos_seleccionados = isset($_POST['entrenamiento']) ? array_map('intval', (array)$_POST['entrenamiento']) : [];
 
     $errores = [];
 
-    // **Validar que el nombre tenga al menos una letra**
-    $esError = false; // Por defecto, asumimos que no hay error
-
+    // **Validar nombre**
     if (!preg_match('/[a-zA-Z]/', $nombre)) {
         $errores[] = "El nombre debe contener al menos una letra.";
     }
 
+    // **Validar email**
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errores[] = "El formato del correo electrónico no es válido.";
     }
 
-    if (!$nombre || !$email || $experiencia === null || $disponibilidad_nueva === null) {
+    // **Validar campos obligatorios**
+    if (empty($nombre) || empty($email) || $experiencia === null || $disponibilidad_nueva === null) {
         $errores[] = "Todos los campos son obligatorios.";
     }
 
-    // Si hay errores, cambiamos la variable de estado
+    // **Si hay errores, mostrar mensaje**
     if (!empty($errores)) {
         $mensaje = implode("<br>", $errores);
-        $esError = true; // Indicamos que es un error
+        $esError = true;
     } else {
         // **Verificar si la disponibilidad cambió**
         $disponibilidad_anterior = $monitor['disponibilidad'];
@@ -85,24 +88,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         foreach ($especialidades_actuales as $id_especialidad => $nombre_especialidad) {
             if (!in_array($id_especialidad, $entrenamientos_seleccionados, true)) {
-                $especialidades_eliminadas[$id_especialidad] = $nombre_especialidad;
+                // **Verificar si la especialidad tiene clases futuras**
+                if (tieneClasesFuturas($conn, $id_monitor, $id_especialidad)) {
+                    $errores[] = "❌ No puedes eliminar la especialidad '$nombre_especialidad' porque tiene clases asignadas en el futuro.";
+                } else {
+                    $especialidades_eliminadas[$id_especialidad] = $nombre_especialidad;
+                }
             }
         }
 
-        // **Actualizar el monitor en la base de datos**
-        $resultado = actualizarMonitor($conn, $id_usuario, $nombre, $email, $monitor['especialidad'], $experiencia, $disponibilidad_nueva);
+        // **Si hay errores por eliminación de especialidades, mostrar mensaje y no actualizar**
+        if (!empty($errores)) {
+            $mensaje = implode("<br>", $errores);
+            $esError = true;
+        } else {
+            // **Actualizar el monitor en la base de datos**
+            $resultado = actualizarMonitor($conn, $id_usuario, $nombre, $email, $monitor['especialidad'], $experiencia, $disponibilidad_nueva);
 
-        if ($resultado['success']) {
-            if ($id_monitor) {
+            if ($resultado['success']) {
                 actualizarEntrenamientosMonitor($conn, $id_monitor, $entrenamientos_seleccionados);
                 $mensaje = "Monitor actualizado correctamente.";
 
-                // **Notificar SOLO por especialidades realmente agregadas**
+                // **Notificar por especialidades agregadas**
                 foreach ($especialidades_agregadas as $id_especialidad => $nombre_especialidad) {
                     enviarNotificacion($conn, $id_usuario, "Se te ha asignado la especialidad: $nombre_especialidad.");
                 }
 
-                // **Notificar SOLO por especialidades realmente eliminadas**
+                // **Notificar por especialidades eliminadas**
                 foreach ($especialidades_eliminadas as $id_especialidad => $nombre_especialidad) {
                     enviarNotificacion($conn, $id_usuario, "Se te ha removido la especialidad: $nombre_especialidad.");
                 }
@@ -111,14 +123,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($cambio_de_disponibilidad) {
                     enviarNotificacion($conn, $id_usuario, "Tu disponibilidad ha cambiado a '$disponibilidad_nueva'.");
                 }
-            } else {
-                $mensaje = "Error: Monitor no encontrado.";
-            }
 
-            // **Volver a cargar los datos del monitor después de actualizar**
-            $monitor = obtenerMonitorPorID($conn, $id_usuario);
-        } else {
-            $mensaje = $resultado['message'];
+                // **Recargar los datos del monitor después de actualizar**
+                $monitor = obtenerMonitorPorID($conn, $id_usuario);
+            } else {
+                $mensaje = "Error al actualizar el monitor.";
+                $esError = true;
+            }
         }
     }
 }
@@ -136,7 +147,7 @@ include '../admin/admin_header.php';
                 document.addEventListener("DOMContentLoaded", function() {
                     Swal.fire({
                         title: "<?php echo $esError ? '¡Error!' : '¡Éxito!'; ?>",
-                        text: "<?php echo htmlspecialchars($mensaje); ?>",
+                        text: "<?php echo htmlspecialchars_decode($mensaje); ?>",
                         icon: "<?php echo $esError ? 'error' : 'success'; ?>",
                         confirmButtonText: "Aceptar"
                     });
@@ -149,14 +160,17 @@ include '../admin/admin_header.php';
                 <form method="POST" action="edit_monitor.php?id_usuario=<?php echo htmlspecialchars($id_usuario); ?>"
                     class="form_general" onsubmit="confirmarEdicion(event);">
 
-
                     <!-- Campo para editar el nombre -->
                     <label for="nombre" class="form-label">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre" class="input-general" value="<?php echo htmlspecialchars($monitor['nombre']); ?>" required>
+                    <input type="text" id="nombre" name="nombre" class="input-general"
+                        value="<?php echo htmlspecialchars($monitor['nombre']); ?>" required
+                        title="Ingrese el nombre del monitor. Debe contener al menos una letra.">
 
                     <!-- Campo para editar el email -->
                     <label for="email" class="form-label">Email:</label>
-                    <input type="email" id="email" name="email" class="input-general" value="<?php echo htmlspecialchars($monitor['email']); ?>" required>
+                    <input type="email" id="email" name="email" class="input-general"
+                        value="<?php echo htmlspecialchars($monitor['email']); ?>" required
+                        title="Ingrese una dirección de correo electrónico válida.">
 
                     <!-- Especialidades del monitor -->
                     <label class="form-label">Especialidades Actuales:</label>
@@ -164,7 +178,7 @@ include '../admin/admin_header.php';
                         <?php if (!empty($monitor['especialidades'])): ?>
                             <ul>
                                 <?php foreach ($monitor['especialidades'] as $especialidad): ?>
-                                    <li><?php echo htmlspecialchars($especialidad['nombre']); ?></li>
+                                    <li title="Especialidad asignada al monitor."><?php echo htmlspecialchars($especialidad['nombre']); ?></li>
                                 <?php endforeach; ?>
                             </ul>
                         <?php else: ?>
@@ -174,13 +188,20 @@ include '../admin/admin_header.php';
 
                     <!-- Campo para editar la experiencia -->
                     <label for="experiencia" class="form-label">Experiencia (años):</label>
-                    <input type="number" id="experiencia" name="experiencia" class="input-general" value="<?php echo htmlspecialchars($monitor['experiencia']); ?>" required min="0">
+                    <input type="number" id="experiencia" name="experiencia" class="input-general"
+                        value="<?php echo htmlspecialchars($monitor['experiencia']); ?>" required min="0"
+                        title="Ingrese los años de experiencia del monitor.">
 
                     <!-- Campo para editar la disponibilidad -->
                     <label for="disponibilidad" class="form-label">Disponibilidad:</label>
-                    <select id="disponibilidad" name="disponibilidad" class="select-general" required>
-                        <option value="disponible" <?php echo ($monitor['disponibilidad'] === 'disponible') ? 'selected' : ''; ?>>Disponible</option>
-                        <option value="no disponible" <?php echo ($monitor['disponibilidad'] === 'no disponible') ? 'selected' : ''; ?>>No Disponible</option>
+                    <select id="disponibilidad" name="disponibilidad" class="select-general" required
+                        title="Seleccione si el monitor está disponible o no.">
+                        <option value="disponible" <?php echo ($monitor['disponibilidad'] === 'disponible') ? 'selected' : ''; ?>>
+                            Disponible
+                        </option>
+                        <option value="no disponible" <?php echo ($monitor['disponibilidad'] === 'no disponible') ? 'selected' : ''; ?>>
+                            No Disponible
+                        </option>
                     </select>
 
                     <!-- Campo para seleccionar múltiples entrenamientos con checkboxes -->
@@ -188,21 +209,23 @@ include '../admin/admin_header.php';
                     <div class="entrenamientos-checkboxes">
                         <?php foreach ($entrenamientos as $entrenamiento): ?>
                             <div class="entrenamiento-item">
-                                <input
-                                    type="checkbox"
+                                <input type="checkbox"
                                     id="entrenamiento_<?php echo htmlspecialchars($entrenamiento['id_especialidad']); ?>"
                                     name="entrenamiento[]"
                                     value="<?php echo htmlspecialchars($entrenamiento['id_especialidad']); ?>"
-                                    <?php echo isset($monitor['especialidades']) && in_array($entrenamiento['id_especialidad'], array_column($monitor['especialidades'], 'id_especialidad')) ? 'checked' : ''; ?>>
+                                    <?php echo isset($monitor['especialidades']) && in_array($entrenamiento['id_especialidad'], array_column($monitor['especialidades'], 'id_especialidad')) ? 'checked' : ''; ?>
+                                    title="Seleccione para asignar la especialidad <?php echo htmlspecialchars($entrenamiento['nombre']); ?> al monitor.">
                                 <label for="entrenamiento_<?php echo htmlspecialchars($entrenamiento['id_especialidad']); ?>">
                                     <?php echo htmlspecialchars($entrenamiento['nombre']); ?>
                                 </label>
                             </div>
                         <?php endforeach; ?>
                     </div>
+
                     <div class="button-container">
-                        <button type="submit" class="btn-general">Actualizar Cambios</button>
-                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary" onclick="unsetReferer()">Volver</a>
+                        <button type="submit" class="btn-general" title="Guarde los cambios realizados al monitor.">Actualizar Cambios</button>
+                        <a href="<?= htmlspecialchars($_SESSION['referer']) ?>" class="btn-general btn-secondary"
+                            onclick="unsetReferer()" title="Regresar a la página anterior sin guardar cambios.">Volver</a>
                     </div>
 
                 </form>
@@ -218,6 +241,7 @@ include '../admin/admin_header.php';
     <script src="../../assets/js/alertas.js"></script>
 
 </body>
+
 
 
 </html>
