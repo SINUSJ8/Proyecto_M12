@@ -6,21 +6,19 @@ verificarAdmin();
 $conn = obtenerConexion();
 
 // Manejar acción de eliminación
-// Manejar acción de eliminación
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['eliminar_usuario']) && isset($_POST['id_usuario'])) {
-    $id_usuario = intval($_POST['id_usuario']); // Asegúrate de convertirlo a entero
-    $resultado = eliminarMiembro($conn, $id_usuario);
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['id_usuario'])) {
+    $id_usuario = intval($_POST['id_usuario']);
+    $resultado = eliminarMiembro($conn, $id_usuario); // Llama a la función de eliminación
 
-    // Redirigir con un mensaje de confirmación o error
     if ($resultado['success']) {
-        $mensaje = $resultado['message'];
-        header("Location: miembros.php?mensaje=" . urlencode($mensaje));
+        header("Location: miembros.php?mensaje=" . urlencode($resultado['message']));
         exit();
     } else {
-        $mensaje = $resultado['message'];
-        echo "<p class='error'>" . htmlspecialchars($mensaje) . "</p>"; // Muestra el error si ocurre
+        header("Location: miembros.php?mensaje=" . urlencode($resultado['message']));
+        exit();
     }
 }
+
 
 
 // Capturar término de búsqueda
@@ -104,13 +102,16 @@ include '../admin/admin_header.php';
                                         <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
                                         <button type="submit" class="btn-general edit-button" title="Modificar el perfil de este miembro">Modificar Perfil</button>
                                     </form>
-                                    <!-- Botón para eliminar -->
+
+                                    <!-- Botón para eliminar (manteniendo compatibilidad con clases.js) -->
                                     <form action="miembros.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="id_usuario" value="<?php echo $miembro['id_usuario']; ?>">
-                                        <button type="submit" class="delete-button" name="eliminar_usuario" onclick="return confirm('¿Estás seguro de que deseas eliminar este miembro? Esta acción no se puede deshacer.')" title="Eliminar definitivamente este miembro">Eliminar</button>
+                                        <button type="button" class="delete-button eliminar-btn" title="Eliminar definitivamente este miembro">Eliminar</button>
+
                                     </form>
                                 </div>
                             </td>
+
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -141,6 +142,21 @@ include '../admin/admin_header.php';
 
     <?php include '../includes/footer.php'; ?>
     <script src="../../assets/js/clases.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("mensaje")) {
+                Swal.fire({
+                    title: "Atención",
+                    text: params.get("mensaje"),
+                    icon: "info",
+                    confirmButtonText: "OK"
+                });
+            }
+        });
+    </script>
+
 </body>
 
 </html>

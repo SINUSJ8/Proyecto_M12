@@ -48,12 +48,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //  Acción de eliminación de usuario
     if (isset($_POST['eliminar_usuario'])) {
         if (eliminarUsuario($conn, $id_usuario)) {
-            header('Location: usuarios.php?mensaje=El usuario ha sido eliminado correctamente&type=confirmacion');
+            header('Location: usuarios.php?mensaje=' . urlencode('El usuario ha sido eliminado correctamente') . '&type=confirmacion');
         } else {
-            header('Location: usuarios.php?mensaje=Error al eliminar el usuario&type=error');
+            header('Location: usuarios.php?mensaje=' . urlencode('Error al eliminar el usuario') . '&type=error');
         }
         exit();
     }
+
 
     //  Si llega aquí sin acción, redirige con un mensaje de error
     header('Location: usuarios.php?mensaje=Acción no válida&type=error');
@@ -317,6 +318,25 @@ include '../admin/admin_header.php';
     <script src="../../assets/js/clases.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/alertas.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("SweetAlert2 activo en usuarios.php"); // Comprobación
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("mensaje")) {
+                Swal.fire({
+                    title: params.get("type") === "error" ? "Error" : "Éxito",
+                    text: params.get("mensaje"),
+                    icon: params.get("type") === "error" ? "error" : "success",
+                    confirmButtonText: "OK"
+                });
+
+                // Limpiar la URL después de mostrar el mensaje
+                window.history.replaceState(null, "", window.location.pathname);
+            }
+        });
+    </script>
 
 </body>
 
