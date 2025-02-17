@@ -62,6 +62,7 @@ function obtenerMonitores($conn, $busqueda = '', $orden_columna = 'nombre', $ord
 function eliminarMonitor($conn, $id_usuario)
 {
     $conn->begin_transaction();
+    $respuesta = ["success" => false, "message" => ""];
 
     try {
         // Eliminar de la tabla monitor
@@ -78,19 +79,20 @@ function eliminarMonitor($conn, $id_usuario)
 
         $conn->commit();
 
-        // Guardar mensaje de éxito en la sesión
-        $_SESSION['mensaje'] = "Monitor eliminado correctamente.";
+        // Devolver mensaje de éxito
+        $respuesta["success"] = true;
+        $respuesta["message"] = "Monitor eliminado correctamente.";
     } catch (Exception $e) {
         $conn->rollback();
 
-        // Guardar mensaje de error en la sesión
-        $_SESSION['error'] = "Error al eliminar el monitor: " . $e->getMessage();
+        // Devolver mensaje de error
+        $respuesta["success"] = false;
+        $respuesta["message"] = "Error al eliminar el monitor: " . $e->getMessage();
     }
 
-    // Redirigir después de establecer el mensaje
-    header("Location: monitores.php");
-    exit();
+    return $respuesta; // Devolver el resultado
 }
+
 
 
 function obtenerMonitorPorID($conn, $id_usuario)

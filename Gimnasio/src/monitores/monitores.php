@@ -12,11 +12,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['eliminar_usuario']) &
     $id_usuario = $_POST['id_usuario'];
     $resultado = eliminarMonitor($conn, $id_usuario);
 
-    // Redirigir con un mensaje de confirmación o error
-    $mensaje = $resultado['message'];
-    header("Location: monitores.php?mensaje=" . urlencode($mensaje));
+    // Pasar el mensaje en la URL
+    $mensaje = urlencode($resultado['message']);
+    $tipo = $resultado['success'] ? "confirmacion" : "error";
+
+    header("Location: monitores.php?mensaje=$mensaje&type=$tipo");
     exit();
 }
+
 
 // Capturar el término de búsqueda, especialidad, disponibilidad y los parámetros de ordenamiento
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
@@ -40,22 +43,7 @@ include '../admin/admin_header.php';
     <main>
         <h2 class="section-title">Gestión de Monitores</h2>
 
-        <!-- Mostrar mensaje de confirmación si existe -->
-        <?php if (isset($_SESSION['mensaje_confirmacion'])): ?>
-            <div id="mensaje-flotante" class="mensaje-confirmacion">
-                <p><?php echo htmlspecialchars($_SESSION['mensaje_confirmacion']); ?></p>
-            </div>
-            <?php unset($_SESSION['mensaje_confirmacion'], $_SESSION['form_data']); // Borrar todos los datos al éxito 
-            ?>
-        <?php endif; ?>
 
-        <!-- Mostrar mensaje de error -->
-        <?php if (isset($_SESSION['mensaje_error'])): ?>
-            <div id="mensaje-flotante" class="mensaje-error">
-                <p><?php echo htmlspecialchars($_SESSION['mensaje_error']); ?></p>
-            </div>
-            <?php unset($_SESSION['mensaje_error']); ?>
-        <?php endif; ?>
 
 
         <!-- Formulario de búsqueda -->
@@ -136,6 +124,25 @@ include '../admin/admin_header.php';
     ?>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/clases.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("SweetAlert2 activo en monitores.php"); // Verificación en consola
+
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("mensaje")) {
+                Swal.fire({
+                    title: params.get("type") === "error" ? "Error" : "Éxito",
+                    text: params.get("mensaje"),
+                    icon: params.get("type") === "error" ? "error" : "success",
+                    confirmButtonText: "OK"
+                });
+
+                // Limpiar la URL después de mostrar el mensaje
+                window.history.replaceState(null, "", window.location.pathname);
+            }
+        });
+    </script>
+
 </body>
 
 
