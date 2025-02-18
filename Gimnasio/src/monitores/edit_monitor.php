@@ -225,7 +225,8 @@ include '../admin/admin_header.php';
 
                     <div class="button-container">
                         <button type="submit" class="btn-general" title="Guarde los cambios realizados al monitor.">Actualizar Cambios</button>
-                        <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+                        <button type="button" onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+
                     </div>
 
                 </form>

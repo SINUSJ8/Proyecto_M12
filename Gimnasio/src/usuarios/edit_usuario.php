@@ -95,7 +95,8 @@ $conn->close();
 
                 <div class="button-container">
                     <button type="submit" class="btn-general">Actualizar Datos</button>
-                    <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+                    <button type="button" onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+
                 </div>
             </form>
         </div>

@@ -203,7 +203,8 @@ include '../admin/admin_header.php';
 
                     <div class="button-container">
                         <button type="submit" class="btn-general">Guardar Cambios</button>
-                        <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+                        <button type="button" onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+
                     </div>
                 </form>
             <?php else: ?>

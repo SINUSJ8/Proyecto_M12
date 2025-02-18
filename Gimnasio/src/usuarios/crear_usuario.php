@@ -90,7 +90,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['crear_usuario'])) {
 
                 <div class="button-container">
                     <button type="submit" name="crear_usuario" class="btn-general">Crear Usuario</button>
-                    <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+                    <button type="button" onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+
                 </div>
             </form>
         </section>

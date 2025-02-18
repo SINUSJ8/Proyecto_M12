@@ -130,7 +130,8 @@ include 'admin_header.php';
                         <form method="POST" style="display:inline;">
                             <input type="hidden" name="id_notificacion" value="<?php echo $notificacion['id_notificacion']; ?>">
 
-                            <?php if ($notificacion['esta_oculta'] > 0): ?>
+                            <?php if (!empty($notificacion['esta_oculta']) && $notificacion['esta_oculta'] == 1): ?>
+
 
                                 <button type="submit" name="accion" value="restaurar" class="btn-general">Restaurar</button>
                             <?php endif; ?>

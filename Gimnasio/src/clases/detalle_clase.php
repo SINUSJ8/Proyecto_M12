@@ -115,7 +115,8 @@ include '../admin/admin_header.php';
         <?php endif; ?>
 
         <div class="button-container">
-            <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+            <button type="button" onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+
         </div>
 
 

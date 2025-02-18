@@ -113,11 +113,12 @@ function obtenerNotificacionesEnviadas($conn, $buscar = '', $fecha_inicio = '', 
 {
     // Base de la consulta
     $sql = "SELECT n.id_notificacion, u.nombre, u.email, n.mensaje, 
-               DATE_FORMAT(n.fecha, '%d/%m/%Y') AS fecha, n.leida,
-               (SELECT COUNT(*) FROM notificacion_oculta no WHERE no.id_notificacion = n.id_notificacion) AS esta_oculta
-        FROM notificacion n
-        INNER JOIN usuario u ON n.id_usuario = u.id_usuario
-        WHERE 1=1";
+       DATE_FORMAT(n.fecha, '%d/%m/%Y') AS fecha, n.leida,
+       COALESCE((SELECT COUNT(*) FROM notificacion_oculta no WHERE no.id_notificacion = n.id_notificacion), 0) AS esta_oculta
+FROM notificacion n
+INNER JOIN usuario u ON n.id_usuario = u.id_usuario
+WHERE 1=1
+";
 
 
     $params = [];

@@ -256,7 +256,7 @@ include '../admin/admin_header.php';
                 <!-- Botones de acción -->
                 <div class="button-container">
                     <button type="submit" class="btn-general" title="Guarda los cambios realizados en la clase.">Actualizar Clase</button>
-                    <button onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
+                    <button type="button" onclick="window.history.back()" class="btn-general btn-secondary">Volver</button>
                 </div>
             </form>
         </section>
