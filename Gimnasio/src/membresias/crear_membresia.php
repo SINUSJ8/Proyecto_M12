@@ -1,7 +1,7 @@
 <?php
 require_once('../admin/admin_functions.php');
 require_once('../miembros/member_functions.php');
-
+require_once('../includes/notificaciones_functions.php');
 verificarAdmin();
 $conn = obtenerConexion();
 
@@ -21,13 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
             $mensaje = "Error: El campo 'tipo' es obligatorio.";
         }
-    } elseif (isset($_POST['editar_membresia'])) {  // <- Aquí se cerró el `if` anterior correctamente
+    } elseif (isset($_POST['editar_membresia'])) {
         $id_membresia = $_POST['id_membresia'] ?? 0;
         $tipo = trim($_POST['tipo'] ?? '');
         $precio = floatval($_POST['precio'] ?? 0);
         $duracion = intval($_POST['duracion'] ?? 0);
         $beneficios = trim($_POST['beneficios'] ?? '');
-        $estado = $_POST['estado'] ?? 'disponible'; // Capturar el estado
+        $estado = $_POST['estado'] ?? 'disponible';
 
         if (!empty($tipo)) {
             $mensaje = editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $beneficios, $estado, $entrenamientos_seleccionados);

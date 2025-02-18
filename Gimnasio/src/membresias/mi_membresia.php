@@ -153,10 +153,26 @@ if (isset($_GET['mensaje'])) {
     <h3 title="Configurar opciones de membresía.">Editar Preferencias</h3>
     <form method="POST" class="form-edit">
         <label for="renovacion_automatica" title="Activar o desactivar la renovación automática de la membresía.">Renovación Automática:</label>
-        <select name="renovacion_automatica" id="renovacion_automatica" title="Selecciona si deseas que la membresía se renueve automáticamente.">
-            <option value="1" <?php echo $miembro['renovacion_automatica'] ? 'selected' : ''; ?>>Sí</option>
-            <option value="0" <?php echo !$miembro['renovacion_automatica'] ? 'selected' : ''; ?>>No</option>
-        </select>
+
+        <?php
+        // Verificar si la membresía activa del usuario está expirada o si la membresía está descontinuada
+        $estado_membresia = $miembro['estado'];
+        $estado_membresia_global = $miembro['estado_global'];
+        $deshabilitar_renovacion = ($estado_membresia == 'expirada' || $estado_membresia_global == 'descontinuada');
+        ?>
+
+        <?php if ($deshabilitar_renovacion): ?>
+            <select disabled title="Esta opción está deshabilitada porque la membresía está descontinuada o expirada.">
+                <option selected>Esta membresía ha sido descontinuada</option>
+            </select>
+            <input type="hidden" name="renovacion_automatica" value="0">
+        <?php else: ?>
+            <select name="renovacion_automatica" id="renovacion_automatica"
+                title="Selecciona si deseas que la membresía se renueve automáticamente.">
+                <option value="1" <?php echo $miembro['renovacion_automatica'] ? 'selected' : ''; ?>>Sí</option>
+                <option value="0" <?php echo !$miembro['renovacion_automatica'] ? 'selected' : ''; ?>>No</option>
+            </select>
+        <?php endif; ?>
 
         <label for="metodo_pago" title="Elige un nuevo método de pago para futuras renovaciones.">Método de Pago:</label>
         <select name="metodo_pago" id="metodo_pago">
@@ -170,6 +186,7 @@ if (isset($_GET['mensaje'])) {
 
         <button type="submit" class="btn-general" title="Guardar los cambios de tu membresía.">Guardar Cambios</button>
     </form>
+
 
     <div class="button-container">
         <a href="cambiar_membresia.php" class="btn-general" title="Modificar o cambiar tu tipo de membresía.">Cambiar Membresía</a>

@@ -124,10 +124,39 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         return "Todos los campos son obligatorios y deben tener valores válidos.";
     }
 
+    // Si la membresía se va a descontinuar, desactivar la renovación automática de los miembros
+    if ($estado === "descontinuada") {
+        // Desactivar renovación automática
+        $stmt = $conn->prepare("UPDATE miembro_membresia SET renovacion_automatica = 0 WHERE id_membresia = ? AND renovacion_automatica = 1");
+        $stmt->bind_param("i", $id_membresia);
+        if (!$stmt->execute()) {
+            return "Error al desactivar la renovación automática: " . $stmt->error;
+        }
+        $stmt->close();
+
+        // Obtener IDs de miembros afectados
+        $stmt = $conn->prepare("SELECT mm.id_miembro, u.id_usuario, u.nombre FROM miembro_membresia mm
+                                INNER JOIN miembro m ON mm.id_miembro = m.id_miembro
+                                INNER JOIN usuario u ON m.id_usuario = u.id_usuario
+                                WHERE mm.id_membresia = ? AND mm.renovacion_automatica = 0");
+        $stmt->bind_param("i", $id_membresia);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $miembros_afectados = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        // Enviar notificación a cada miembro afectado
+        foreach ($miembros_afectados as $miembro) {
+            $mensaje = "Estimado/a {$miembro['nombre']}, tu membresía '{$tipo}' ha sido descontinuada y la renovación automática ha sido desactivada. 
+                        Por favor, revisa nuestras opciones para elegir una nueva membresía.";
+            enviarNotificacion($conn, $miembro['id_usuario'], $mensaje);
+        }
+    }
+
     // Normalizar el nombre a minúsculas para comparación
     $tipo_normalizado = strtolower($tipo);
 
-    // Verificar si ya existe otra membresía con el mismo nombre (ignorando mayúsculas y minúsculas)
+    // Verificar si ya existe otra membresía con el mismo nombre
     $stmt = $conn->prepare("SELECT id_membresia FROM membresia WHERE LOWER(tipo) = ? AND id_membresia != ?");
     $stmt->bind_param("si", $tipo_normalizado, $id_membresia);
     $stmt->execute();
@@ -139,7 +168,7 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         return "Ya existe otra membresía con ese nombre.";
     }
 
-    // Intentar actualizar la membresía
+    // Actualizar membresía
     $stmt = $conn->prepare("UPDATE membresia SET tipo = ?, precio = ?, duracion = ?, beneficios = ?, estado = ? WHERE id_membresia = ?");
     if (!$stmt) {
         return "Error al preparar la consulta: " . $conn->error;
@@ -178,6 +207,7 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         return $error;
     }
 }
+
 
 
 

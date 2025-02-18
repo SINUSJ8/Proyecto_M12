@@ -114,7 +114,7 @@ function obtenerMiembroPorID($conn, $id_usuario)
     $stmt->close();
 
     if (!$miembro) {
-        return null; // Miembro no encontrado
+        return null;
     }
 
     // Obtener los entrenamientos asociados
@@ -232,7 +232,7 @@ function actualizarMiembro($conn, $id_usuario, $nombre, $email, $fecha_registro,
             $stmtInsertarEntrenamiento = $conn->prepare($sqlInsertarEntrenamiento);
 
             while ($entrenamiento = $resultadoEntrenamientos->fetch_assoc()) {
-                $id_especialidad = $entrenamiento['id_entrenamiento']; // Asigna id_entrenamiento a id_especialidad
+                $id_especialidad = $entrenamiento['id_entrenamiento'];
                 $stmtInsertarEntrenamiento->bind_param("ii", $id_miembro, $id_especialidad);
                 $stmtInsertarEntrenamiento->execute();
             }
@@ -315,7 +315,7 @@ function obtenerMembresias($conn)
 
     $membresias = [];
     while ($row = $result->fetch_assoc()) {
-        // Convertir los IDs de entrenamientos en un array
+
         $row['entrenamientos_ids'] = $row['entrenamientos_ids'] ? explode(',', $row['entrenamientos_ids']) : [];
         $membresias[] = $row;
     }
@@ -377,7 +377,7 @@ function obtenerInformacionMiembro($id_usuario)
     if ($resultado->num_rows > 0) {
         return $resultado->fetch_assoc();
     } else {
-        return null; // Retornar null si no se encuentra información
+        return null;
     }
 }
 
@@ -392,6 +392,7 @@ function informacionMembresia($id_usuario)
             u.email,
             m.fecha_registro,
             mem.tipo AS nombre_membresia,
+            mem.estado AS estado_global, -- Agregamos el estado de la membresía
             mm.fecha_inicio,
             mm.fecha_fin,
             mm.estado,
@@ -416,7 +417,7 @@ function informacionMembresia($id_usuario)
         FROM usuario u
         LEFT JOIN miembro m ON u.id_usuario = m.id_usuario
         LEFT JOIN miembro_membresia mm ON m.id_miembro = mm.id_miembro AND mm.estado = 'activa'
-        LEFT JOIN membresia mem ON mm.id_membresia = mem.id_membresia
+        LEFT JOIN membresia mem ON mm.id_membresia = mem.id_membresia -- Se une con la tabla membresia
         WHERE u.id_usuario = ?
     ";
 
@@ -455,6 +456,7 @@ function informacionMembresia($id_usuario)
 
     return $datosMiembro;
 }
+
 
 function obtenerTotalMiembros($conn, $busqueda = '')
 {
@@ -647,7 +649,7 @@ function obtenerUsuarioPorId($conn, $id_usuario)
     }
     $stmt->close();
 
-    return $usuario ? [$usuario] : []; // Devolver un array con un solo usuario
+    return $usuario ? [$usuario] : [];
 }
 function obtenerUsuariosPorRol($conn, $rol)
 {
