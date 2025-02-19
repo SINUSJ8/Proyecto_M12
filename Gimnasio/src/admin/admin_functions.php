@@ -124,21 +124,24 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         return "Todos los campos son obligatorios y deben tener valores válidos.";
     }
 
-    // Si la membresía se va a descontinuar, desactivar la renovación automática de los miembros
+    // Si la membresía se descontinúa, desactivar renovación automática y notificar SOLO a miembros activos
     if ($estado === "descontinuada") {
-        // Desactivar renovación automática
-        $stmt = $conn->prepare("UPDATE miembro_membresia SET renovacion_automatica = 0 WHERE id_membresia = ? AND renovacion_automatica = 1");
+        // Desactivar la renovación automática para todos los miembros con esta membresía activa
+        $stmt = $conn->prepare("UPDATE miembro_membresia SET renovacion_automatica = 0 WHERE id_membresia = ? AND estado = 'activa'");
         $stmt->bind_param("i", $id_membresia);
         if (!$stmt->execute()) {
             return "Error al desactivar la renovación automática: " . $stmt->error;
         }
         $stmt->close();
 
-        // Obtener IDs de miembros afectados
-        $stmt = $conn->prepare("SELECT mm.id_miembro, u.id_usuario, u.nombre FROM miembro_membresia mm
-                                INNER JOIN miembro m ON mm.id_miembro = m.id_miembro
-                                INNER JOIN usuario u ON m.id_usuario = u.id_usuario
-                                WHERE mm.id_membresia = ? AND mm.renovacion_automatica = 0");
+        // Obtener IDs de miembros que tienen esta membresía activa
+        $stmt = $conn->prepare("
+            SELECT mm.id_miembro, u.id_usuario, u.nombre 
+            FROM miembro_membresia mm
+            INNER JOIN miembro m ON mm.id_miembro = m.id_miembro
+            INNER JOIN usuario u ON m.id_usuario = u.id_usuario
+            WHERE mm.id_membresia = ? AND mm.estado = 'activa'
+        ");
         $stmt->bind_param("i", $id_membresia);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -147,13 +150,13 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
 
         // Enviar notificación a cada miembro afectado
         foreach ($miembros_afectados as $miembro) {
-            $mensaje = "Estimado/a {$miembro['nombre']}, tu membresía '{$tipo}' ha sido descontinuada y la renovación automática ha sido desactivada. 
-                        Por favor, revisa nuestras opciones para elegir una nueva membresía.";
+            $mensaje = "Estimado/a {$miembro['nombre']}, tu membresía '{$tipo}' ha sido descontinuada. 
+                        Te invitamos a revisar nuestras opciones y elegir una nueva membresía.";
             enviarNotificacion($conn, $miembro['id_usuario'], $mensaje);
         }
     }
 
-    // Normalizar el nombre a minúsculas para comparación
+    // Normalizar el nombre a minúsculas para evitar duplicados
     $tipo_normalizado = strtolower($tipo);
 
     // Verificar si ya existe otra membresía con el mismo nombre
@@ -168,7 +171,7 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         return "Ya existe otra membresía con ese nombre.";
     }
 
-    // Actualizar membresía
+    // Actualizar la membresía
     $stmt = $conn->prepare("UPDATE membresia SET tipo = ?, precio = ?, duracion = ?, beneficios = ?, estado = ? WHERE id_membresia = ?");
     if (!$stmt) {
         return "Error al preparar la consulta: " . $conn->error;
@@ -179,12 +182,13 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
     if ($stmt->execute()) {
         $stmt->close();
 
-        // Eliminar entrenamientos antiguos y agregar los nuevos
+        // Eliminar entrenamientos antiguos
         $stmt = $conn->prepare("DELETE FROM membresia_entrenamiento WHERE id_membresia = ?");
         $stmt->bind_param("i", $id_membresia);
         $stmt->execute();
         $stmt->close();
 
+        // Agregar entrenamientos nuevos si existen
         if (!empty($entrenamientos)) {
             $stmt = $conn->prepare("INSERT INTO membresia_entrenamiento (id_membresia, id_entrenamiento) VALUES (?, ?)");
             if (!$stmt) {
@@ -207,6 +211,7 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         return $error;
     }
 }
+
 
 
 

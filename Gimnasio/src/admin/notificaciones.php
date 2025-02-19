@@ -61,14 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mensaje'])) {
                 $usuarios = obtenerUsuarioPorId($conn, $id_usuario);
             }
         }
-        // Enviar notificaciones a los usuarios seleccionados
+        // Enviar notificaciones usando la función enviarNotificacion()
         if (!empty($usuarios)) {
-            $stmt = $conn->prepare("INSERT INTO notificacion (id_usuario, mensaje) VALUES (?, ?)");
             foreach ($usuarios as $usuario) {
-                $stmt->bind_param("is", $usuario['id_usuario'], $mensaje);
-                $stmt->execute();
+                enviarNotificacion($conn, $usuario['id_usuario'], $mensaje);
             }
-            $stmt->close();
             $success = "Notificaciones enviadas correctamente.";
         } else {
             $error = "No se encontraron destinatarios válidos.";

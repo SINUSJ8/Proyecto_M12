@@ -145,7 +145,19 @@ function obtenerMonitorPorID($conn, $id_usuario)
 function actualizarMonitor($conn, $id_usuario, $nombre, $email, $especialidad, $experiencia, $disponibilidad)
 {
     try {
-        // Actualizar datos del usuario en la tabla usuario y monitor
+        // ✅ Verificar si el usuario YA es un monitor para evitar INSERT accidental
+        $stmt = $conn->prepare("SELECT id_monitor FROM monitor WHERE id_usuario = ?");
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $stmt->bind_result($id_monitor);
+        $stmt->fetch();
+        $stmt->close();
+
+        if (!$id_monitor) {
+            return ["success" => false, "message" => "Error: Este usuario no es un monitor registrado."];
+        }
+
+        // ✅ Si ya existe, actualizamos sus datos
         $sql = "UPDATE usuario u
                 INNER JOIN monitor m ON u.id_usuario = m.id_usuario
                 SET u.nombre = ?, u.email = ?, m.especialidad = ?, m.experiencia = ?, m.disponibilidad = ?
@@ -160,6 +172,7 @@ function actualizarMonitor($conn, $id_usuario, $nombre, $email, $especialidad, $
         return ["success" => false, "message" => "Error al actualizar el monitor: " . $e->getMessage()];
     }
 }
+
 
 function actualizarEntrenamientosMonitor($conn, $id_monitor, $entrenamientos)
 {

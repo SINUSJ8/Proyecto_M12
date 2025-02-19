@@ -54,7 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const fechaFin = new Date(fechaFinInput.value);
 
         if (fechaInicio > fechaFin) {
-            alert("⚠️ La fecha de inicio no puede ser posterior a la fecha de fin.");
+            Swal.fire({
+                title: "⚠️ Error en Fechas",
+                text: "La fecha de inicio no puede ser posterior a la fecha de fin.",
+                icon: "warning",
+                confirmButtonText: "Aceptar"
+            });
             return false; // Evita el envío del formulario
         }
         return true; // Permite el envío si las fechas son correctas
