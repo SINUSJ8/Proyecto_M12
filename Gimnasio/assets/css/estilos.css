@@ -128,8 +128,9 @@ header nav .logout-link:hover {
 .menu-horizontal li a {
     color: white;
     text-decoration: none;
-    padding: 10px 15px;
+    padding: 5px 10px;
     display: block;
+    font-size: 14px;
 }
 
 .menu-horizontal li:hover {
