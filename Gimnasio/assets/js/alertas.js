@@ -1,4 +1,5 @@
 function confirmarEliminacionEspecialidad(idEspecialidad) {
+    // Muestra una alerta de confirmación antes de eliminar una especialidad
     Swal.fire({
         title: "¿Estás seguro?",
         text: "Esta acción no se puede deshacer.",
@@ -12,15 +13,17 @@ function confirmarEliminacionEspecialidad(idEspecialidad) {
         if (result.isConfirmed) {
             console.log("ID Especialidad a eliminar:", idEspecialidad);
 
-            // Asignar el ID al input hidden del formulario existente
+            // Asigna el ID de la especialidad al campo oculto del formulario
             document.getElementById("id_especialidad").value = idEspecialidad;
 
-            // Enviar el formulario
+            // Envía el formulario para eliminar la especialidad
             document.getElementById("form-eliminar").submit();
         }
     });
 }
+
 function confirmarEliminacionUsuario(idUsuario) {
+    // Muestra una alerta de confirmación antes de eliminar un usuario
     Swal.fire({
         title: "¿Estás seguro?",
         text: "Esta acción no se puede deshacer.",
@@ -34,10 +37,10 @@ function confirmarEliminacionUsuario(idUsuario) {
         if (result.isConfirmed) {
             console.log("Usuario a eliminar:", idUsuario);
 
-            // Asignar el ID al input hidden del formulario oculto
+            // Asigna el ID del usuario al campo oculto del formulario
             document.getElementById("id_usuario").value = idUsuario;
 
-            // Enviar el formulario
+            // Envía el formulario de eliminación
             document.getElementById("form-eliminar").submit();
         }
     });
@@ -50,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fechaFinInput = document.getElementById('fecha_fin');
 
     function validarFechas() {
+        // Verifica que la fecha de inicio no sea posterior a la fecha de fin
         const fechaInicio = new Date(fechaInicioInput.value);
         const fechaFin = new Date(fechaFinInput.value);
 
@@ -60,27 +64,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon: "warning",
                 confirmButtonText: "Aceptar"
             });
-            return false; // Evita el envío del formulario
+            return false;
         }
-        return true; // Permite el envío si las fechas son correctas
+        return true;
     }
 
     function actualizarEntrenamientos() {
+        // Marca los entrenamientos según la membresía seleccionada
         const entrenamientosCheckboxes = document.querySelectorAll('.entrenamientos-checkboxes input[type="checkbox"]');
 
-        // Obtener entrenamientos asociados con la membresía seleccionada
+        // Obtiene los entrenamientos asociados a la membresía seleccionada
         const entrenamientosSeleccionados = selectMembresia.options[selectMembresia.selectedIndex].dataset.entrenamientos.split(',');
         entrenamientosCheckboxes.forEach(checkbox => {
             checkbox.checked = entrenamientosSeleccionados.includes(checkbox.value);
         });
 
-        // Actualizar la fecha de fin según la duración de la membresía
+        // Ajusta la fecha de fin en función de la duración de la membresía
         const duracion = parseInt(selectMembresia.options[selectMembresia.selectedIndex].dataset.duracion, 10);
         const fechaInicio = new Date(fechaInicioInput.value);
 
         if (!isNaN(duracion) && duracion > 0) {
             fechaInicio.setMonth(fechaInicio.getMonth() + duracion);
-            fechaFinInput.value = fechaInicio.toISOString().split('T')[0]; // Formatear como YYYY-MM-DD
+            fechaFinInput.value = fechaInicio.toISOString().split('T')[0];
         }
     }
 
@@ -88,18 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
         actualizarEntrenamientos();
         selectMembresia.addEventListener('change', actualizarEntrenamientos);
 
-        // Validar fechas antes de enviar el formulario
+        // Verifica las fechas antes de enviar el formulario
         form.addEventListener('submit', function (event) {
             if (!validarFechas()) {
-                event.preventDefault(); // Detener el envío si las fechas son incorrectas
+                event.preventDefault();
             }
         });
     }
 });
 
-
-
 function ocultarMensaje() {
+    // Oculta automáticamente los mensajes de confirmación o error después de 3 segundos
     setTimeout(function () {
         let mensaje = document.querySelector('.mensaje-confirmacion, .mensaje-error');
         if (mensaje) {
@@ -110,12 +114,13 @@ function ocultarMensaje() {
     }, 3000);
 }
 
-// Ejecutar al cargar la página
+// Ejecuta la función para ocultar mensajes cuando la página carga
 document.addEventListener("DOMContentLoaded", ocultarMensaje);
 
 function confirmarEdicion(event) {
     event.preventDefault();
 
+    // Muestra una alerta de confirmación antes de actualizar los datos del monitor
     Swal.fire({
         title: "Confirmar Edición",
         html: "<b>¿Estás seguro de que quieres actualizar los datos del monitor?</b>",
@@ -138,7 +143,9 @@ function confirmarEdicion(event) {
         }
     });
 }
+
 function validarFechas() {
+    // Verifica que la fecha de inicio no sea posterior a la fecha de fin
     const fechaInicioInput = document.getElementById('fecha_inicio');
     const fechaFinInput = document.getElementById('fecha_fin');
 
@@ -157,14 +164,15 @@ function validarFechas() {
     return true;
 }
 
-
 function confirmarEdicionMiembro(event) {
     event.preventDefault();
 
+    // Valida las fechas antes de confirmar la edición
     if (!validarFechas()) {
         return;
     }
 
+    // Muestra una alerta de confirmación antes de actualizar los datos del miembro
     Swal.fire({
         title: "Confirmar Edición",
         html: "<b>¿Estás seguro de que quieres actualizar los datos del miembro?</b>",
@@ -187,6 +195,4 @@ function confirmarEdicionMiembro(event) {
         }
     });
 }
-
-
 

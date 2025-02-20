@@ -1,3 +1,4 @@
+//Función para ordenar tablas
 function ordenarTabla(columna, idTabla = 'tabla-clases') {
     const tabla = document.getElementById(idTabla);
     const filas = Array.from(tabla.tBodies[0].rows);
@@ -36,6 +37,7 @@ function ordenarTabla(columna, idTabla = 'tabla-clases') {
     // Reinsertar las filas ordenadas en la tabla
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
+//Función para ordenar tabla de Monitores
 function ordenarTablaM(columna, idTabla = 'tabla-clases') {
     const tabla = document.getElementById(idTabla);
     const filas = Array.from(tabla.tBodies[0].rows);
@@ -75,6 +77,7 @@ function ordenarTablaM(columna, idTabla = 'tabla-clases') {
     // Reinsertar las filas ordenadas en la tabla
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
+//Función para ordenar tabla de Miembro
 function ordenarTablaMi(columna, idTabla = 'tabla-clases') {
     const tabla = document.getElementById(idTabla);
     if (!tabla) {
@@ -126,6 +129,7 @@ function ordenarTablaMi(columna, idTabla = 'tabla-clases') {
     // Reinsertar las filas ordenadas en la tabla
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
+//Función ordenar tabla Usuarios
 function ordenarTablaU(columna) {
     const tabla = document.getElementById('tabla-usuarios');
     const filas = Array.from(tabla.tBodies[0].rows);
@@ -159,7 +163,7 @@ function ordenarTablaU(columna) {
     // Reinsertar las filas ordenadas en la tabla
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
-
+//Función para ordenar tabla de Membresías
 function ordenarTablaMe(columna, idTabla = 'tabla-membresias') {
     const tabla = document.getElementById(idTabla);
     if (!tabla) {
@@ -208,12 +212,13 @@ function ordenarTablaMe(columna, idTabla = 'tabla-membresias') {
     filas.forEach(fila => tabla.tBodies[0].appendChild(fila));
 }
 
-
+//Función para limpiar formularios
 function limpiarFormulario() {
     const form = document.querySelector('.search-form');
     form.reset();
     window.location.href = 'clases.php';
 }
+//Función para ordenar tabla de Clases
 function ordenarTablaC(columna, idTabla = 'tabla-clases') {
     const tabla = document.getElementById(idTabla);
     if (!tabla) return;

@@ -118,7 +118,7 @@ function valFormUsuario() {
     // Si todo está correcto, permite el envío del formulario
     return true;
 }
-
+//Función para validar formularios de edición
 function validarFormularioEdicion(tipoFormulario) {
     const nombre = document.getElementById('nombre')?.value?.trim();
     const email = document.getElementById('email')?.value?.trim();
@@ -154,7 +154,7 @@ function validarFormularioEdicion(tipoFormulario) {
 
 }
 
-
+//Función para calcular las fechas de las membresías
 function actualizarFechasMembresia() {
     const selectMembresia = document.getElementById('tipo_membresia');
     const fechaInicioInput = document.getElementById('fecha_inicio');
@@ -188,6 +188,7 @@ function actualizarFechasMembresia() {
     fechaInicioInput.value = fechaInicioFormateada;
     fechaFinInput.value = fechaFinFormateada;
 }
+//Función para actualizar de las membresías
 function actualizarEntrenamientos() {
     const selectMembresia = document.getElementById('tipo_membresia');
     const entrenamientosCheckboxes = document.querySelectorAll('.entrenamientos-checkboxes input[type="checkbox"]');
@@ -211,12 +212,13 @@ function actualizarEntrenamientos() {
         });
     }
 }
-
+//Función para elegir el tipo de destinatario de la notificación
 function toggleDestinatario() {
     const destinatario = document.getElementById('destinatario').value;
     document.getElementById('grupo_destinatario').style.display = destinatario === 'grupo' ? 'block' : 'none';
     document.getElementById('usuario_destinatario').style.display = destinatario === 'usuario' ? 'block' : 'none';
 }
+//Función para buscar un usuario en notificaciones
 function buscarUsuario(termino) {
     const selectUsuario = document.getElementById('id_usuario');
 
@@ -239,6 +241,7 @@ function buscarUsuario(termino) {
             selectUsuario.innerHTML = '<option value="">Error al buscar usuarios</option>';
         });
 }
+//Funcion para la confirmación de la addquisición de la membresía
 function mostrarConfirmacion(event, membresia) {
     event.preventDefault();
 
@@ -265,7 +268,7 @@ function mostrarConfirmacion(event, membresia) {
 
     document.getElementById('modal-confirmacion').style.display = 'flex';
 }
-
+//Funcion para la confirmación del cambio de la membresía
 function mostrarConfirmacionC(event, membresia, tipoAccion) {
     event.preventDefault();
 
@@ -298,21 +301,27 @@ function mostrarConfirmacionC(event, membresia, tipoAccion) {
 
     document.getElementById('modal-confirmacion').style.display = 'flex';
 }
-
+//Función que cierra el modal de confirmar membresías
 function cerrarModal() {
     document.getElementById('modal-confirmacion').style.display = 'none';
 }
-
+//Función para borrar la página de referencia desde la que se accediño
 function unsetReferer() {
     fetch('../admin/unset_referer.php', { method: 'POST' });
 }
 
+// Ejecuta el código cuando el DOM se haya cargado completamente para el formulario de la clase
 document.addEventListener('DOMContentLoaded', () => {
+    // Obtiene el formulario con id 'form_clase'
     const formClase = document.getElementById('form_clase');
-    if (formClase) {
-        formClase.addEventListener('submit', function (e) {
-            e.preventDefault();
 
+    // Verifica si el formulario existe antes de agregar el evento
+    if (formClase) {
+        // Agrega un evento para manejar el envío del formulario
+        formClase.addEventListener('submit', function (e) {
+            e.preventDefault(); // Evita el envío por defecto del formulario
+
+            // Obtiene los valores de los campos del formulario usando el operador opcional (?.) para evitar errores si no existen
             const nombre = document.getElementById('nombre')?.value.trim();
             const idMonitor = document.getElementById('id_monitor')?.value;
             const idEspecialidad = document.getElementById('id_especialidad')?.value;
@@ -321,19 +330,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const duracion = parseInt(document.getElementById('duracion')?.value, 10);
             const capacidad = parseInt(document.getElementById('capacidad')?.value, 10);
 
+            // Verifica que todos los campos estén completos y contengan valores válidos
             if (!nombre || !idMonitor || !idEspecialidad || !fecha || !horario || isNaN(duracion) || duracion <= 0 || isNaN(capacidad) || capacidad <= 0) {
                 mostrarMensajeError("Todos los campos son obligatorios y deben contener valores válidos.");
-                return false;
+                return false; // Detiene el proceso si hay errores
             }
 
-            // Validar que la fecha y hora sean futuras
+            // Obtiene la fecha y hora actuales
             const ahora = new Date();
+            // Crea un objeto de fecha combinando la fecha y la hora seleccionadas
             const fechaSeleccionada = new Date(`${fecha}T${horario}`);
+
+            // Valida que la fecha y hora sean futuras
             if (fechaSeleccionada < ahora) {
                 mostrarMensajeError("La fecha y hora deben ser futuras.");
-                return false;
+                return false; // Detiene el proceso si la fecha es inválida
             }
 
+            // Si todas las validaciones son correctas, envía el formulario
             this.submit();
         });
     }
