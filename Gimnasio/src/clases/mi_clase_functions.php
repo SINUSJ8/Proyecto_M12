@@ -225,32 +225,6 @@ function obtenerClasesCalendario($conn, $id_miembro)
     return $clases;
 }
 
-/*
-function obtenerClasesInscritas($conn, $id_miembro)
-{
-    $sql = "
-        SELECT c.id_clase, c.nombre, c.fecha, c.horario
-        FROM asistencia a
-        INNER JOIN clase c ON a.id_clase = c.id_clase
-        WHERE a.id_miembro = ?
-          AND (c.fecha > CURRENT_DATE() OR (c.fecha = CURRENT_DATE() AND c.horario >= CURRENT_TIME()))
-        ORDER BY c.fecha, c.horario
-    ";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id_miembro);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $clases = [];
-
-    while ($row = $result->fetch_assoc()) {
-        $clases[] = $row;
-    }
-
-    $stmt->close();
-    return $clases;
-}
-    */
 function obtenerClasesInscritas($conn, $id_miembro, $limit, $offset)
 {
     $sql = "
