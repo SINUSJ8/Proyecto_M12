@@ -1,3 +1,4 @@
+//Función para cargar los monitores con la especialidad seleccionada
 function configurarMonitoresPorEspecialidad(especialidadSelectId, monitorSelectId) {
     const especialidadSelect = document.getElementById(especialidadSelectId);
     const monitorSelect = document.getElementById(monitorSelectId);
@@ -38,7 +39,7 @@ function configurarMonitoresPorEspecialidad(especialidadSelectId, monitorSelectI
         cargarMonitores();
     }
 }
-
+//función para validar la fecha y la hora de la clase
 function configurarRestriccionesFechaHora(fechaId, horarioId) {
     const fechaInput = document.getElementById(fechaId);
     const horarioInput = document.getElementById(horarioId);
