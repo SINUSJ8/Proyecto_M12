@@ -59,11 +59,10 @@ function agregarEspecialidad($conn, $nombre_especialidad)
         return $error;
     }
 }
-
 function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entrenamientos = [])
 {
     if (empty($tipo) || $precio <= 0 || $duracion <= 0) {
-        return "Todos los campos son obligatorios y deben tener valores válidos.";
+        return "Error: Todos los campos son obligatorios y deben tener valores válidos.";
     }
 
     // Normalizar el nombre a minúsculas para comparación
@@ -78,13 +77,13 @@ function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entren
     $stmt->close();
 
     if (!empty($existing_id)) {
-        return "Ya existe una membresía con ese nombre.";
+        return "Error: Ya existe una membresía con ese nombre.";
     }
 
     // Insertar la nueva membresía
     $stmt = $conn->prepare("INSERT INTO membresia (tipo, precio, duracion, beneficios) VALUES (?, ?, ?, ?)");
     if (!$stmt) {
-        return "Error al preparar la consulta: " . $conn->error;
+        return "Error: " . $conn->error;
     }
 
     $stmt->bind_param("sdis", $tipo, $precio, $duracion, $beneficios);
@@ -96,13 +95,13 @@ function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entren
         if (!empty($entrenamientos)) {
             $stmt = $conn->prepare("INSERT INTO membresia_entrenamiento (id_membresia, id_entrenamiento) VALUES (?, ?)");
             if (!$stmt) {
-                return "Error al preparar la consulta de entrenamientos: " . $conn->error;
+                return "Error: " . $conn->error;
             }
 
             foreach ($entrenamientos as $id_entrenamiento) {
                 $stmt->bind_param("ii", $id_membresia, $id_entrenamiento);
                 if (!$stmt->execute()) {
-                    return "Error al insertar entrenamiento: " . $stmt->error;
+                    return "Error: " . $stmt->error;
                 }
             }
             $stmt->close();
@@ -110,7 +109,7 @@ function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entren
 
         return "Membresía añadida exitosamente.";
     } else {
-        $error = "Error al añadir la membresía: " . $stmt->error;
+        $error = "Error: " . $stmt->error;
         $stmt->close();
         return $error;
     }
@@ -118,10 +117,11 @@ function agregarMembresia($conn, $tipo, $precio, $duracion, $beneficios, $entren
 
 
 
+
 function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $beneficios, $estado, $entrenamientos = [])
 {
     if (empty($tipo) || $precio <= 0 || $duracion <= 0) {
-        return "Todos los campos son obligatorios y deben tener valores válidos.";
+        return "Error: Todos los campos son obligatorios y deben tener valores válidos.";
     }
 
     // Si la membresía se descontinúa, desactivar renovación automática y notificar SOLO a miembros activos
@@ -130,7 +130,7 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         $stmt = $conn->prepare("UPDATE miembro_membresia SET renovacion_automatica = 0 WHERE id_membresia = ? AND estado = 'activa'");
         $stmt->bind_param("i", $id_membresia);
         if (!$stmt->execute()) {
-            return "Error al desactivar la renovación automática: " . $stmt->error;
+            return "Error: No se pudo desactivar la renovación automática. " . $stmt->error;
         }
         $stmt->close();
 
@@ -168,13 +168,13 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
     $stmt->close();
 
     if (!empty($existing_id)) {
-        return "Ya existe otra membresía con ese nombre.";
+        return "Error: Ya existe otra membresía con ese nombre.";
     }
 
     // Actualizar la membresía
     $stmt = $conn->prepare("UPDATE membresia SET tipo = ?, precio = ?, duracion = ?, beneficios = ?, estado = ? WHERE id_membresia = ?");
     if (!$stmt) {
-        return "Error al preparar la consulta: " . $conn->error;
+        return "Error: No se pudo preparar la consulta. " . $conn->error;
     }
 
     $stmt->bind_param("sdissi", $tipo, $precio, $duracion, $beneficios, $estado, $id_membresia);
@@ -192,13 +192,13 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
         if (!empty($entrenamientos)) {
             $stmt = $conn->prepare("INSERT INTO membresia_entrenamiento (id_membresia, id_entrenamiento) VALUES (?, ?)");
             if (!$stmt) {
-                return "Error al preparar la consulta de entrenamientos: " . $conn->error;
+                return "Error: No se pudo preparar la consulta de entrenamientos. " . $conn->error;
             }
 
             foreach ($entrenamientos as $id_entrenamiento) {
                 $stmt->bind_param("ii", $id_membresia, $id_entrenamiento);
                 if (!$stmt->execute()) {
-                    return "Error al insertar entrenamiento: " . $stmt->error;
+                    return "Error: No se pudo insertar el entrenamiento. " . $stmt->error;
                 }
             }
             $stmt->close();
@@ -206,11 +206,12 @@ function editarMembresia($conn, $id_membresia, $tipo, $precio, $duracion, $benef
 
         return "Membresía actualizada exitosamente.";
     } else {
-        $error = "Error al actualizar la membresía: " . $stmt->error;
+        $error = "Error: No se pudo actualizar la membresía. " . $stmt->error;
         $stmt->close();
         return $error;
     }
 }
+
 
 
 
@@ -225,10 +226,9 @@ function eliminarMembresia($conn, $id_membresia)
     $stmt->bind_result($cantidad_miembros);
     $stmt->fetch();
     $stmt->close();
-
     // Si hay miembros activos, no permitir la eliminación
     if ($cantidad_miembros > 0) {
-        return "No se puede eliminar la membresía porque hay miembros activos con esta membresía.";
+        return "Error: No se puede eliminar la membresía porque hay miembros activos con esta membresía.";
     }
 
     // Verificar si la membresía está en el historial de membresías activas
@@ -240,10 +240,10 @@ function eliminarMembresia($conn, $id_membresia)
     $stmt->close();
 
     if ($cantidad_historial > 0) {
-        return "No se puede eliminar la membresía porque hay registros en el historial con estado activo.";
+        return "Error: No se puede eliminar la membresía porque hay registros en el historial con estado activo.";
     }
 
-    // Si no hay miembros con esta membresía, proceder con la eliminación
+    // Si no hay restricciones, proceder con la eliminación
     $stmt = $conn->prepare("DELETE FROM membresia WHERE id_membresia = ?");
     $stmt->bind_param("i", $id_membresia);
 
@@ -251,11 +251,12 @@ function eliminarMembresia($conn, $id_membresia)
         $stmt->close();
         return "Membresía eliminada exitosamente.";
     } else {
-        $error = "Error al eliminar la membresía: " . $stmt->error;
+        $error = "Error: " . $stmt->error;
         $stmt->close();
         return $error;
     }
 }
+
 
 function eliminarMiembroMembresia($conn, $id_miembro_membresia)
 {
